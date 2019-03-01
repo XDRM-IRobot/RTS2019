@@ -25,13 +25,12 @@
 #include <unistd.h>
 
 #include "../utilities/log.h"
-#include "hardware_interface.h"
 
 namespace roborts_sdk {
 /**
  * @brief serial device class inherited from hardware interface
  */
-class SerialDevice: public HardwareInterface {
+class SerialDevice{
  public:
   /**
    * @brief Constructor of serial device
@@ -47,21 +46,21 @@ class SerialDevice: public HardwareInterface {
    * @brief Initialization of serial device to config and open the device
    * @return True if success
    */
-  virtual bool Init() override ;
+  bool Init();
   /**
    * @brief Serial device read function
    * @param buf Given buffer to be updated by reading
    * @param len Read data length
    * @return -1 if failed, else the read length
    */
-  virtual int Read(uint8_t *buf, int len) override ;
+  int Read(uint8_t *buf, int len);
   /**
    * @brief Write the buffer data into device to send the data
    * @param buf Given buffer to be sent
    * @param len Send data length
    * @return < 0 if failed, else the send length
    */
-  virtual int Write(const uint8_t *buf, int len) override ;
+  int Write(const uint8_t *buf, int len);
 
  private:
   /**

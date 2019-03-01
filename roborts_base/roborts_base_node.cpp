@@ -17,14 +17,15 @@
 
 #include "gimbal/gimbal.h"
 #include "chassis/chassis.h"
-#include "roborts_base_config.h"
 
 int main(int argc, char **argv){
   ros::init(argc, argv, "roborts_base_node");
   ros::NodeHandle nh;
-  roborts_base::Config config;
-  config.GetParam(&nh);
-  auto handle = std::make_shared<roborts_sdk::Handle>(config.serial_port);
+  
+  std::string serial_port;
+  nh.param<std::string>("serial_port", serial_port, "/dev/serial_sdk");
+
+  auto handle = std::make_shared<roborts_sdk::Handle>(serial_port);
   if(!handle->Init()) return 1;
   
   roborts_base::Chassis chassis(handle);
