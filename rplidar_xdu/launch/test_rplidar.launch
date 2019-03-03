@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find rplidar_xdu)/launch/rplidar.launch" />
+
+  <node name="rplidarNodeClient" pkg="rplidar_xdu"  type="rplidarNodeClient" output="screen"/>
+
+</launch>

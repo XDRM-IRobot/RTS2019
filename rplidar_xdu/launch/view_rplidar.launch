@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find rplidar_xdu)/launch/rplidar.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rplidar_xdu)/rviz/rplidar.rviz" />
+  
+</launch>

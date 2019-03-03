@@ -1,6 +1,0 @@
-<launch>
-  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
-
-  <node name="rplidarNodeClient" pkg="rplidar_ros"  type="rplidarNodeClient" output="screen"/>
-
-</launch>

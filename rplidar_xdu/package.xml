@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>rplidar_ros</name>
+  <name>rplidar_xdu</name>
   <version>1.10.0</version>
   <description>The rplidar ros package, support rplidar A2/A1 and A3/S1</description>
 

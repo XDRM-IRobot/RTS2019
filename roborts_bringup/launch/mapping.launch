@@ -4,7 +4,7 @@
   <include file="$(find roborts_bringup)/launch/base.launch" />
 
   <!-- Run the lidar -->
-  <node name="rplidar_node" pkg="rplidar_ros" type="rplidarNode" output="screen">
+  <node name="rplidar_node" pkg="rplidar_xdu" type="rplidarNode" output="screen">
       <param name="serial_port" type="string" value="/dev/rplidar"/>
       <param name="serial_baudrate" type="int" value="115200"/>
       <param name="frame_id" type="string" value="base_laser_link"/>
