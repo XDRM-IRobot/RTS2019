@@ -31,11 +31,14 @@
 
 namespace roborts_decision{
 
+#define Simulator
+
 class Blackboard {
- public:
+public:
   typedef std::shared_ptr<Blackboard> Ptr;
   typedef roborts_costmap::CostmapInterface CostMap;
   typedef roborts_costmap::Costmap2D CostMap2D;
+
   explicit Blackboard(const std::string &proto_file_path):
       enemy_detected_(false),
       armor_detection_actionlib_client_("armor_detection_node_action", true){
@@ -50,10 +53,13 @@ class Blackboard {
 
     costmap_2d_ = costmap_ptr_->GetLayeredCostmap()->GetCostMap();
 
+#ifdef Simulator
     // Enemy fake pose
     ros::NodeHandle rviz_nh("/move_base_simple");
     enemy_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, &Blackboard::GoalCallback, this);
-
+#else
+    // sub topic from armor detect
+#endif
     ros::NodeHandle nh;
 
     roborts_decision::DecisionConfig decision_config;
@@ -89,8 +95,8 @@ class Blackboard {
       camera_pose_msg = feedback->enemy_pos;
 
       double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
-          camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
-      double yaw = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
+                                  camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
+      double yaw      = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
 
       //camera_pose_msg.pose.position.z=camera_pose_msg.pose.position.z;
       tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,
