@@ -1,3 +1,4 @@
-inaccessible_cost: 253
-heuristic_factor: 1.0
-goal_search_tolerance: 0.45
+inaccessible_cost: 253        # 不可通过（即视为致命障碍物）的地图栅格代价值
+heuristic_factor: 1.0         # 启发因子
+goal_search_tolerance: 0.45   # 寻找新目标点的容忍距离（单位米），
+                              # 如果发送的目标点不可通过，则在此允许距离周围内找一个可以通过的新目标点

@@ -1,6 +1,6 @@
   name: "a_star_planner"
   selected_algorithm: "a_star_planner"
-  frequency: 3
-  max_retries: 5 
-  goal_distance_tolerance: 0.15
-  goal_angle_tolerance: 0.15
+  frequency: 3                            # 全局规划算法的频率
+  max_retries: 5                          # 允许全局规划失败重试的次数
+  goal_distance_tolerance: 0.15           # 全局规划到达目标的欧式距离误差
+  goal_angle_tolerance: 0.15              # 全局规划到达目标的角度（单位弧度制）误差
