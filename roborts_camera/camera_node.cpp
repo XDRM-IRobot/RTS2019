@@ -26,6 +26,7 @@ CameraNode::CameraNode() {
   camera_threads_.resize(camera_num_);
   camera_driver_.resize(camera_num_);
 
+
   for (unsigned int i = 0; i < camera_num_; i++) {
     auto camera_info = camera_param_.GetCameraParam()[i];
     nhs_.push_back(ros::NodeHandle(camera_info.camera_name));

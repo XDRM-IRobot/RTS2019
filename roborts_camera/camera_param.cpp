@@ -34,6 +34,7 @@ void CameraParam::LoadCameraParam() {
 
   //camera number and ids
   int camera_num = camera_info.camera().size();
+  
   cameras_param_.resize(camera_num);
   for(unsigned int index = 0; index < camera_num; index++) {
 

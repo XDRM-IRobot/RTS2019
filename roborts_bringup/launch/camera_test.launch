@@ -1,0 +1,11 @@
+<launch>
+  <master auto="start"/>
+
+  <!-- Run the camera node -->
+  <node pkg="roborts_camera" type="roborts_camera_node" name="uvc_camera" respawn="false" />
+
+  <!-- Run the camera test node -->
+  <node pkg="roborts_camera" type="image_capture_test" name="image_capture_test" respawn="false" />
+ 
+</launch>
+
