@@ -19,7 +19,7 @@ message Threshold {
   required float blue_thread = 12;
   required float red_thread = 13;
 }
-
+ 
 message ArmorSize {
   required float width = 1;
   required float height = 2;
