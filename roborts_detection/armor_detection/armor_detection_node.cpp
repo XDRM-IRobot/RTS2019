@@ -81,6 +81,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
   if(!initialized_){
     feedback.error_code = error_info_.error_code();
     feedback.error_msg  = error_info_.error_msg();
+
     as_.publishFeedback(feedback);
     as_.setAborted(result, feedback.error_msg);
     ROS_INFO("Initialization Failed, Failed to execute action!");
@@ -145,7 +146,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 }
 
 void ArmorDetectionNode::ExecuteLoop() {
-  undetected_count_ = undetected_armor_delay_;
+  undetected_count_ = undetected_armor_delay_; // init undetected count
 
   while(running_) {
     usleep(1);
@@ -157,7 +158,7 @@ void ArmorDetectionNode::ExecuteLoop() {
         x_ = target_3d.x;
         y_ = target_3d.y;
         z_ = target_3d.z;
-        error_info_ = error_info;
+        error_info_ = error_info;  // update error_info of armor_detect
       }
 
       if(detected_enemy_) {

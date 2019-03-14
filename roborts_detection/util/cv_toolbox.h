@@ -127,11 +127,12 @@ class CVToolbox {
     capture_begin_ = std::chrono::high_resolution_clock::now();
     auto write_begin = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < buffer_state_.size(); ++i) {
+      // As long as it is not the idx being read, we could assign img to this buffer[idx]
       if (buffer_state_[i] != BufferState::READ) {
         image_buffer_[i] = cv_bridge::toCvShare(img_msg, "bgr8")->image.clone();
         buffer_state_[i] = BufferState::WRITE;
         lock_.lock();
-        latest_index_ = i;
+        latest_index_ = i;  // mark the newest idx of img
         lock_.unlock();
       }
     }
@@ -150,17 +151,17 @@ class CVToolbox {
     }
     int temp_index = -1;
     lock_.lock();
-    if (buffer_state_[latest_index_] == BufferState::WRITE) {
+    if (buffer_state_[latest_index_] == BufferState::WRITE) { // if img if fresh, update buffer state 
       buffer_state_[latest_index_] = BufferState::READ;
     } else {
-      ROS_INFO("No image is available");
+      ROS_INFO("No image is available");  // else, all img have been read, return -1
       lock_.unlock();
       return temp_index;
     }
     temp_index = latest_index_;
     lock_.unlock();
 
-    src_img = image_buffer_[temp_index];
+    src_img = image_buffer_[temp_index];  // assign img form buffer to Algorithm
     return temp_index;
   }
 

@@ -34,31 +34,7 @@ public:
 		// svm_big = StatModel::load<SVM>("../config/big_armor_model.yml");
 		// svm_small = StatModel::load<SVM>("../config/armor_model.yml");
 	};
-    void setPara(const armor_param & para) {
-        _para = para;
-    };
 	
-	void init_armorHist(const std::string& small_armor_pic, 
-						const std::string& big_armor_pic)
-	{
-		cv::Mat armor_Hist = cv::imread(big_armor_pic, cv::IMREAD_GRAYSCALE);
-		cv::Mat bigarmor_Hist = cv::imread(small_armor_pic, cv::IMREAD_GRAYSCALE);
-		if(bigarmor_Hist.empty())
-		{
-			std::cout << small_armor_pic << "can not open! check path!" << std::endl; 
-		}
-		if(armor_Hist.empty())
-		{
-			std::cout << big_armor_pic << "can not open! check path!" << std::endl; 
-		}
-		int histSize = 256;  
-    	float range[] = { 0, 256 };
-    	const float* histRange = { range };
-    	int channels[] = {0}; 
-    	bool uniform = true; bool accumulate = false; 
-		cv::calcHist(&armor_Hist, 1, channels, cv::Mat(), armor_1_hist, 1,&histSize, &histRange, uniform, accumulate); // use 0.7ms
-	  	cv::calcHist(&bigarmor_Hist, 1, channels, cv::Mat(), armor_2_hist, 1,&histSize, &histRange, uniform, accumulate); // use 0.7ms
-	}
 	/**
  	 * @brief: 检测API
 	 * @param: camera_src 
@@ -68,76 +44,7 @@ public:
 	bool detect(cv::Mat & src, std::vector<armor_info> & armors_candidate);
 
 private:
-	void DrawRotatedRect(cv::Mat &img, const cv::RotatedRect &rect, const cv::Scalar &color, int thickness) {    
-		cv::Point2f vertex[4];
-		rect.points(vertex);
-		for (int i = 0; i < 4; i++)
-			cv::line(img, vertex[i], vertex[(i + 1) % 4], color, thickness);
-	}
-
-	std::vector<std::vector<cv::Point>> FindContours(const cv::Mat &binary_img) {
-		std::vector<std::vector<cv::Point>> contours;
-		const auto mode = CV_RETR_EXTERNAL;
-		const auto method = CV_CHAIN_APPROX_SIMPLE;
-		cv::findContours(binary_img, contours, mode, method);
-		return contours;
-	 }
-	cv::Mat DistillationColor(const cv::Mat &src_img, unsigned int color) {
-		std::vector<cv::Mat> bgr_channel;
-		cv::split(src_img, bgr_channel);
-		if (color == RED) {
-			cv::Mat result_img;
-			cv::subtract(bgr_channel[2], bgr_channel[1], result_img);
-			return result_img;
-		} 
-		else{
-			cv::Mat result_img;
-			cv::subtract(bgr_channel[0], bgr_channel[1], result_img);
-			return result_img;
-		}
-	}
-	void choose_target_from_lights(std::vector<cv::RotatedRect> &lights, std::vector<armor_info> &armor_vector);
-	armor_info SlectFinalArmor(std::vector<armor_info> &armors);
 	
-	void FilterArmors(std::vector<armor_info> &armors);
-	//void FilterArmors(cv::Mat & src, std::vector<armor_info> &armors);
-    void DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect> &lights);  //, double yaw_diff = 0);
-	  
-	void FilterLights(std::vector<cv::RotatedRect> &lights);   //, double yaw_diff = 0);
-
-	/**
-	 * @brief: 根据装甲板不同的移动情况框选装甲板
-	 */
-    cv::RotatedRect boundingRRect(const cv::RotatedRect & left, const cv::RotatedRect & right);
-	cv::RotatedRect boundingRRectFast(const cv::RotatedRect & left, const cv::RotatedRect & right);
-	cv::RotatedRect boundingRRectSlow(const cv::RotatedRect & left, const cv::RotatedRect & right);
-	/**
-	 * @brief: filterarmor方法1: 计算灰度和均值
-	 * @param: cv::Mat& mask
-	 * @param: const cv::RotatedRect& rect
-	 * @param: double& mean
-	 * @param: double& stddev
-	 * no-return;
-	 */
-	void calu_meanstdev(cv::Mat& mask, const cv::RotatedRect& rect, double& m, double& stddev);
-	/**
-	 * @brief: filterarmor方法2: 直方图匹配
-	 * @param: cv::Mat mask
-	 * @param: cv::RotateRect rect
-	 * @param: bool visual
-	 * @return: 相关度 0 ~ 1
-	 */
-	double armor_hist_diff(cv::Mat& mask, const cv::RotatedRect& rect, bool Visual);
-	/**
-	 * @brief: support vector machince for armor
-	 * @param: 英雄 wsize(100,25)
-	 * @param: 步兵 wsize(60,25)
-	 * @return: 预测值 -1 ~ +1
-	 */
-	float armor_svm(Mat& img_roi);
-	float small_armor_svm(Mat& img_roi);
-
-	float get_armor_roi(cv::RotatedRect& rect, bool visual = 0);
 private:
     armor_param _para;	// 装甲板的参数
 	cv::Mat src_img_;
@@ -161,8 +68,6 @@ private:
 	Ptr<SVM> svm_big;
 	Ptr<SVM> svm_small;
 };
-
-int armorToarmorTest(const cv::RotatedRect & _rect1, const cv::RotatedRect & _rect2);
 
 } // namespace detect_mul
 

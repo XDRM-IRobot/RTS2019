@@ -103,20 +103,20 @@ struct LightInfo {
   std::vector<cv::Point2f> vertices_;
 };
 
+enum Armor_Twist { STILL = 1, LOW_MOVE = 2, MID_MOVE = 3, FAST_MOVE = 4 }; // 速度信息
+
 /**
  *  This class describes the armor information, including maximum bounding box, vertex, standard deviation.
  */
 class ArmorInfo {
  public:
-  ArmorInfo(cv::RotatedRect armor_rect, std::vector<cv::Point2f> armor_vertex, float armor_stddev = 0.0) {
+  ArmorInfo(cv::RotatedRect armor_rect, Armor_Twist st) {
     rect = armor_rect;
-    vertex = armor_vertex;
-    stddev = armor_stddev;
+    state = st;
   }
  public:
   cv::RotatedRect rect;
-  std::vector<cv::Point2f> vertex;
-  float stddev;
+  Armor_Twist state;
 };
 
 /**
@@ -252,6 +252,9 @@ class ConstraintSet : public ArmorDetectionBase {
 
   //ros
   ros::NodeHandle nh;
+  
+  // my
+  std::vector<cv::RotatedRect> light_rects;
 };
 
 roborts_common::REGISTER_ALGORITHM(ArmorDetectionBase, "constraint_set", ConstraintSet, std::shared_ptr<CVToolbox>);
