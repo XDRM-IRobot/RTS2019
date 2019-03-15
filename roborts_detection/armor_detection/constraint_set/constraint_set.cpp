@@ -59,22 +59,35 @@ void ConstraintSet::LoadParam() {
   using_hsv_              = constraint_set_config_.using_hsv();
 
 	// image threshold parameters
-	color_thread_           = constraint_set_config_.threshold().color_thread();
-  blue_thread_            = constraint_set_config_.threshold().blue_thread();
-  red_thread_             = constraint_set_config_.threshold().red_thread();
+	light_threshold_        = constraint_set_config_.threshold().light_threshold();
+	color_threshold_        = constraint_set_config_.threshold().color_threshold();
+  blue_threshold_         = constraint_set_config_.threshold().blue_threshold();
+  red_threshold_          = constraint_set_config_.threshold().red_threshold();
 
   // light threshold parameters
-  light_max_aspect_ratio_ = constraint_set_config_.threshold().light_max_aspect_ratio();
   light_min_area_         = constraint_set_config_.threshold().light_min_area();
+	light_max_area_         = constraint_set_config_.threshold().light_max_area();
+	light_min_angle_        = constraint_set_config_.threshold().light_min_angle();
   light_max_angle_        = constraint_set_config_.threshold().light_max_angle();
-  light_max_angle_diff_   = constraint_set_config_.threshold().light_max_angle_diff();
+	light_min_angle_diff_   = constraint_set_config_.threshold().light_min_angle_diff();
+	light_max_angle_diff_   = constraint_set_config_.threshold().light_max_angle_diff();
+	light_min_aspect_ratio_ = constraint_set_config_.threshold().light_min_aspect_ratio();
+	light_max_aspect_ratio_ = constraint_set_config_.threshold().light_max_aspect_ratio();
 
 	// armor threshold parameters
-  armor_max_angle_        = constraint_set_config_.threshold().armor_max_angle();
+	light_max_width_diff_   = constraint_set_config_.threshold().light_max_width_diff();
+	light_max_height_diff_  = constraint_set_config_.threshold().light_max_height_diff();
   armor_min_area_         = constraint_set_config_.threshold().armor_min_area();
-  armor_max_aspect_ratio_ = constraint_set_config_.threshold().armor_max_aspect_ratio();
+	armor_max_area_         = constraint_set_config_.threshold().armor_max_area();
+	armor_min_angle_        = constraint_set_config_.threshold().armor_min_angle();
+  armor_max_angle_        = constraint_set_config_.threshold().armor_max_angle();
   armor_light_angle_diff_ = constraint_set_config_.threshold().armor_light_angle_diff();
-
+	armor_min_ratio_        = constraint_set_config_.threshold().armor_min_ratio();
+	armor_max_ratio_        = constraint_set_config_.threshold().armor_max_ratio();
+	armor_min_aspect_ratio_ = constraint_set_config_.threshold().armor_min_aspect_ratio();
+	armor_max_aspect_ratio_ = constraint_set_config_.threshold().armor_max_aspect_ratio();
+	filter_armor_area_      = constraint_set_config_.threshold().filter_armor_area();
+	
 	// angle solver parameters
   float armor_width       = constraint_set_config_.armor_size().width();
   float armor_height      = constraint_set_config_.armor_size().height();
@@ -181,7 +194,7 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
 
   if(using_hsv_) {
     binary_color_img = cv_toolbox_->DistillationColor(src, enemy_color_, using_hsv_);
-    cv::threshold(gray_img_, binary_brightness_img, color_thread_, 255, CV_THRESH_BINARY);
+    cv::threshold(gray_img_, binary_brightness_img, color_threshold_, 255, CV_THRESH_BINARY);
   }else {
     cv::Mat subtract_color_img;
 	  std::vector<cv::Mat> bgr_channel;
@@ -192,13 +205,13 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
 	  else
 		  cv::subtract(bgr_channel[0], bgr_channel[1], subtract_color_img);
 
-    cv::threshold(gray_img_, binary_brightness_img, color_thread_, 255, CV_THRESH_BINARY);
+    cv::threshold(gray_img_, binary_brightness_img, color_threshold_, 255, CV_THRESH_BINARY);
     
     float thresh;
     if (enemy_color_ == RED)
-      thresh = red_thread_;
+      thresh = red_threshold_;
     else
-      thresh = blue_thread_;
+      thresh = blue_threshold_;
 
     cv::threshold(subtract_color_img, binary_color_img, thresh, 255, CV_THRESH_BINARY);
 

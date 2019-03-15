@@ -311,25 +311,35 @@ class ConstraintSet : public ArmorDetectionBase {
   //! armor info
   AngleSolver angle_solver_;
 
-  //! image param
-  float color_thread_;
-  float blue_thread_;
-  float red_thread_;
+  // image threshold parameters
+	float light_threshold_;
+	float color_threshold_;
+  float blue_threshold_;
+  float red_threshold_;
 
-  //! Filter lights
-  std::vector<LightInfo> lights_info_;
-  float light_max_aspect_ratio_;
+  // light threshold parameters
   float light_min_area_;
-  float light_max_area_;
+	float light_max_area_;
+	float light_min_angle_;
   float light_max_angle_;
-  float light_max_angle_diff_;
+	float light_min_angle_diff_;
+	float light_max_angle_diff_;
+	float light_min_aspect_ratio_;
+	float light_max_aspect_ratio_;
 
-  //! Filter armor
-  float light_min_aspect_ratio_;
-  float armor_max_angle_;
+	// armor threshold parameters
+	float light_max_width_diff_;
+	float light_max_height_diff_;
   float armor_min_area_;
-  float armor_max_aspect_ratio_;
+	float armor_max_area_;
+	float armor_min_angle_;
+  float armor_max_angle_;
   float armor_light_angle_diff_;
+	float armor_min_ratio_;
+	float armor_max_ratio_;
+	float armor_min_aspect_ratio_;
+	float armor_max_aspect_ratio_;
+	float filter_armor_area_;
 
   bool thread_running_;
 

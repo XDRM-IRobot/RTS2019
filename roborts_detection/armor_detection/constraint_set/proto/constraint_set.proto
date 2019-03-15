@@ -2,25 +2,35 @@ syntax = "proto2";
 package roborts_detection;
 
 message Threshold {
+  //for image
+  required float light_threshold        = 1;
+  required float color_threshold        = 2;
+  required float blue_threshold         = 3;
+  required float red_threshold          = 4;
+
   //for light
-  required float light_max_aspect_ratio = 1;
-  required float light_min_area = 2;
-  required float light_max_angle = 3;
-  required float light_max_angle_diff = 4;
+  required float light_min_area         = 5;
+  required float light_max_area         = 6;
+  required float light_min_angle        = 7;
+  required float light_max_angle        = 8;
+  required float light_min_angle_diff   = 9;
+  required float light_max_angle_diff   = 10;
+  required float light_min_aspect_ratio = 11;
+  required float light_max_aspect_ratio = 12;
+  
   //for armor
-  required float armor_max_angle = 5;
-
-  required float armor_min_area = 6;
-  required float armor_max_area = 7;
-
-  required float armor_min_aspect_ratio = 8;
-  required float armor_max_aspect_ratio = 9;
-  
-  required float armor_light_angle_diff = 10;
-  
-  required float color_thread = 11;
-  required float blue_thread = 12;
-  required float red_thread = 13;
+  required float light_max_width_diff   = 13;
+  required float light_max_height_diff  = 14;
+  required float armor_min_area         = 15;
+  required float armor_max_area         = 16;
+  required float armor_min_angle        = 17;
+  required float armor_max_angle        = 18;
+  required float armor_light_angle_diff = 19;
+  required float armor_min_ratio        = 20;
+  required float armor_max_ratio        = 21; 
+  required float armor_min_aspect_ratio = 22;
+  required float armor_max_aspect_ratio = 23;
+  required float filter_armor_area      = 24;
 }
 
 message ArmorSize {
