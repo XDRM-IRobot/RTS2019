@@ -83,7 +83,13 @@ public:
 
   ~Blackboard() = default;
 
-
+  geometry_msgs::PoseStamped SelectFinalEnemy()
+  {
+    if(enemy_pose_candidate_.size())
+    {
+      return enemy_pose_candidate_[0];
+    }
+  }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
@@ -92,40 +98,44 @@ public:
 
       tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
       geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
-      camera_pose_msg = feedback->enemy_pos;
 
-      double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
-                                  camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
-      double yaw      = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
+      enemy_pose_candidate_.clear();
 
-      //camera_pose_msg.pose.position.z=camera_pose_msg.pose.position.z;
-      tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,
-                                                              0,
-                                                              yaw);
-      camera_pose_msg.pose.orientation.w = quaternion.w();
-      camera_pose_msg.pose.orientation.x = quaternion.x();
-      camera_pose_msg.pose.orientation.y = quaternion.y();
-      camera_pose_msg.pose.orientation.z = quaternion.z();
-      poseStampedMsgToTF(camera_pose_msg, tf_pose);
-
-      tf_pose.stamp_ = ros::Time(0);
-      try
+      std::vector<geometry_msgs::PoseStamped>::const_iterator it = feedback->enemy_pos.begin(); 
+      for (int i = 0; it != feedback->enemy_pos.end(); ++it, ++i)
       {
-        tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
-        tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
+        camera_pose_msg = feedback->enemy_pos[i];
 
-        if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
-          enemy_pose_ = global_pose_msg;
+        double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
+                                  camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
+        double yaw      = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
+      
+        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
+        camera_pose_msg.pose.orientation.w = quaternion.w();
+        camera_pose_msg.pose.orientation.x = quaternion.x();
+        camera_pose_msg.pose.orientation.y = quaternion.y();
+        camera_pose_msg.pose.orientation.z = quaternion.z();
+        poseStampedMsgToTF(camera_pose_msg, tf_pose);
+        tf_pose.stamp_ = ros::Time(0);      
+        try
+        {
+          tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
+          tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
 
+          if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
+            enemy_pose_candidate_.push_back(global_pose_msg);
+          }
+        }
+        catch (tf::TransformException &ex) {
+          ROS_ERROR("tf error when transform enemy pose from camera to map");
         }
       }
-      catch (tf::TransformException &ex) {
-        ROS_ERROR("tf error when transform enemy pose from camera to map");
-      }
+
+      enemy_pose_ = SelectFinalEnemy();
+
     } else{
       enemy_detected_ = false;
     }
-
   }
 
   geometry_msgs::PoseStamped GetEnemy() const {
@@ -223,6 +233,7 @@ public:
   actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction> armor_detection_actionlib_client_;
   roborts_msgs::ArmorDetectionGoal armor_detection_goal_;
   geometry_msgs::PoseStamped enemy_pose_;
+  std::vector<geometry_msgs::PoseStamped> enemy_pose_candidate_;
   bool enemy_detected_;
 
   //! cost map

@@ -26,10 +26,11 @@ Gimbal::Gimbal(std::shared_ptr<roborts_sdk::Handle> handle):
 }
 
 void Gimbal::SDK_Init(){
+  // receive gimbal_info from car
   handle_->CreateSubscriber<roborts_sdk::cmd_gimbal_info>(GIMBAL_CMD_SET, CMD_PUSH_GIMBAL_INFO,
                                                           GIMBAL_ADDRESS, BROADCAST_ADDRESS,
                                                           std::bind(&Gimbal::GimbalInfoCallback, this, std::placeholders::_1));
-
+  // command to car
   gimbal_angle_pub_ = handle_->CreatePublisher<roborts_sdk::cmd_gimbal_angle>(GIMBAL_CMD_SET, CMD_SET_GIMBAL_ANGLE,
                                                                               MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
   gimbal_mode_pub_= handle_->CreatePublisher<roborts_sdk::gimbal_mode_e>(GIMBAL_CMD_SET, CMD_SET_GIMBAL_MODE,
@@ -67,7 +68,7 @@ void Gimbal::GimbalInfoCallback(const std::shared_ptr<roborts_sdk::cmd_gimbal_in
   gimbal_tf_.transform.translation.x = 0;
   gimbal_tf_.transform.translation.y = 0;
   gimbal_tf_.transform.translation.z = 0.15;
-  tf_broadcaster_.sendTransform(gimbal_tf_);
+  tf_broadcaster_.sendTransform(gimbal_tf_); // publish gimbal tf 
 
 }
 
@@ -79,14 +80,14 @@ void Gimbal::GimbalAngleCtrlCallback(const roborts_msgs::GimbalAngle::ConstPtr &
   gimbal_angle.pitch = msg->pitch_angle*1800/M_PI;
   gimbal_angle.yaw = msg->yaw_angle*1800/M_PI;
 
-  gimbal_angle_pub_->Publish(gimbal_angle);
+  gimbal_angle_pub_->Publish(gimbal_angle); // publish to car
 
 }
 
 bool Gimbal::SetGimbalModeService(roborts_msgs::GimbalMode::Request &req,
                                   roborts_msgs::GimbalMode::Response &res){
   roborts_sdk::gimbal_mode_e gimbal_mode = static_cast<roborts_sdk::gimbal_mode_e>(req.gimbal_mode);
-  gimbal_mode_pub_->Publish(gimbal_mode);
+  gimbal_mode_pub_->Publish(gimbal_mode);  // publish to car
   res.received = true;
   return true;
 }
@@ -100,7 +101,7 @@ bool Gimbal::CtrlFricWheelService(roborts_msgs::FricWhl::Request &req,
     fric_speed.left = 1000;
     fric_speed.right = 1000;
   }
-  fric_wheel_pub_->Publish(fric_speed);
+  fric_wheel_pub_->Publish(fric_speed);   // publish to car
   res.received = true;
   return true;
 }
@@ -134,7 +135,7 @@ bool Gimbal::CtrlShootService(roborts_msgs::ShootCmd::Request &req,
     default:
       return  false;
   }
-  gimbal_shoot_pub_->Publish(gimbal_shoot);
+  gimbal_shoot_pub_->Publish(gimbal_shoot);  // publish to car
 
   res.received = true;
   return true;

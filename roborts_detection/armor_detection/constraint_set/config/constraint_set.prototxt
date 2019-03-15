@@ -1,19 +1,32 @@
 threshold {
-  light_max_aspect_ratio: 20.0
-  light_min_area: 1
-  light_max_angle: 20.0
-  light_max_angle_diff: 10.0
+  light_threshold        :  200
+  color_threshold        :  100
+  blue_threshold         :  70
+  red_threshold          :  40
 
-  armor_max_angle: 15.0
-  armor_min_area: 100
-  armor_max_aspect_ratio: 4
-  armor_max_pixel_val: 150.0
-  armor_max_stddev: 90
-  armor_max_mean: 90
+#for light
+  light_min_area         :  20
+  light_max_area         :  0.04    # 0.04 x img
+  light_min_angle        :  0
+  light_max_angle        :  35.0
+  light_min_angle_diff   :  0
+  light_max_angle_diff   :  40.0
+  light_min_aspect_ratio :  1.2
+  light_max_aspect_ratio :  10.0
 
-  color_thread: 100
-  blue_thread: 90
-  red_thread: 50
+#for armor
+  light_max_width_diff   :  0.5
+  light_max_height_diff  :  0.5
+  armor_min_area         :  30
+  armor_max_area         :  320000
+  armor_min_angle        :  0   
+  armor_max_angle        :  15.0
+  armor_light_angle_diff :  35
+  armor_min_ratio        :  1.2
+  armor_max_ratio        :  5.0
+  armor_min_aspect_ratio :  1.2
+  armor_max_aspect_ratio :  3.8
+  filter_armor_area      :  200
 }
 
 signal_recognization {

@@ -103,20 +103,20 @@ struct LightInfo {
   std::vector<cv::Point2f> vertices_;
 };
 
+enum Armor_Twist { STILL = 1, LOW_MOVE = 2, MID_MOVE = 3, FAST_MOVE = 4 }; // 速度信息
+
 /**
  *  This class describes the armor information, including maximum bounding box, vertex, standard deviation.
  */
 class ArmorInfo {
  public:
-  ArmorInfo(cv::RotatedRect armor_rect, std::vector<cv::Point2f> armor_vertex, float armor_stddev = 0.0) {
+  ArmorInfo(cv::RotatedRect armor_rect, Armor_Twist st) {
     rect = armor_rect;
-    vertex = armor_vertex;
-    stddev = armor_stddev;
+    state = st;
   }
  public:
   cv::RotatedRect rect;
-  std::vector<cv::Point2f> vertex;
-  float stddev;
+  Armor_Twist state;
 };
 
 /**
@@ -134,7 +134,7 @@ class ConstraintSet : public ArmorDetectionBase {
    * @param translation Translation information of the armor relative to the camera.
    * @param rotation Rotation information of the armor relative to the camera.
    */
-  ErrorInfo DetectArmor(bool &detected, cv::Point3f &target_3d) override;
+  ErrorInfo DetectArmor(bool &detected, std::vector<cv::Point3f> &targets_3d) override;
   /**
    * @brief Detecting lights on the armors.
    * @param src Input image
@@ -206,10 +206,6 @@ class ConstraintSet : public ArmorDetectionBase {
 
   cv::Mat src_img_;
   cv::Mat gray_img_;
-  //!  Camera intrinsic matrix
-  cv::Mat intrinsic_matrix_;
-  //! Camera distortion Coefficient
-  cv::Mat distortion_coeffs_;
   //! Read image index
   int read_index_;
   //! detection time
@@ -226,32 +222,101 @@ class ConstraintSet : public ArmorDetectionBase {
   cv::Mat show_armors_befor_filter_;
   cv::Mat show_armors_after_filter_;
 
-  //! armor info
-  std::vector<cv::Point3f> armor_points_;
+  // image threshold parameters
+	float light_threshold_;
+	float color_threshold_;
+  float blue_threshold_;
+  float red_threshold_;
 
-  //! Filter lights
-  std::vector<LightInfo> lights_info_;
-  float light_max_aspect_ratio_;
+  // light threshold parameters
   float light_min_area_;
+	float light_max_area_;
+	float light_min_angle_;
   float light_max_angle_;
-  float light_max_angle_diff_;
+	float light_min_angle_diff_;
+	float light_max_angle_diff_;
+	float light_min_aspect_ratio_;
+	float light_max_aspect_ratio_;
 
-  //! Filter armor
-  float armor_max_angle_;
+	// armor threshold parameters
+	float light_max_width_diff_;
+	float light_max_height_diff_;
   float armor_min_area_;
-  float armor_max_aspect_ratio_;
-  float armor_max_pixel_val_;
-  float armor_max_mean_;
-  float armor_max_stddev_;
-
-  float color_thread_;
-  float blue_thread_;
-  float red_thread_;
+	float armor_max_area_;
+	float armor_min_angle_;
+  float armor_max_angle_;
+  float armor_light_angle_diff_;
+	float armor_min_ratio_;
+	float armor_max_ratio_;
+	float armor_min_aspect_ratio_;
+	float armor_max_aspect_ratio_;
+	float filter_armor_area_;
 
   bool thread_running_;
 
   //ros
   ros::NodeHandle nh;
+
+  // solver
+  double target_width_;
+  double target_height_;
+
+  //! target 2d coordinates
+  std::vector<cv::Point2f> target_points_2d_;
+  //! target 3d coordinates
+  std::vector<cv::Point3f> target_points_3d_;
+  //! Camera intrinsic matrix
+  cv::Mat intrinsic_matrix_;
+  //! Camera distortion Coefficient
+  cv::Mat distortion_coeffs_;
+
+  void GetTarget2d(const cv::RotatedRect & rect, const cv::Point2f& offset = cv::Point2f(0,0))
+  {
+    cv::Point2f vertices[4];
+    rect.points(vertices);
+    cv::Point2f lu, ld, ru, rd;
+    std::sort(vertices, vertices + 4, [](const cv::Point2f & p1, const cv::Point2f & p2) { return p1.x < p2.x; });
+    if (vertices[0].y < vertices[1].y) {
+        lu = vertices[0];
+        ld = vertices[1];
+    }
+    else{
+        lu = vertices[1];
+        ld = vertices[0];
+    }
+    if (vertices[2].y < vertices[3].y) {
+        ru = vertices[2];
+        rd = vertices[3];
+    }
+    else {
+        ru = vertices[3];
+        rd = vertices[2];
+    }
+
+    target_points_2d_.clear();
+    target_points_2d_.emplace_back(lu + offset);
+    target_points_2d_.emplace_back(ru + offset);
+    target_points_2d_.emplace_back(rd + offset);
+    target_points_2d_.emplace_back(ld + offset);
+  }
+
+  void GetTarget3d(const cv::RotatedRect & rect, cv::Point3f & target_3d) 
+  {
+    if (rect.size.height < 1) return;
+    double wh_ratio = target_width_ / target_height_;
+    cv::RotatedRect rect_adjust(rect.center, cv::Size2f(rect.size.width, rect.size.width/wh_ratio), rect.angle);
+    GetTarget2d(rect_adjust);
+
+    cv::Mat rvec;
+    cv::Mat tvec;
+    cv::solvePnP(target_points_3d_, 
+                 target_points_2d_, 
+                 intrinsic_matrix_, 
+                 distortion_coeffs_, 
+                 rvec, 
+                 tvec);
+    target_3d = cv::Point3f(tvec);
+  }
 };
 
 roborts_common::REGISTER_ALGORITHM(ArmorDetectionBase, "constraint_set", ConstraintSet, std::shared_ptr<CVToolbox>);
