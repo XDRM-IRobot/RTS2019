@@ -3,51 +3,55 @@ opt_frame {
     map_frame: "map"
 }
 
+# 轨迹相关
 trajectory_opt {
-    teb_autosize: True
-    dt_ref: 0.15
-    dt_hysteresis: 0.01
-    global_plan_overwrite_orientation: true 
-    allow_init_with_backwards_motion: false 
-    global_plan_viapoint_sep: 1.5
-    via_points_ordered: False
-    max_global_plan_lookahead_dist: 2.0
-    exact_arc_length: False
-    force_reinit_new_goal_dist: 0.8
-    feasibility_check_no_poses: 5
-    publish_feedback: False
-    min_samples: 3
-    max_samples: 200
+    teb_autosize: True                        # 是否重新计算路径
+    dt_ref: 0.15                              # 初始时间常数
+    dt_hysteresis: 0.01                       # 时间补偿常数
+    global_plan_overwrite_orientation: true   # 是否重写路径规划点的朝向
+    allow_init_with_backwards_motion: false   # 是否允许后退运动
+    global_plan_viapoint_sep: 1.5             # 选取必须通过的全局路径规划点
+    via_points_ordered: False                 # 按顺序通过必经路径点
+    max_global_plan_lookahead_dist: 2.0       # 局部路径规划截取全局路径规划距离
+    exact_arc_length: False                   # 两个位置之间以弧线连接
+    force_reinit_new_goal_dist: 0.8           # 重新规划局部路径
+    feasibility_check_no_poses: 5             # 计算路径可行性点的个数
+    publish_feedback: False                   # 无用参数
+
+    min_samples: 3                            # 路径最小点的个数
+    max_samples: 200                          # 路径最多点的个数
 }
 
+# 运动学参数
 kinematics_opt {
-    max_vel_x: 2.5
-    max_vel_x_backwards: 0.2
-    max_vel_y: 2.5
-    max_vel_theta: 2.5
-    acc_lim_x: 2.6
-    acc_lim_y: 2.6
-    acc_lim_theta: 2.6
-    min_turning_radius: 0
-    wheelbase: 0
-    cmd_angle_instead_rotvel: false
+    max_vel_x: 1                              # 最大前进运动速度
+    max_vel_x_backwards: 0.2                  # 最大后退速度
+    max_vel_y: 1                              # 最大平移速度
+    max_vel_theta: 1                          # 最大角速度
+    acc_lim_x: 1                              # 最大纵向加速度
+    acc_lim_y: 1                              # 最大平移加速度
+    acc_lim_theta: 1                          # 最大角加速度
+    min_turning_radius: 0                     # 最小转弯半径
+    wheelbase: 0                              # 无用参数
+    cmd_angle_instead_rotvel: false           # ?
 }
 
+# 容忍度参数
 tolerance_opt {
-    xy_goal_tolerance: 0.1
-    yaw_goal_tolerance: 0.1
-    free_goal_vel: False
+    xy_goal_tolerance: 0.1                    # 允许距离误差
+    yaw_goal_tolerance: 0.1                   # 允许角度误差
+    free_goal_vel: False                      # 终点零速
 }
 
 obstacles_opt {
-    min_obstacle_dist: 0.32 #0.8
-    inflation_dist: 0
-    include_costmap_obstacles: True
-    costmap_obstacles_behind_robot_dist: 0.1
-    obstacle_poses_affected: 30
-    legacy_obstacle_association: False
-    obstacle_association_cutoff_factor: 5.0
-    obstacle_association_force_inclusion_factor: 1.5
+    min_obstacle_dist: 0.32 #0.8                      # 障碍物最小距离
+    inflation_dist: 0                                 # 障碍物膨胀大小
+    include_costmap_obstacles: True                   # 是否考虑代价地图中的障碍物, 无用参数
+    costmap_obstacles_behind_robot_dist: 0.1          # 考虑车后障碍物距离阈值
+    obstacle_poses_affected: 30                       # 障碍物影响路径点的数目, 仅在legacy_obstacle_association为true有用
+    legacy_obstacle_association: False                # 选择以离障碍物最近的路径点优化,还是离路径点最近的障碍物优化
+    obstacle_association_cutoff_factor: 5.0           # 不考虑的障碍物因子, legacy_obstacle_association为false有用
+    obstacle_association_force_inclusion_factor: 1.5  # 强制考虑障碍物因子, 工作条件同上
 }
 
 robot_type {
@@ -70,27 +74,28 @@ robot_type {
     }
 }
 
+# 优化参数
 optimize_info {
-    no_inner_iterations: 5
-    no_outer_iterations: 4
-    optimization_activate: True
-    optimization_verbose: False
-    penalty_epsilon: 0.1
-    weight_max_vel_x: 1
-    weight_max_vel_y: 1
-    weight_max_vel_theta: 3
-    weight_acc_lim_x: 1
-    weight_acc_lim_y: 1
-    weight_acc_lim_theta: 3
-    weight_kinematics_nh: 1
-    weight_kinematics_forward_drive: 1
-    weight_kinematics_turning_radius: 0.0
-    weight_optimaltime: 1
-    weight_obstacle: 50
-    weight_inflation: 0.1
-    weight_dynamic_obstacle: 10
-    weight_viapoint: 10
-    weight_adapt_factor: 2.0
-    weight_prefer_rotdir: 0
+    no_inner_iterations: 5                  # 每一次调整轨迹后, 求解器迭代次数
+    no_outer_iterations: 4                  # 自动调整轨迹次数
+    optimization_activate: True             # 是否开始优化
+    optimization_verbose: False             # 是否输出调试信息
+    penalty_epsilon: 0.1                    # 约束惩罚函数补偿项
+    weight_max_vel_x: 1                     # 最大x速度权重
+    weight_max_vel_y: 1                     # 最大y速度权重
+    weight_max_vel_theta: 3                 # 最大角速度权重
+    weight_acc_lim_x: 1                     # 最大x加速度权重
+    weight_acc_lim_y: 1                     # 最大y加速度权重
+    weight_acc_lim_theta: 3                 # 最大角速度权重
+    weight_kinematics_nh: 1                 # 非完整运动学约束权重
+    weight_kinematics_forward_drive: 1      # 正向运动权重
+    weight_kinematics_turning_radius: 0.0   # 最小化转弯半径权重,car like model
+    weight_optimaltime: 1                   # 优化轨迹时间的权重
+    weight_obstacle: 50                     # 满足与障碍物最小距离的权重
+    weight_inflation: 0.1                   # 膨胀后权重
+    weight_dynamic_obstacle: 10             # 动态障碍物权重
+    weight_viapoint: 10                     # 最小与必经点距离权重
+    weight_adapt_factor: 2.0                # 权重自曾参数,现在只有obstacle使用
+    weight_prefer_rotdir: 0                 # 转向权重
 }
 

@@ -2,15 +2,15 @@ use_map_topic             : true
 first_map_only            : false
 gui_publish_rate          : 10
 
-laser_min_range           : 0.15
-laser_max_range           : 8.0
-laser_max_beams           : 30
+laser_min_range           : 0.15   # 激光雷达的最小有效测距距离
+laser_max_range           : 8.0    # 激光雷达的最大有效测距距离
+laser_max_beams           : 30     # 激光雷达的波束数
 
-min_particles             : 70
-max_particles             : 5000
+min_particles             : 70     # 粒子滤波器的最小粒子数
+max_particles             : 5000   # 粒子滤波器的最大粒子数
 
-kld_err                   : 0.05
-kld_z                     : 0.99
+kld_err                   : 0.05   # KLD_Sampling_MCL中的 \epsilon
+kld_z                     : 0.99   # KLD_Sampling_MCL中的(1-\delta)(1−δ)
 
 laser_model               : LASER_MODEL_LIKELIHOOD_FIELD_PROB
 z_hit                     : 0.5
@@ -18,10 +18,10 @@ z_rand                    : 0.5
 sigma_hit                 : 0.2
 lambda_short              : 0.1
 laser_likelihood_max_dist : 5.0
-do_beamskip               : false
-beam_skip_distance        : 0.5
-beam_skip_threshold       : 0.3
-beam_skip_error_threshold : 0.9
+do_beamskip               : false  # Position Tracking阶段忽略部分激光波束，以避免不可预料的误差，比如动态物体等等
+beam_skip_distance        : 0.5    # 忽略波束的障碍物距离阈值
+beam_skip_threshold       : 0.3    # 波束忽略的阈值
+beam_skip_error_threshold : 0.9    # 波束忽略的错误阈值
 
 
 odom_model   : ODOM_MODEL_OMNI
@@ -31,19 +31,19 @@ odom_alpha3  : 0.01
 odom_alpha4  : 0.005
 odom_alpha5  : 0.003
 
-update_min_d      : 0.05
-update_min_a      : 0.03
+update_min_d      : 0.05         # 滤波器更新的位移阈值
+update_min_a      : 0.03         # 滤波器更新的旋转阈值
 
-resample_interval   : 1
-transform_tolerance : 0.1
-recovery_alpha_slow : 0.001
-recovery_alpha_fast : 0.1
+resample_interval   : 1          # 重采样周期
+transform_tolerance : 0.1        # tf发布间隔
+recovery_alpha_slow : 0.001      # Augmented_MCL中的\alpha_{slow}参数
+recovery_alpha_fast : 0.1        # Augmented_MCL中的\alpha_{fast}参数
 
-use_global_localization : false
-random_heading : true
-laser_filter_weight : 0.4
+use_global_localization : false  # 是否初始随机初始定位
+random_heading : true            # 是否初始随机角度的初始定位
+laser_filter_weight : 0.4        # 权重阈值，用于筛选出权重较低的激光雷达测量值
 
-max_uwb_particles : 10
-uwb_cov_x : 0.06
-uwb_cov_y : 0.06
-resample_uwb_factor : 4.0
+max_uwb_particles : 10           # 重采样阶段，以UWB为均值的最大重采样数
+uwb_cov_x : 0.06                 # 重采样阶段，以UWB为均值的高斯分布的方差x
+uwb_cov_y : 0.06                 # 重采样阶段，以UWB为均值的高斯分布的方差y
+resample_uwb_factor : 4.0        # 重采样因子，用于判断对称定位
