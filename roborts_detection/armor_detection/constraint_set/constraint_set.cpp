@@ -29,8 +29,7 @@ namespace roborts_detection {
 #define LINE_INFO(str,str2) //std::cout << "Code Line:" << __LINE__ << "\t" << str <<":\t"<< str2 << std::endl;
 
 ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
-    ArmorDetectionBase(cv_toolbox), angle_solver_(cv_toolbox)
-{
+    ArmorDetectionBase(cv_toolbox){
   filter_x_count_ = 0;
   filter_y_count_ = 0;
   filter_z_count_ = 0;
@@ -53,7 +52,7 @@ void ConstraintSet::LoadParam() {
   bool read_state = roborts_common::ReadProtoFromTextFile(file_name, &constraint_set_config_);
   ROS_ASSERT_MSG(read_state, "Cannot open %s", file_name.c_str());
 
-	// algorithm info
+  // algorithm info
   enable_debug_           = constraint_set_config_.enable_debug();
   enemy_color_            = constraint_set_config_.enemy_color();
   using_hsv_              = constraint_set_config_.using_hsv();
@@ -91,15 +90,24 @@ void ConstraintSet::LoadParam() {
 	// angle solver parameters
   float armor_width       = constraint_set_config_.armor_size().width();
   float armor_height      = constraint_set_config_.armor_size().height();
+	SolveArmorCoordinate(armor_width, armor_height);
 
- 	angle_solver_.init(armor_width, armor_height);
+  int get_intrinsic_state = -1;
+  int get_distortion_state = -1;
 
+  while ((get_intrinsic_state < 0) || (get_distortion_state < 0)) {
+    ROS_WARN("Wait for camera driver launch %d", get_intrinsic_state);
+    usleep(50000);
+    ros::spinOnce();
+    get_intrinsic_state = cv_toolbox_->GetCameraMatrix(intrinsic_matrix_);
+    get_distortion_state = cv_toolbox_->GetCameraDistortion(distortion_coeffs_);
+  }
 }
 
 ErrorInfo ConstraintSet::DetectArmor(bool &detected, std::vector<cv::Point3f> &targets_3d) 
 {
   std::vector<cv::RotatedRect> lights;
-  std::vector<ArmorInfo> armors_candidate;
+  std::vector<ArmorInfo> armors;
 
   auto img_begin = std::chrono::high_resolution_clock::now();
   bool sleep_by_diff_flag = true;
@@ -113,7 +121,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, std::vector<cv::Point3f> &t
     if (read_index_ < 0) {
       // Reducing lock and unlock when accessing function 'NextImage'
       if (detection_time_ == 0) {
-        usleep(20000); // we sleep 20ms to wait image
+        usleep(20000);
         continue;
       } else {
         double capture_time = 0;
@@ -123,57 +131,58 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, std::vector<cv::Point3f> &t
           usleep(20000);
           continue;
         } else if (capture_time > detection_time_ && sleep_by_diff_flag) {
-          ROS_WARN("time sleep %lf", (capture_time - detection_time_));
-          usleep((unsigned int)(capture_time - detection_time_)); // Sleep until the input and output are synchronized
+//          ROS_WARN("time sleep %lf", (capture_time - detection_time_));
+          usleep((unsigned int)(capture_time - detection_time_));
           sleep_by_diff_flag = false;
           continue;
         } else {
           //For real time request when image call back called, the function 'NextImage' should be called.
-          usleep(500); // // we sleep 0.5ms 
+          usleep(500);
           continue;
         }
       }
-    } else break;
+    } else {
+      break;
+    }
   }
-  ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
-      (std::chrono::high_resolution_clock::now() - img_begin).count());
+  /*ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
+      (std::chrono::high_resolution_clock::now() - img_begin).count());*/
 
   auto detection_begin = std::chrono::high_resolution_clock::now();
 
-  cv::cvtColor(src_img_, gray_img_, cv::ColorConversionCodes::COLOR_BGR2GRAY);
-  
+    cv::cvtColor(src_img_, gray_img_, CV_BGR2GRAY);
     if (enable_debug_) {
-      show_lights_before_filter_ = src_img_.clone();
-      show_lights_after_filter_ = src_img_.clone();
-      show_armors_befor_filter_ = src_img_.clone();
-      show_armors_after_filter_ = src_img_.clone();
+      show_lights_before_filter_ = cv::Mat::zeros(src_img_.size(), CV_8UC3);
+  	  show_lights_after_filter_  = cv::Mat::zeros(src_img_.size(), CV_8UC3);
+  	  show_armors_befor_filter_  = src_img_.clone();
+  	  show_armors_after_filter_  = src_img_.clone();
       cv::waitKey(1);
     }
 
     DetectLights(src_img_, lights);
     FilterLights(lights);
-    PossibleArmors(lights, armors_candidate);
-    FilterArmors(armors_candidate);
+    PossibleArmors(lights, armors);
+    FilterArmors(armors);
+		
+		cv::Point3f target_3d;
 
-    if(!armors_candidate.empty()) {
+    if(!armors.empty()) {
       detected = true;
-			cv::Point3f target_3d;
-			for (int i = 0; i != armors_candidate.size(); ++i)
+			for (int i = 0; i != armors.size(); ++i)
 			{
-				cv_toolbox_->DrawRotatedRect(src_img_, armors_candidate[0].rect, cv::Scalar(0, 255, 0), 2);
-				angle_solver_.GetTarget3d(armors_candidate[0].rect, target_3d);
-				targets_3d.emplace_back(target_3d);
+				cv::Point3f target_3d;
+      	GetTarget3d(armors[i].rect, target_3d);
+				targets_3d.push_back(target_3d);
+				cv_toolbox_->DrawRotatedRect(src_img_, armors[i].rect, cv::Scalar(0, 255, 0), 2);
 			}
-    }
-		else
+    } else
       detected = false;
-    
-		if(enable_debug_) {
+    if(enable_debug_) {
       cv::imshow("relust_img_", src_img_);
     }
 
   lights.clear();
-  armors_candidate.clear();
+  armors.clear();
   cv_toolbox_->ReadComplete(read_index_);
   ROS_INFO("read complete");
   detection_time_ = std::chrono::duration<double, std::ratio<1, 1000000>>
@@ -238,20 +247,14 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
         }
     } // for j loop
   } // for i loop
-    
-  if (enable_debug_) 
-  {
-    cv::imshow("light", subtract_color_img);
-    cv::imshow("binary_light_img", binary_light_img);
-    cv::imshow("binary_color_img", binary_color_img);
-    cv::imshow("binary_brightness_img", binary_brightness_img);
+
+  if (enable_debug_)
     cv::imshow("show_lights_before_filter", show_lights_before_filter_);
-  }
 }
 
 void ConstraintSet::FilterLights(std::vector<cv::RotatedRect> &lights) 
 {
-  light_rects.clear();
+  std::vector<cv::RotatedRect> light_rects;
 
 #pragma omp parallel for 
   for(uchar i = 0; i < lights.size(); i++ ){
@@ -299,9 +302,8 @@ void ConstraintSet::FilterLights(std::vector<cv::RotatedRect> &lights)
   lights = light_rects;
 }
 
-void ConstraintSet::PossibleArmors(const std::vector<cv::RotatedRect> &lights, std::vector<ArmorInfo> &armor_vector) 
-{
-  for (int i = 0; i < lights.size(); ++i) {
+void ConstraintSet::PossibleArmors(const std::vector<cv::RotatedRect> &lights, std::vector<ArmorInfo> &armor_vector) {
+    for (int i = 0; i < lights.size(); ++i) {
     for (int j = i; j < lights.size(); ++j) {
 			auto rect1 = std::minmax(lights[i].size.width, lights[i].size.height);
     	auto light_aspect_ratio1 = rect1.second / rect1.first;
@@ -829,11 +831,17 @@ void ConstraintSet::PossibleArmors(const std::vector<cv::RotatedRect> &lights, s
 				
 		} // for j loop
 	} // for i loop
+
+  if (enable_debug_)
+  {
+    for (int i = 0; i != armor_vector.size(); ++i)
+      cv_toolbox_->DrawRotatedRect(show_armors_befor_filter_, armor_vector[i].rect, cv::Scalar(0,255,0), 2);
+    cv::imshow("armors_before_filter", show_armors_befor_filter_);
+  }
 }
 
-void ConstraintSet::FilterArmors(std::vector<ArmorInfo> &armors) 
-{
-  std::vector<bool> is_armor(armors.size(), true);
+void ConstraintSet::FilterArmors(std::vector<ArmorInfo> &armors) {
+	std::vector<bool> is_armor(armors.size(), true);
 
 	for (int i = 0; i < armors.size(); i++) {
 	  for (int j = i + 1; j < armors.size(); j++) {
@@ -900,22 +908,43 @@ void ConstraintSet::FilterArmors(std::vector<ArmorInfo> &armors)
     }	 		 // for j
   } 			 // for i
 
-	filter_rects.clear();
+	std::vector<ArmorInfo> filter_rects;
+
 	for( int i = 0; i < is_armor.size();++i)
 		if(is_armor[i]) filter_rects.push_back(armors[i]);
 	
 	armors = filter_rects;
+
+	if (enable_debug_)
+  {
+    for (int i = 0; i != armors.size(); ++i)
+      cv_toolbox_->DrawRotatedRect(show_armors_after_filter_, armors[i].rect, cv::Scalar(0,255,0), 2);
+    cv::imshow("armors_after_filter", show_armors_after_filter_);
+  }
+
+}
+
+ArmorInfo ConstraintSet::SlectFinalArmor(std::vector<ArmorInfo> &armors) {
+  std::sort(armors.begin(),
+            armors.end(),
+            [](const ArmorInfo &p1, const ArmorInfo &p2) { return p1.rect.size.area() > p2.rect.size.area(); });
+
+  return armors[0];
+}
+
+void ConstraintSet::CalcControlInfo(const ArmorInfo & armor, cv::Point3f &target_3d) {
+  
+
 }
 
 void ConstraintSet::CalcArmorInfo(std::vector<cv::Point2f> &armor_points,
                                  cv::RotatedRect left_light,
-                                 cv::RotatedRect right_light) 
-{
+                                 cv::RotatedRect right_light) {
   cv::Point2f left_points[4], right_points[4];
   left_light.points(left_points);
   right_light.points(right_points);
 
-  cv::Point2f right_lu, right_ld, left_ru, left_rd;
+  cv::Point2f right_lu, right_ld, lift_ru, lift_rd;
   std::sort(left_points, left_points + 4, [](const cv::Point2f &p1, const cv::Point2f &p2) { return p1.x < p2.x; });
   std::sort(right_points, right_points + 4, [](const cv::Point2f &p1, const cv::Point2f &p2) { return p1.x < p2.x; });
   if (right_points[0].y < right_points[1].y) {
@@ -927,16 +956,44 @@ void ConstraintSet::CalcArmorInfo(std::vector<cv::Point2f> &armor_points,
   }
 
   if (left_points[2].y < left_points[3].y) {
-    left_ru = left_points[2];
-    left_rd = left_points[3];
+    lift_ru = left_points[2];
+    lift_rd = left_points[3];
   } else {
-    left_ru = left_points[3];
-    left_rd = left_points[2];
+    lift_ru = left_points[3];
+    lift_rd = left_points[2];
   }
-  armor_points.push_back(left_ru);
+  armor_points.push_back(lift_ru);
   armor_points.push_back(right_lu);
   armor_points.push_back(right_ld);
-  armor_points.push_back(left_rd);
+  armor_points.push_back(lift_rd);
+
 }
 
+void ConstraintSet::SolveArmorCoordinate(const float width, const float height) 
+{
+	target_width_  = width;
+	target_height_ = height;
+  target_points_3d_.emplace_back(cv::Point3f(-width/2, height/2,  0.0));
+  target_points_3d_.emplace_back(cv::Point3f(width/2,  height/2,  0.0));
+  target_points_3d_.emplace_back(cv::Point3f(width/2,  -height/2, 0.0));
+  target_points_3d_.emplace_back(cv::Point3f(-width/2, -height/2, 0.0));
+}
+
+void ConstraintSet::SignalFilter(double &new_num, double &old_num, unsigned int &filter_count, double max_diff) {
+  if(fabs(new_num - old_num) > max_diff && filter_count < 2) {
+    filter_count++;
+    new_num += max_diff;
+  } else {
+    filter_count = 0;
+    old_num = new_num;
+  }
+}
+
+void ConstraintSet::SetThreadState(bool thread_state) {
+  thread_running_ = thread_state;
+}
+
+ConstraintSet::~ConstraintSet() {
+
+}
 } //namespace roborts_detection

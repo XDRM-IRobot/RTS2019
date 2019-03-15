@@ -1,7 +1,7 @@
 camera: {
   camera_name: "gimbal_camera"
   camera_type: "uvc"
-  camera_path: "/dev/video1"
+  camera_path: "/dev/video0"
 
   camera_matrix {
     data: 839.923052

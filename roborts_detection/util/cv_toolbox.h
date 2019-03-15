@@ -129,12 +129,11 @@ class CVToolbox {
     capture_begin_ = std::chrono::high_resolution_clock::now();
     auto write_begin = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < buffer_state_.size(); ++i) {
-      // As long as it is not the idx being read, we could assign img to this buffer[idx]
       if (buffer_state_[i] != BufferState::READ) {
         image_buffer_[i] = cv_bridge::toCvShare(img_msg, "bgr8")->image.clone();
         buffer_state_[i] = BufferState::WRITE;
         lock_.lock();
-        latest_index_ = i;  // mark the newest idx of img
+        latest_index_ = i;
         lock_.unlock();
       }
     }
@@ -153,17 +152,17 @@ class CVToolbox {
     }
     int temp_index = -1;
     lock_.lock();
-    if (buffer_state_[latest_index_] == BufferState::WRITE) { // if img if fresh, update buffer state 
+    if (buffer_state_[latest_index_] == BufferState::WRITE) {
       buffer_state_[latest_index_] = BufferState::READ;
     } else {
-      ROS_INFO("No image is available");  // else, all img have been read, return -1
+      ROS_INFO("No image is available");
       lock_.unlock();
       return temp_index;
     }
     temp_index = latest_index_;
     lock_.unlock();
 
-    src_img = image_buffer_[temp_index];  // assign img form buffer to Algorithm
+    src_img = image_buffer_[temp_index];
     return temp_index;
   }
 
@@ -290,7 +289,20 @@ class CVToolbox {
     for (int i = 0; i < 4; i++)
       cv::line(img, vertex[i], vertex[(i + 1) % 4], color, thickness);
   }
+ private:
+  std::vector<cv::Mat> image_buffer_;
+  std::vector<BufferState> buffer_state_;
+  int latest_index_;
+  std::mutex lock_;
+  int index_;
+  std::chrono::high_resolution_clock::time_point capture_begin_;
+  double capture_time_;
 
+  image_transport::CameraSubscriber camera_sub_;
+  bool get_img_info_;
+  sensor_msgs::CameraInfo camera_info_;
+
+public:
   void adjustRect(cv:: RotatedRect &rect)
   {
     if(rect.size.width > rect.size.height)
@@ -308,7 +320,6 @@ class CVToolbox {
     else if(rect.angle < -90)
         rect.angle += 90;   // 左灯条角度为负, 右灯条角度为正
   }
-
   /**
    * @brief: 针对平凡的情况
    */
@@ -354,7 +365,6 @@ class CVToolbox {
     float angle = std::atan2(right.center.y - left.center.y, right.center.x - left.center.x);
     return cv::RotatedRect(center, cv::Size2f(width, height), angle * 180 / CV_PI);
   }
-
   bool makeRectSafe(cv::Rect & rect, cv::Size size){
       if (rect.x < 0)
           rect.x = 0;
@@ -386,19 +396,6 @@ class CVToolbox {
 		}
 	  return -1;
   }
-
- private:
-  std::vector<cv::Mat> image_buffer_;
-  std::vector<BufferState> buffer_state_;
-  int latest_index_;
-  std::mutex lock_;
-  int index_;
-  std::chrono::high_resolution_clock::time_point capture_begin_;
-  double capture_time_;
-
-  image_transport::CameraSubscriber camera_sub_;
-  bool get_img_info_;
-  sensor_msgs::CameraInfo camera_info_;
 };
 } //namespace roborts_detection
 

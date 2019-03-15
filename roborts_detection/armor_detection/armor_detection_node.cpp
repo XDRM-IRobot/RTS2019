@@ -60,7 +60,7 @@ ErrorInfo ArmorDetectionNode::Init() {
   //create the selected algorithms
   std::string selected_algorithm = armor_detection_param.selected_algorithm();
   // create image receiver
-  cv_toolbox_ = std::make_shared<CVToolbox>(armor_detection_param.camera_name());
+  cv_toolbox_ =std::make_shared<CVToolbox>(armor_detection_param.camera_name());
   // create armor detection algorithm
   armor_detector_ = roborts_common::AlgorithmFactory<ArmorDetectionBase,std::shared_ptr<CVToolbox>>::CreateAlgorithm
       (selected_algorithm, cv_toolbox_);
@@ -81,7 +81,6 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
   if(!initialized_){
     feedback.error_code = error_info_.error_code();
     feedback.error_msg  = error_info_.error_msg();
-
     as_.publishFeedback(feedback);
     as_.setAborted(result, feedback.error_msg);
     ROS_INFO("Initialization Failed, Failed to execute action!");
@@ -146,22 +145,20 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 }
 
 void ArmorDetectionNode::ExecuteLoop() {
-  undetected_count_ = undetected_armor_delay_; // init undetected count
+  undetected_count_ = undetected_armor_delay_;
 
   while(running_) {
     usleep(1);
-    if (node_state_ == NodeState::RUNNING) 
-    {
+    if (node_state_ == NodeState::RUNNING) {
       std::vector<cv::Point3f> targets_3d;
       cv::Point3f target_3d;
       ErrorInfo error_info = armor_detector_->DetectArmor(detected_enemy_, targets_3d);
       {
         std::lock_guard<std::mutex> guard(mutex_);
-        target_3d = targets_3d[0];
         x_ = target_3d.x;
         y_ = target_3d.y;
         z_ = target_3d.z;
-        error_info_ = error_info;  // update error_info of armor_detect
+        error_info_ = error_info;
       }
 
       if(detected_enemy_) {

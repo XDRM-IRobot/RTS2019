@@ -80,10 +80,10 @@ struct LightInfo {
     aspect_ratio_ = width_ / height_;
     center_.x = (vertices[1].x + vertices[3].x) / 2;
     center_.y = (vertices[1].y + vertices[3].y) / 2;
-    vertices_.emplace_back(vertices[0]);
-    vertices_.emplace_back(vertices[1]);
-    vertices_.emplace_back(vertices[2]);
-    vertices_.emplace_back(vertices[3]);
+    vertices_.push_back(vertices[0]);
+    vertices_.push_back(vertices[1]);
+    vertices_.push_back(vertices[2]);
+    vertices_.push_back(vertices[3]);
   }
 
  public:
@@ -119,99 +119,6 @@ class ArmorInfo {
   Armor_Twist state;
 };
 
-class AngleSolver {
-public:
-  AngleSolver(std::shared_ptr<CVToolbox> cv_toolbox): cv_toolbox_(cv_toolbox){ };
-
-  ErrorInfo init(double width, double height)
-  {
-    target_width_  = width;
-    target_height_ = height;
-
-    target_points_3d_.emplace_back(cv::Point3f(-target_width_/2,  target_height_/2, 0.0));
-    target_points_3d_.emplace_back(cv::Point3f( target_width_/2,  target_height_/2, 0.0));
-    target_points_3d_.emplace_back(cv::Point3f( target_width_/2, -target_height_/2, 0.0));
-    target_points_3d_.emplace_back(cv::Point3f(-target_width_/2, -target_height_/2, 0.0));
-    
-    int get_intrinsic_state  = -1;
-    int get_distortion_state = -1;
-
-    while ((get_intrinsic_state < 0) || (get_distortion_state < 0)) {
-      ROS_WARN("Wait for camera driver launch %d", get_intrinsic_state);
-      usleep(50000);
-      ros::spinOnce();
-      get_intrinsic_state  = cv_toolbox_->GetCameraMatrix(intrinsic_matrix_);
-      get_distortion_state = cv_toolbox_->GetCameraDistortion(distortion_coeffs_);
-    }
-    // Todo
-    ErrorInfo error_info(ErrorCode::OK);
-  }
-
-  void GetTarget3d(const cv::RotatedRect & rect, cv::Point3f & target_3d) 
-  {
-    if (rect.size.height < 1) return;
-    double wh_ratio = target_width_ / target_height_;
-    cv::RotatedRect rect_adjust(rect.center, cv::Size2f(rect.size.width, rect.size.width/wh_ratio), rect.angle);
-    GetTarget2d(rect_adjust);
-
-    cv::Mat rvec;
-    cv::Mat tvec;
-    cv::solvePnP(target_points_3d_, 
-                 target_points_2d_, 
-                 intrinsic_matrix_, 
-                 distortion_coeffs_, 
-                 rvec, 
-                 tvec);
-    target_3d = cv::Point3f(tvec);
-  }
-
-private:
-  std::shared_ptr<CVToolbox> cv_toolbox_;
-  
-  double target_width_;
-  double target_height_;
-
-  //! target 2d coordinates
-  std::vector<cv::Point2f> target_points_2d_;
-  //! target 3d coordinates
-  std::vector<cv::Point3f> target_points_3d_;
-  //! Camera intrinsic matrix
-  cv::Mat intrinsic_matrix_;
-  //! Camera distortion Coefficient
-  cv::Mat distortion_coeffs_;
-
-private:
-  void GetTarget2d(const cv::RotatedRect & rect, const cv::Point2f& offset = cv::Point2f(0,0))
-  {
-    cv::Point2f vertices[4];
-    rect.points(vertices);
-    cv::Point2f lu, ld, ru, rd;
-    std::sort(vertices, vertices + 4, [](const cv::Point2f & p1, const cv::Point2f & p2) { return p1.x < p2.x; });
-    if (vertices[0].y < vertices[1].y) {
-        lu = vertices[0];
-        ld = vertices[1];
-    }
-    else{
-        lu = vertices[1];
-        ld = vertices[0];
-    }
-    if (vertices[2].y < vertices[3].y) {
-        ru = vertices[2];
-        rd = vertices[3];
-    }
-    else {
-        ru = vertices[3];
-        rd = vertices[2];
-    }
-
-    target_points_2d_.clear();
-    target_points_2d_.emplace_back(lu + offset);
-    target_points_2d_.emplace_back(ru + offset);
-    target_points_2d_.emplace_back(rd + offset);
-    target_points_2d_.emplace_back(ld + offset);
-  }
-};
-
 /**
  * @brief This class achieved functions that can help to detect armors of RoboMaster vehicle.
  */
@@ -227,7 +134,7 @@ class ConstraintSet : public ArmorDetectionBase {
    * @param translation Translation information of the armor relative to the camera.
    * @param rotation Rotation information of the armor relative to the camera.
    */
-  ErrorInfo DetectArmor(bool &detected, std::vector<cv::Point3f> &target_3d) override;
+  ErrorInfo DetectArmor(bool &detected, std::vector<cv::Point3f> &targets_3d) override;
   /**
    * @brief Detecting lights on the armors.
    * @param src Input image
@@ -250,6 +157,20 @@ class ConstraintSet : public ArmorDetectionBase {
    * @param armors Result armors
    */
   void FilterArmors(std::vector<ArmorInfo> &armors);
+  /**
+   * @brief Slecting final armor as the target armor which we will be shot.
+   * @param Input armors
+   */
+  ArmorInfo SlectFinalArmor(std::vector<ArmorInfo> &armors);
+  /**
+   *
+   * @param armor
+   * @param distance
+   * @param pitch
+   * @param yaw
+   * @param bullet_speed
+   */
+  void CalcControlInfo(const ArmorInfo & armor, cv::Point3f &target_3d);
 
   /**
    * @brief Using two lights(left light and right light) to calculate four points of armor.
@@ -258,29 +179,22 @@ class ConstraintSet : public ArmorDetectionBase {
    * @param right_light Rotated rectangles of right light
    */
   void CalcArmorInfo(std::vector<cv::Point2f> &armor_points, cv::RotatedRect left_light, cv::RotatedRect right_light);
-
+  /**
+   * @brief Calculating the coordinates of the armor by its width and height.
+   * @param width Armor width
+   * @param height Armor height
+   */
+  void SolveArmorCoordinate(const float width, const float height);
   /**
    *
    */
-  void SignalFilter(double &new_num, double &old_num,unsigned int &filter_count, double max_diff)
-  {
-    if(fabs(new_num - old_num) > max_diff && filter_count < 2) {
-      filter_count++;
-      new_num += max_diff;
-    } else {
-      filter_count = 0;
-      old_num = new_num;
-    }
-  }
+  void SignalFilter(double &new_num, double &old_num,unsigned int &filter_count, double max_diff);
 
-  void SetThreadState(bool thread_state) override
-  {
-    thread_running_ = thread_state;
-  }
+  void SetThreadState(bool thread_state) override;
   /**
    * @brief Destructor
    */
-  ~ConstraintSet() final {};
+  ~ConstraintSet() final;
  private:
   ErrorInfo error_info_;
   unsigned int filter_x_count_;
@@ -307,9 +221,6 @@ class ConstraintSet : public ArmorDetectionBase {
   cv::Mat show_lights_after_filter_;
   cv::Mat show_armors_befor_filter_;
   cv::Mat show_armors_after_filter_;
-
-  //! armor info
-  AngleSolver angle_solver_;
 
   // image threshold parameters
 	float light_threshold_;
@@ -345,58 +256,70 @@ class ConstraintSet : public ArmorDetectionBase {
 
   //ros
   ros::NodeHandle nh;
-  
-  // my
-  std::vector<cv::RotatedRect> light_rects;
-  std::vector<ArmorInfo> filter_rects;
+
+  // solver
+  double target_width_;
+  double target_height_;
+
+  //! target 2d coordinates
+  std::vector<cv::Point2f> target_points_2d_;
+  //! target 3d coordinates
+  std::vector<cv::Point3f> target_points_3d_;
+  //! Camera intrinsic matrix
+  cv::Mat intrinsic_matrix_;
+  //! Camera distortion Coefficient
+  cv::Mat distortion_coeffs_;
+
+  void GetTarget2d(const cv::RotatedRect & rect, const cv::Point2f& offset = cv::Point2f(0,0))
+  {
+    cv::Point2f vertices[4];
+    rect.points(vertices);
+    cv::Point2f lu, ld, ru, rd;
+    std::sort(vertices, vertices + 4, [](const cv::Point2f & p1, const cv::Point2f & p2) { return p1.x < p2.x; });
+    if (vertices[0].y < vertices[1].y) {
+        lu = vertices[0];
+        ld = vertices[1];
+    }
+    else{
+        lu = vertices[1];
+        ld = vertices[0];
+    }
+    if (vertices[2].y < vertices[3].y) {
+        ru = vertices[2];
+        rd = vertices[3];
+    }
+    else {
+        ru = vertices[3];
+        rd = vertices[2];
+    }
+
+    target_points_2d_.clear();
+    target_points_2d_.emplace_back(lu + offset);
+    target_points_2d_.emplace_back(ru + offset);
+    target_points_2d_.emplace_back(rd + offset);
+    target_points_2d_.emplace_back(ld + offset);
+  }
+
+  void GetTarget3d(const cv::RotatedRect & rect, cv::Point3f & target_3d) 
+  {
+    if (rect.size.height < 1) return;
+    double wh_ratio = target_width_ / target_height_;
+    cv::RotatedRect rect_adjust(rect.center, cv::Size2f(rect.size.width, rect.size.width/wh_ratio), rect.angle);
+    GetTarget2d(rect_adjust);
+
+    cv::Mat rvec;
+    cv::Mat tvec;
+    cv::solvePnP(target_points_3d_, 
+                 target_points_2d_, 
+                 intrinsic_matrix_, 
+                 distortion_coeffs_, 
+                 rvec, 
+                 tvec);
+    target_3d = cv::Point3f(tvec);
+  }
 };
 
 roborts_common::REGISTER_ALGORITHM(ArmorDetectionBase, "constraint_set", ConstraintSet, std::shared_ptr<CVToolbox>);
-/*
-float armor_svm(Mat& img_roi) {
-  cv::Mat gradient_lst;
-  HOGDescriptor hog;
-	cv::Size wsize =  cv::Size(100,25);
-	cv::resize(img_roi, img_roi, cv::Size(100,25));
-  hog.winSize = wsize / 8 * 8;
-  std::vector< float > descriptors;
-    
-  Rect roi = Rect((img_roi.cols - wsize.width ) / 2,
-                    (img_roi.rows - wsize.height ) / 2,
-                   	 wsize.width,
-                  	 wsize.height);
-  hog.compute( img_roi(roi), descriptors, Size(8,8), Size(0,0));   
-	float response = svm_big->predict(descriptors);
-	return response;
-}
-
-float get_armor_roi(cv::RotatedRect& rect, bool visual)
-{
-	auto center = rect.center;
-	cv::Mat rot_mat = cv::getRotationMatrix2D(rect.center, rect.angle, 1); 
-	cv::Mat img;
-	warpAffine(gray_img_, img, rot_mat, img.size(), INTER_LINEAR, BORDER_CONSTANT); // warpAffine use 2ms
-	// cv::imshow("warpaffine", img);
-	cv::Rect roi = cv::Rect(center.x - (rect.size.width / 2), 
-						     center.y - (rect.size.height / 2), 
-					  	   rect.size.width, rect.size.height);
-
-	if (makeRectSafe(roi, img.size()) == true)
-	{
-		cv::Mat armor_roi = img(roi);
-		if(visual) cv::imshow("armor_roi", armor_roi);
-
-		float wh = roi.width, gh = roi.height;
-		float ratio = wh/gh;
-
-		// 这里简单地根据装甲片的长宽比例判定了大小装甲，然后最终用的是SVM分类器
-		float val = armor_svm(armor_roi);
-		std::cout << "svm lebel:" << val << std::endl;
-		return val;
-	}
-	else
-		return 0;
-}*/
 
 } //namespace roborts_detection
 
