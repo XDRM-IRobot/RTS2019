@@ -15,7 +15,6 @@ add_executable(${PROJECT_NAME}_node
   ${ArmorDetectionProtoSrc}
   ${ArmorDetectionProtoHds}
   armor_detection_node.cpp
-  gimbal_control.cpp
 )
 
 target_link_libraries(armor_detection_node

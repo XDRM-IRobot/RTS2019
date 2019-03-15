@@ -38,7 +38,6 @@
 #include "armor_detection_base.h"
 #include "proto/armor_detection.pb.h"
 #include "armor_detection_algorithms.h"
-#include "gimbal_control.h"
 
 namespace roborts_detection {
 
@@ -74,10 +73,7 @@ class ArmorDetectionNode {
    * @brief Executing the armor detection algorithm.
    */
   void ExecuteLoop();
-  /**
-   * @brief Publishing enemy pose information that been calculated by the armor detection algorithm.
-   */
-  void PublishMsgs();
+
   ~ArmorDetectionNode();
  protected:
  private:
@@ -97,22 +93,15 @@ class ArmorDetectionNode {
   unsigned int undetected_count_;
 
   //! enemy information
-  double x_;
-  double y_;
-  double z_;
   bool detected_enemy_;
   unsigned long demensions_;
 
   //ROS
   ros::NodeHandle nh_;
-  ros::NodeHandle enemy_nh_;
-  ros::Publisher enemy_info_pub_;
   std::shared_ptr<CVToolbox> cv_toolbox_;
   actionlib::SimpleActionServer<roborts_msgs::ArmorDetectionAction> as_;
-  roborts_msgs::GimbalAngle gimbal_angle_;
 
-  //! control model
-  GimbalContrl gimbal_control_;
+  std::vector<cv::Point3f> targets_3d_;
 };
 } //namespace roborts_detection
 
