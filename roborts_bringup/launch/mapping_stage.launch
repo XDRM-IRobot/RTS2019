@@ -15,5 +15,8 @@
   <!-- Run the rviz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/mapping.rviz" />
 
+  <!-- Run the roborts teleop node -->
+  <node pkg="roborts_teleop" type="roborts_teleop_node" name="keyboard" respawn="false" />
+
 </launch>
 

@@ -22,6 +22,7 @@
 #include <actionlib/client/simple_action_client.h>
 
 #include "roborts_msgs/GlobalPlannerAction.h"
+#include "roborts_msgs/LocalPlannerAction.h"
 #include "state/error_code.h"
 
 using roborts_common::ErrorCode;
@@ -29,7 +30,9 @@ using roborts_common::ErrorCode;
 class GlobalPlannerTest{
  public:
   GlobalPlannerTest():
-      global_planner_actionlib_client_("global_planner_node_action", true){
+      global_planner_actionlib_client_("global_planner_node_action", true),
+      local_planner_actionlib_client_("local_planner_node_action", true) // Added
+  {
     ros::NodeHandle rviz_nh("move_base_simple");
     goal_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1,
                                                               &GlobalPlannerTest::GoalCallback,this);
@@ -40,8 +43,8 @@ class GlobalPlannerTest{
 
   void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr & goal){
     ROS_INFO("Get new goal.");
-    command_.goal = *goal;
-    global_planner_actionlib_client_.sendGoal(command_,
+    global_planner_goal_.goal = *goal;
+    global_planner_actionlib_client_.sendGoal(global_planner_goal_,
                                               boost::bind(&GlobalPlannerTest::DoneCallback, this, _1, _2),
                                               boost::bind(&GlobalPlannerTest::ActiveCallback, this),
                                               boost::bind(&GlobalPlannerTest::FeedbackCallback, this, _1)
@@ -60,12 +63,18 @@ class GlobalPlannerTest{
     }
     if (!feedback->path.poses.empty()) {
       ROS_INFO("Get Path!");
+      local_planner_goal_.route = feedback->path;                     // added
+      local_planner_actionlib_client_.sendGoal(local_planner_goal_);  // added
     }
   }
  private:
   ros::Subscriber goal_sub_;
-  roborts_msgs::GlobalPlannerGoal command_;
+
+  roborts_msgs::GlobalPlannerGoal global_planner_goal_;
   actionlib::SimpleActionClient<roborts_msgs::GlobalPlannerAction> global_planner_actionlib_client_;
+
+  roborts_msgs::LocalPlannerGoal local_planner_goal_;
+  actionlib::SimpleActionClient<roborts_msgs::LocalPlannerAction>  local_planner_actionlib_client_;
 };
 
 int main(int argc, char **argv) {

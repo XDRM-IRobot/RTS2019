@@ -31,8 +31,19 @@ UVCDriver::UVCDriver(CameraInfo camera_info):
 void UVCDriver::StartReadCamera(cv::Mat &img) {
   if(!camera_initialized_){
     camera_info_.cap_handle.open(camera_info_.camera_path);
-    SetCameraExposure(camera_info_.camera_path, camera_info_.exposure_value);
+    
     ROS_ASSERT_MSG(camera_info_.cap_handle.isOpened(), "Cannot open %s .", cameras_[camera_num].video_path.c_str());
+
+    if (!camera_info_.auto_exposure)
+      SetCameraExposure(camera_info_.camera_path, camera_info_.exposure_value);
+
+    if (camera_info_.resolution_height > 480) // image format need MJPG
+    {
+      camera_info_.cap_handle.set(CV_CAP_PROP_FOURCC,CV_FOURCC('M','J','P','G'));
+      camera_info_.cap_handle.set(CV_CAP_PROP_FRAME_WIDTH, camera_info_.resolution_width);
+      camera_info_.cap_handle.set(CV_CAP_PROP_FRAME_HEIGHT, camera_info_.resolution_height);
+    }
+
     camera_initialized_ = true;
   }
   else {

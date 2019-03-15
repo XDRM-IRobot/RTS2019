@@ -1,0 +1,13 @@
+syntax = "proto2";
+package roborts_decision;
+
+message GimbalControlParam
+{
+    required float offset_x     = 1;
+    required float offset_y     = 2;
+    required float offset_z     = 3;
+    required float offset_yaw   = 4;
+    required float offset_pitch = 5;
+    required float init_v       = 6;
+    required float init_k       = 7;
+}
