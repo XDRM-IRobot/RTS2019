@@ -9,12 +9,15 @@ message Threshold {
   required float light_max_angle_diff = 4;
   //for armor
   required float armor_max_angle = 5;
-  required float armor_min_area = 6;
-  required float armor_max_aspect_ratio = 7;
-  required float armor_max_pixel_val = 8;
-  required float armor_max_stddev = 9;
-  required float armor_max_mean = 10;
 
+  required float armor_min_area = 6;
+  required float armor_max_area = 7;
+
+  required float armor_min_aspect_ratio = 8;
+  required float armor_max_aspect_ratio = 9;
+  
+  required float armor_light_angle_diff = 10;
+  
   required float color_thread = 11;
   required float blue_thread = 12;
   required float red_thread = 13;
