@@ -1,0 +1,8 @@
+
+offset_x      :  0
+offset_y      : 10
+offset_z      :  9
+offset_pitch  : -2.5
+offset_yaw    :  4.5
+init_v        : 15       
+init_k        :  0.026
