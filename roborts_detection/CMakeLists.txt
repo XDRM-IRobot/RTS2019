@@ -23,8 +23,42 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package()
 
-include_directories(${EIGEN3_INCLUDE_DIR} util)
+include_directories(${EIGEN3_INCLUDE_DIR} util test)
 
 add_subdirectory(util)
 add_subdirectory(armor_detection)
-#add_subdirectory(color_detection)
+
+
+
+
+file(GLOB ProtoFiles "${CMAKE_CURRENT_SOURCE_DIR}/test/proto/*.proto")
+
+rrts_protobuf_generate_cpp(${CMAKE_CURRENT_SOURCE_DIR}/test/proto
+  GimbalControlProtoSrc
+  GimbalControlProtoHds
+  ${ProtoFiles})
+
+add_executable(armor_detection_client
+  test/gimbal_control.cpp
+  test/armor_detection_client.cpp
+  ${GimbalControlProtoSrc}
+  ${GimbalControlProtoHds}
+)
+
+target_include_directories(armor_detection_client
+  PRIVATE
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRECTORIES}
+  )
+
+target_link_libraries(armor_detection_client
+  PRIVATE
+  detection::tool
+  detection::constraint_set
+  ${PROTOBUF_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+add_dependencies(armor_detection_client
+  roborts_msgs_generate_messages)
+
