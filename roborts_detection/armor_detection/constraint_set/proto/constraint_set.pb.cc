@@ -44,20 +44,31 @@ void protobuf_AssignDesc_constraint_5fset_2eproto() {
       "constraint_set.proto");
   GOOGLE_CHECK(file != NULL);
   Threshold_descriptor_ = file->message_type(0);
-  static const int Threshold_offsets_[13] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_aspect_ratio_),
+  static const int Threshold_offsets_[24] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_threshold_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, color_threshold_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, blue_threshold_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, red_threshold_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_min_area_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_area_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_min_angle_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_angle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_min_angle_diff_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_angle_diff_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_angle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_min_aspect_ratio_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_aspect_ratio_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_width_diff_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, light_max_height_diff_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_min_area_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_area_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_min_angle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_angle_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_light_angle_diff_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_min_ratio_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_ratio_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_min_aspect_ratio_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_aspect_ratio_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_pixel_val_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_stddev_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, armor_max_mean_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, color_thread_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, blue_thread_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, red_thread_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Threshold, filter_armor_area_),
   };
   Threshold_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -168,27 +179,35 @@ void protobuf_AddDesc_constraint_5fset_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\024constraint_set.proto\022\021roborts_detectio"
-    "n\"\331\002\n\tThreshold\022\036\n\026light_max_aspect_rati"
-    "o\030\001 \002(\002\022\026\n\016light_min_area\030\002 \002(\002\022\027\n\017light"
-    "_max_angle\030\003 \002(\002\022\034\n\024light_max_angle_diff"
-    "\030\004 \002(\002\022\027\n\017armor_max_angle\030\005 \002(\002\022\026\n\016armor"
-    "_min_area\030\006 \002(\002\022\036\n\026armor_max_aspect_rati"
-    "o\030\007 \002(\002\022\033\n\023armor_max_pixel_val\030\010 \002(\002\022\030\n\020"
-    "armor_max_stddev\030\t \002(\002\022\026\n\016armor_max_mean"
-    "\030\n \002(\002\022\024\n\014color_thread\030\013 \002(\002\022\023\n\013blue_thr"
-    "ead\030\014 \002(\002\022\022\n\nred_thread\030\r \002(\002\"*\n\tArmorSi"
-    "ze\022\r\n\005width\030\001 \002(\002\022\016\n\006height\030\002 \002(\002\"U\n\023Sig"
-    "nalRecognization\022\024\n\014max_wait_fps\030\001 \002(\r\022\027"
-    "\n\017min_pulse_angle\030\002 \002(\002\022\017\n\007min_num\030\003 \002(\r"
-    "\"\260\002\n\023ConstraintSetConfig\022\024\n\014enable_debug"
-    "\030\001 \002(\010\022\023\n\013enable_neon\030\002 \002(\010\022\021\n\tusing_hsv"
-    "\030\003 \002(\010\022/\n\tthreshold\030\004 \002(\0132\034.roborts_dete"
-    "ction.Threshold\0220\n\narmor_size\030\005 \002(\0132\034.ro"
-    "borts_detection.ArmorSize\0222\n\013enemy_color"
-    "\030\006 \002(\0162\035.roborts_detection.EnemyColor\022D\n"
-    "\024signal_recognization\030\007 \002(\0132&.roborts_de"
-    "tection.SignalRecognization*\037\n\nEnemyColo"
-    "r\022\010\n\004BLUE\020\000\022\007\n\003RED\020\001", 860);
+    "n\"\226\005\n\tThreshold\022\027\n\017light_threshold\030\001 \002(\002"
+    "\022\027\n\017color_threshold\030\002 \002(\002\022\026\n\016blue_thresh"
+    "old\030\003 \002(\002\022\025\n\rred_threshold\030\004 \002(\002\022\026\n\016ligh"
+    "t_min_area\030\005 \002(\002\022\026\n\016light_max_area\030\006 \002(\002"
+    "\022\027\n\017light_min_angle\030\007 \002(\002\022\027\n\017light_max_a"
+    "ngle\030\010 \002(\002\022\034\n\024light_min_angle_diff\030\t \002(\002"
+    "\022\034\n\024light_max_angle_diff\030\n \002(\002\022\036\n\026light_"
+    "min_aspect_ratio\030\013 \002(\002\022\036\n\026light_max_aspe"
+    "ct_ratio\030\014 \002(\002\022\034\n\024light_max_width_diff\030\r"
+    " \002(\002\022\035\n\025light_max_height_diff\030\016 \002(\002\022\026\n\016a"
+    "rmor_min_area\030\017 \002(\002\022\026\n\016armor_max_area\030\020 "
+    "\002(\002\022\027\n\017armor_min_angle\030\021 \002(\002\022\027\n\017armor_ma"
+    "x_angle\030\022 \002(\002\022\036\n\026armor_light_angle_diff\030"
+    "\023 \002(\002\022\027\n\017armor_min_ratio\030\024 \002(\002\022\027\n\017armor_"
+    "max_ratio\030\025 \002(\002\022\036\n\026armor_min_aspect_rati"
+    "o\030\026 \002(\002\022\036\n\026armor_max_aspect_ratio\030\027 \002(\002\022"
+    "\031\n\021filter_armor_area\030\030 \002(\002\"*\n\tArmorSize\022"
+    "\r\n\005width\030\001 \002(\002\022\016\n\006height\030\002 \002(\002\"U\n\023Signal"
+    "Recognization\022\024\n\014max_wait_fps\030\001 \002(\r\022\027\n\017m"
+    "in_pulse_angle\030\002 \002(\002\022\017\n\007min_num\030\003 \002(\r\"\260\002"
+    "\n\023ConstraintSetConfig\022\024\n\014enable_debug\030\001 "
+    "\002(\010\022\023\n\013enable_neon\030\002 \002(\010\022\021\n\tusing_hsv\030\003 "
+    "\002(\010\022/\n\tthreshold\030\004 \002(\0132\034.roborts_detecti"
+    "on.Threshold\0220\n\narmor_size\030\005 \002(\0132\034.robor"
+    "ts_detection.ArmorSize\0222\n\013enemy_color\030\006 "
+    "\002(\0162\035.roborts_detection.EnemyColor\022D\n\024si"
+    "gnal_recognization\030\007 \002(\0132&.roborts_detec"
+    "tion.SignalRecognization*\037\n\nEnemyColor\022\010"
+    "\n\004BLUE\020\000\022\007\n\003RED\020\001", 1177);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "constraint_set.proto", &protobuf_RegisterTypes);
   Threshold::default_instance_ = new Threshold();
@@ -226,19 +245,30 @@ bool EnemyColor_IsValid(int value) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int Threshold::kLightMaxAspectRatioFieldNumber;
+const int Threshold::kLightThresholdFieldNumber;
+const int Threshold::kColorThresholdFieldNumber;
+const int Threshold::kBlueThresholdFieldNumber;
+const int Threshold::kRedThresholdFieldNumber;
 const int Threshold::kLightMinAreaFieldNumber;
+const int Threshold::kLightMaxAreaFieldNumber;
+const int Threshold::kLightMinAngleFieldNumber;
 const int Threshold::kLightMaxAngleFieldNumber;
+const int Threshold::kLightMinAngleDiffFieldNumber;
 const int Threshold::kLightMaxAngleDiffFieldNumber;
-const int Threshold::kArmorMaxAngleFieldNumber;
+const int Threshold::kLightMinAspectRatioFieldNumber;
+const int Threshold::kLightMaxAspectRatioFieldNumber;
+const int Threshold::kLightMaxWidthDiffFieldNumber;
+const int Threshold::kLightMaxHeightDiffFieldNumber;
 const int Threshold::kArmorMinAreaFieldNumber;
+const int Threshold::kArmorMaxAreaFieldNumber;
+const int Threshold::kArmorMinAngleFieldNumber;
+const int Threshold::kArmorMaxAngleFieldNumber;
+const int Threshold::kArmorLightAngleDiffFieldNumber;
+const int Threshold::kArmorMinRatioFieldNumber;
+const int Threshold::kArmorMaxRatioFieldNumber;
+const int Threshold::kArmorMinAspectRatioFieldNumber;
 const int Threshold::kArmorMaxAspectRatioFieldNumber;
-const int Threshold::kArmorMaxPixelValFieldNumber;
-const int Threshold::kArmorMaxStddevFieldNumber;
-const int Threshold::kArmorMaxMeanFieldNumber;
-const int Threshold::kColorThreadFieldNumber;
-const int Threshold::kBlueThreadFieldNumber;
-const int Threshold::kRedThreadFieldNumber;
+const int Threshold::kFilterArmorAreaFieldNumber;
 #endif  // !_MSC_VER
 
 Threshold::Threshold()
@@ -259,19 +289,30 @@ Threshold::Threshold(const Threshold& from)
 
 void Threshold::SharedCtor() {
   _cached_size_ = 0;
-  light_max_aspect_ratio_ = 0;
+  light_threshold_ = 0;
+  color_threshold_ = 0;
+  blue_threshold_ = 0;
+  red_threshold_ = 0;
   light_min_area_ = 0;
+  light_max_area_ = 0;
+  light_min_angle_ = 0;
   light_max_angle_ = 0;
+  light_min_angle_diff_ = 0;
   light_max_angle_diff_ = 0;
-  armor_max_angle_ = 0;
+  light_min_aspect_ratio_ = 0;
+  light_max_aspect_ratio_ = 0;
+  light_max_width_diff_ = 0;
+  light_max_height_diff_ = 0;
   armor_min_area_ = 0;
+  armor_max_area_ = 0;
+  armor_min_angle_ = 0;
+  armor_max_angle_ = 0;
+  armor_light_angle_diff_ = 0;
+  armor_min_ratio_ = 0;
+  armor_max_ratio_ = 0;
+  armor_min_aspect_ratio_ = 0;
   armor_max_aspect_ratio_ = 0;
-  armor_max_pixel_val_ = 0;
-  armor_max_stddev_ = 0;
-  armor_max_mean_ = 0;
-  color_thread_ = 0;
-  blue_thread_ = 0;
-  red_thread_ = 0;
+  filter_armor_area_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -318,10 +359,13 @@ void Threshold::Clear() {
   } while (0)
 
   if (_has_bits_[0 / 32] & 255) {
-    ZR_(light_max_aspect_ratio_, armor_max_pixel_val_);
+    ZR_(light_threshold_, light_max_angle_);
   }
-  if (_has_bits_[8 / 32] & 7936) {
-    ZR_(armor_max_stddev_, red_thread_);
+  if (_has_bits_[8 / 32] & 65280) {
+    ZR_(light_min_angle_diff_, armor_max_area_);
+  }
+  if (_has_bits_[16 / 32] & 16711680) {
+    ZR_(armor_min_angle_, filter_armor_area_);
   }
 
 #undef OFFSET_OF_FIELD_
@@ -337,27 +381,72 @@ bool Threshold::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:roborts_detection.Threshold)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(16383);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required float light_max_aspect_ratio = 1;
+      // required float light_threshold = 1;
       case 1: {
         if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &light_max_aspect_ratio_)));
-          set_has_light_max_aspect_ratio();
+                 input, &light_threshold_)));
+          set_has_light_threshold();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(21)) goto parse_light_min_area;
+        if (input->ExpectTag(21)) goto parse_color_threshold;
         break;
       }
 
-      // required float light_min_area = 2;
+      // required float color_threshold = 2;
       case 2: {
         if (tag == 21) {
+         parse_color_threshold:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &color_threshold_)));
+          set_has_color_threshold();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(29)) goto parse_blue_threshold;
+        break;
+      }
+
+      // required float blue_threshold = 3;
+      case 3: {
+        if (tag == 29) {
+         parse_blue_threshold:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &blue_threshold_)));
+          set_has_blue_threshold();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(37)) goto parse_red_threshold;
+        break;
+      }
+
+      // required float red_threshold = 4;
+      case 4: {
+        if (tag == 37) {
+         parse_red_threshold:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &red_threshold_)));
+          set_has_red_threshold();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(45)) goto parse_light_min_area;
+        break;
+      }
+
+      // required float light_min_area = 5;
+      case 5: {
+        if (tag == 45) {
          parse_light_min_area:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
@@ -366,13 +455,43 @@ bool Threshold::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(29)) goto parse_light_max_angle;
+        if (input->ExpectTag(53)) goto parse_light_max_area;
         break;
       }
 
-      // required float light_max_angle = 3;
-      case 3: {
-        if (tag == 29) {
+      // required float light_max_area = 6;
+      case 6: {
+        if (tag == 53) {
+         parse_light_max_area:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_max_area_)));
+          set_has_light_max_area();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(61)) goto parse_light_min_angle;
+        break;
+      }
+
+      // required float light_min_angle = 7;
+      case 7: {
+        if (tag == 61) {
+         parse_light_min_angle:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_min_angle_)));
+          set_has_light_min_angle();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(69)) goto parse_light_max_angle;
+        break;
+      }
+
+      // required float light_max_angle = 8;
+      case 8: {
+        if (tag == 69) {
          parse_light_max_angle:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
@@ -381,13 +500,28 @@ bool Threshold::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(37)) goto parse_light_max_angle_diff;
+        if (input->ExpectTag(77)) goto parse_light_min_angle_diff;
         break;
       }
 
-      // required float light_max_angle_diff = 4;
-      case 4: {
-        if (tag == 37) {
+      // required float light_min_angle_diff = 9;
+      case 9: {
+        if (tag == 77) {
+         parse_light_min_angle_diff:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_min_angle_diff_)));
+          set_has_light_min_angle_diff();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(85)) goto parse_light_max_angle_diff;
+        break;
+      }
+
+      // required float light_max_angle_diff = 10;
+      case 10: {
+        if (tag == 85) {
          parse_light_max_angle_diff:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
@@ -396,28 +530,73 @@ bool Threshold::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(45)) goto parse_armor_max_angle;
+        if (input->ExpectTag(93)) goto parse_light_min_aspect_ratio;
         break;
       }
 
-      // required float armor_max_angle = 5;
-      case 5: {
-        if (tag == 45) {
-         parse_armor_max_angle:
+      // required float light_min_aspect_ratio = 11;
+      case 11: {
+        if (tag == 93) {
+         parse_light_min_aspect_ratio:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &armor_max_angle_)));
-          set_has_armor_max_angle();
+                 input, &light_min_aspect_ratio_)));
+          set_has_light_min_aspect_ratio();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(53)) goto parse_armor_min_area;
+        if (input->ExpectTag(101)) goto parse_light_max_aspect_ratio;
         break;
       }
 
-      // required float armor_min_area = 6;
-      case 6: {
-        if (tag == 53) {
+      // required float light_max_aspect_ratio = 12;
+      case 12: {
+        if (tag == 101) {
+         parse_light_max_aspect_ratio:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_max_aspect_ratio_)));
+          set_has_light_max_aspect_ratio();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(109)) goto parse_light_max_width_diff;
+        break;
+      }
+
+      // required float light_max_width_diff = 13;
+      case 13: {
+        if (tag == 109) {
+         parse_light_max_width_diff:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_max_width_diff_)));
+          set_has_light_max_width_diff();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(117)) goto parse_light_max_height_diff;
+        break;
+      }
+
+      // required float light_max_height_diff = 14;
+      case 14: {
+        if (tag == 117) {
+         parse_light_max_height_diff:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &light_max_height_diff_)));
+          set_has_light_max_height_diff();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(125)) goto parse_armor_min_area;
+        break;
+      }
+
+      // required float armor_min_area = 15;
+      case 15: {
+        if (tag == 125) {
          parse_armor_min_area:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
@@ -426,13 +605,118 @@ bool Threshold::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(61)) goto parse_armor_max_aspect_ratio;
+        if (input->ExpectTag(133)) goto parse_armor_max_area;
         break;
       }
 
-      // required float armor_max_aspect_ratio = 7;
-      case 7: {
-        if (tag == 61) {
+      // required float armor_max_area = 16;
+      case 16: {
+        if (tag == 133) {
+         parse_armor_max_area:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_max_area_)));
+          set_has_armor_max_area();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(141)) goto parse_armor_min_angle;
+        break;
+      }
+
+      // required float armor_min_angle = 17;
+      case 17: {
+        if (tag == 141) {
+         parse_armor_min_angle:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_min_angle_)));
+          set_has_armor_min_angle();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(149)) goto parse_armor_max_angle;
+        break;
+      }
+
+      // required float armor_max_angle = 18;
+      case 18: {
+        if (tag == 149) {
+         parse_armor_max_angle:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_max_angle_)));
+          set_has_armor_max_angle();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(157)) goto parse_armor_light_angle_diff;
+        break;
+      }
+
+      // required float armor_light_angle_diff = 19;
+      case 19: {
+        if (tag == 157) {
+         parse_armor_light_angle_diff:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_light_angle_diff_)));
+          set_has_armor_light_angle_diff();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(165)) goto parse_armor_min_ratio;
+        break;
+      }
+
+      // required float armor_min_ratio = 20;
+      case 20: {
+        if (tag == 165) {
+         parse_armor_min_ratio:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_min_ratio_)));
+          set_has_armor_min_ratio();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(173)) goto parse_armor_max_ratio;
+        break;
+      }
+
+      // required float armor_max_ratio = 21;
+      case 21: {
+        if (tag == 173) {
+         parse_armor_max_ratio:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_max_ratio_)));
+          set_has_armor_max_ratio();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(181)) goto parse_armor_min_aspect_ratio;
+        break;
+      }
+
+      // required float armor_min_aspect_ratio = 22;
+      case 22: {
+        if (tag == 181) {
+         parse_armor_min_aspect_ratio:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &armor_min_aspect_ratio_)));
+          set_has_armor_min_aspect_ratio();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(189)) goto parse_armor_max_aspect_ratio;
+        break;
+      }
+
+      // required float armor_max_aspect_ratio = 23;
+      case 23: {
+        if (tag == 189) {
          parse_armor_max_aspect_ratio:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
@@ -441,93 +725,18 @@ bool Threshold::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(69)) goto parse_armor_max_pixel_val;
+        if (input->ExpectTag(197)) goto parse_filter_armor_area;
         break;
       }
 
-      // required float armor_max_pixel_val = 8;
-      case 8: {
-        if (tag == 69) {
-         parse_armor_max_pixel_val:
+      // required float filter_armor_area = 24;
+      case 24: {
+        if (tag == 197) {
+         parse_filter_armor_area:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &armor_max_pixel_val_)));
-          set_has_armor_max_pixel_val();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(77)) goto parse_armor_max_stddev;
-        break;
-      }
-
-      // required float armor_max_stddev = 9;
-      case 9: {
-        if (tag == 77) {
-         parse_armor_max_stddev:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &armor_max_stddev_)));
-          set_has_armor_max_stddev();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(85)) goto parse_armor_max_mean;
-        break;
-      }
-
-      // required float armor_max_mean = 10;
-      case 10: {
-        if (tag == 85) {
-         parse_armor_max_mean:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &armor_max_mean_)));
-          set_has_armor_max_mean();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(93)) goto parse_color_thread;
-        break;
-      }
-
-      // required float color_thread = 11;
-      case 11: {
-        if (tag == 93) {
-         parse_color_thread:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &color_thread_)));
-          set_has_color_thread();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(101)) goto parse_blue_thread;
-        break;
-      }
-
-      // required float blue_thread = 12;
-      case 12: {
-        if (tag == 101) {
-         parse_blue_thread:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &blue_thread_)));
-          set_has_blue_thread();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(109)) goto parse_red_thread;
-        break;
-      }
-
-      // required float red_thread = 13;
-      case 13: {
-        if (tag == 109) {
-         parse_red_thread:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &red_thread_)));
-          set_has_red_thread();
+                 input, &filter_armor_area_)));
+          set_has_filter_armor_area();
         } else {
           goto handle_unusual;
         }
@@ -560,69 +769,124 @@ failure:
 void Threshold::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:roborts_detection.Threshold)
-  // required float light_max_aspect_ratio = 1;
-  if (has_light_max_aspect_ratio()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->light_max_aspect_ratio(), output);
+  // required float light_threshold = 1;
+  if (has_light_threshold()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->light_threshold(), output);
   }
 
-  // required float light_min_area = 2;
+  // required float color_threshold = 2;
+  if (has_color_threshold()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->color_threshold(), output);
+  }
+
+  // required float blue_threshold = 3;
+  if (has_blue_threshold()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->blue_threshold(), output);
+  }
+
+  // required float red_threshold = 4;
+  if (has_red_threshold()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->red_threshold(), output);
+  }
+
+  // required float light_min_area = 5;
   if (has_light_min_area()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->light_min_area(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->light_min_area(), output);
   }
 
-  // required float light_max_angle = 3;
+  // required float light_max_area = 6;
+  if (has_light_max_area()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->light_max_area(), output);
+  }
+
+  // required float light_min_angle = 7;
+  if (has_light_min_angle()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->light_min_angle(), output);
+  }
+
+  // required float light_max_angle = 8;
   if (has_light_max_angle()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->light_max_angle(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->light_max_angle(), output);
   }
 
-  // required float light_max_angle_diff = 4;
+  // required float light_min_angle_diff = 9;
+  if (has_light_min_angle_diff()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(9, this->light_min_angle_diff(), output);
+  }
+
+  // required float light_max_angle_diff = 10;
   if (has_light_max_angle_diff()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->light_max_angle_diff(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(10, this->light_max_angle_diff(), output);
   }
 
-  // required float armor_max_angle = 5;
-  if (has_armor_max_angle()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->armor_max_angle(), output);
+  // required float light_min_aspect_ratio = 11;
+  if (has_light_min_aspect_ratio()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(11, this->light_min_aspect_ratio(), output);
   }
 
-  // required float armor_min_area = 6;
+  // required float light_max_aspect_ratio = 12;
+  if (has_light_max_aspect_ratio()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->light_max_aspect_ratio(), output);
+  }
+
+  // required float light_max_width_diff = 13;
+  if (has_light_max_width_diff()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->light_max_width_diff(), output);
+  }
+
+  // required float light_max_height_diff = 14;
+  if (has_light_max_height_diff()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(14, this->light_max_height_diff(), output);
+  }
+
+  // required float armor_min_area = 15;
   if (has_armor_min_area()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->armor_min_area(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(15, this->armor_min_area(), output);
   }
 
-  // required float armor_max_aspect_ratio = 7;
+  // required float armor_max_area = 16;
+  if (has_armor_max_area()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(16, this->armor_max_area(), output);
+  }
+
+  // required float armor_min_angle = 17;
+  if (has_armor_min_angle()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(17, this->armor_min_angle(), output);
+  }
+
+  // required float armor_max_angle = 18;
+  if (has_armor_max_angle()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(18, this->armor_max_angle(), output);
+  }
+
+  // required float armor_light_angle_diff = 19;
+  if (has_armor_light_angle_diff()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(19, this->armor_light_angle_diff(), output);
+  }
+
+  // required float armor_min_ratio = 20;
+  if (has_armor_min_ratio()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(20, this->armor_min_ratio(), output);
+  }
+
+  // required float armor_max_ratio = 21;
+  if (has_armor_max_ratio()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(21, this->armor_max_ratio(), output);
+  }
+
+  // required float armor_min_aspect_ratio = 22;
+  if (has_armor_min_aspect_ratio()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(22, this->armor_min_aspect_ratio(), output);
+  }
+
+  // required float armor_max_aspect_ratio = 23;
   if (has_armor_max_aspect_ratio()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->armor_max_aspect_ratio(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(23, this->armor_max_aspect_ratio(), output);
   }
 
-  // required float armor_max_pixel_val = 8;
-  if (has_armor_max_pixel_val()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->armor_max_pixel_val(), output);
-  }
-
-  // required float armor_max_stddev = 9;
-  if (has_armor_max_stddev()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(9, this->armor_max_stddev(), output);
-  }
-
-  // required float armor_max_mean = 10;
-  if (has_armor_max_mean()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(10, this->armor_max_mean(), output);
-  }
-
-  // required float color_thread = 11;
-  if (has_color_thread()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(11, this->color_thread(), output);
-  }
-
-  // required float blue_thread = 12;
-  if (has_blue_thread()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->blue_thread(), output);
-  }
-
-  // required float red_thread = 13;
-  if (has_red_thread()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->red_thread(), output);
+  // required float filter_armor_area = 24;
+  if (has_filter_armor_area()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(24, this->filter_armor_area(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -635,69 +899,124 @@ void Threshold::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Threshold::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:roborts_detection.Threshold)
-  // required float light_max_aspect_ratio = 1;
-  if (has_light_max_aspect_ratio()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->light_max_aspect_ratio(), target);
+  // required float light_threshold = 1;
+  if (has_light_threshold()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->light_threshold(), target);
   }
 
-  // required float light_min_area = 2;
+  // required float color_threshold = 2;
+  if (has_color_threshold()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->color_threshold(), target);
+  }
+
+  // required float blue_threshold = 3;
+  if (has_blue_threshold()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->blue_threshold(), target);
+  }
+
+  // required float red_threshold = 4;
+  if (has_red_threshold()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->red_threshold(), target);
+  }
+
+  // required float light_min_area = 5;
   if (has_light_min_area()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->light_min_area(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->light_min_area(), target);
   }
 
-  // required float light_max_angle = 3;
+  // required float light_max_area = 6;
+  if (has_light_max_area()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->light_max_area(), target);
+  }
+
+  // required float light_min_angle = 7;
+  if (has_light_min_angle()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->light_min_angle(), target);
+  }
+
+  // required float light_max_angle = 8;
   if (has_light_max_angle()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->light_max_angle(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->light_max_angle(), target);
   }
 
-  // required float light_max_angle_diff = 4;
+  // required float light_min_angle_diff = 9;
+  if (has_light_min_angle_diff()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(9, this->light_min_angle_diff(), target);
+  }
+
+  // required float light_max_angle_diff = 10;
   if (has_light_max_angle_diff()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->light_max_angle_diff(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(10, this->light_max_angle_diff(), target);
   }
 
-  // required float armor_max_angle = 5;
-  if (has_armor_max_angle()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->armor_max_angle(), target);
+  // required float light_min_aspect_ratio = 11;
+  if (has_light_min_aspect_ratio()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(11, this->light_min_aspect_ratio(), target);
   }
 
-  // required float armor_min_area = 6;
+  // required float light_max_aspect_ratio = 12;
+  if (has_light_max_aspect_ratio()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->light_max_aspect_ratio(), target);
+  }
+
+  // required float light_max_width_diff = 13;
+  if (has_light_max_width_diff()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->light_max_width_diff(), target);
+  }
+
+  // required float light_max_height_diff = 14;
+  if (has_light_max_height_diff()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(14, this->light_max_height_diff(), target);
+  }
+
+  // required float armor_min_area = 15;
   if (has_armor_min_area()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->armor_min_area(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(15, this->armor_min_area(), target);
   }
 
-  // required float armor_max_aspect_ratio = 7;
+  // required float armor_max_area = 16;
+  if (has_armor_max_area()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(16, this->armor_max_area(), target);
+  }
+
+  // required float armor_min_angle = 17;
+  if (has_armor_min_angle()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(17, this->armor_min_angle(), target);
+  }
+
+  // required float armor_max_angle = 18;
+  if (has_armor_max_angle()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(18, this->armor_max_angle(), target);
+  }
+
+  // required float armor_light_angle_diff = 19;
+  if (has_armor_light_angle_diff()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(19, this->armor_light_angle_diff(), target);
+  }
+
+  // required float armor_min_ratio = 20;
+  if (has_armor_min_ratio()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(20, this->armor_min_ratio(), target);
+  }
+
+  // required float armor_max_ratio = 21;
+  if (has_armor_max_ratio()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(21, this->armor_max_ratio(), target);
+  }
+
+  // required float armor_min_aspect_ratio = 22;
+  if (has_armor_min_aspect_ratio()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(22, this->armor_min_aspect_ratio(), target);
+  }
+
+  // required float armor_max_aspect_ratio = 23;
   if (has_armor_max_aspect_ratio()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->armor_max_aspect_ratio(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(23, this->armor_max_aspect_ratio(), target);
   }
 
-  // required float armor_max_pixel_val = 8;
-  if (has_armor_max_pixel_val()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->armor_max_pixel_val(), target);
-  }
-
-  // required float armor_max_stddev = 9;
-  if (has_armor_max_stddev()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(9, this->armor_max_stddev(), target);
-  }
-
-  // required float armor_max_mean = 10;
-  if (has_armor_max_mean()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(10, this->armor_max_mean(), target);
-  }
-
-  // required float color_thread = 11;
-  if (has_color_thread()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(11, this->color_thread(), target);
-  }
-
-  // required float blue_thread = 12;
-  if (has_blue_thread()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->blue_thread(), target);
-  }
-
-  // required float red_thread = 13;
-  if (has_red_thread()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->red_thread(), target);
+  // required float filter_armor_area = 24;
+  if (has_filter_armor_area()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(24, this->filter_armor_area(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -712,71 +1031,128 @@ int Threshold::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required float light_max_aspect_ratio = 1;
-    if (has_light_max_aspect_ratio()) {
+    // required float light_threshold = 1;
+    if (has_light_threshold()) {
       total_size += 1 + 4;
     }
 
-    // required float light_min_area = 2;
+    // required float color_threshold = 2;
+    if (has_color_threshold()) {
+      total_size += 1 + 4;
+    }
+
+    // required float blue_threshold = 3;
+    if (has_blue_threshold()) {
+      total_size += 1 + 4;
+    }
+
+    // required float red_threshold = 4;
+    if (has_red_threshold()) {
+      total_size += 1 + 4;
+    }
+
+    // required float light_min_area = 5;
     if (has_light_min_area()) {
       total_size += 1 + 4;
     }
 
-    // required float light_max_angle = 3;
+    // required float light_max_area = 6;
+    if (has_light_max_area()) {
+      total_size += 1 + 4;
+    }
+
+    // required float light_min_angle = 7;
+    if (has_light_min_angle()) {
+      total_size += 1 + 4;
+    }
+
+    // required float light_max_angle = 8;
     if (has_light_max_angle()) {
-      total_size += 1 + 4;
-    }
-
-    // required float light_max_angle_diff = 4;
-    if (has_light_max_angle_diff()) {
-      total_size += 1 + 4;
-    }
-
-    // required float armor_max_angle = 5;
-    if (has_armor_max_angle()) {
-      total_size += 1 + 4;
-    }
-
-    // required float armor_min_area = 6;
-    if (has_armor_min_area()) {
-      total_size += 1 + 4;
-    }
-
-    // required float armor_max_aspect_ratio = 7;
-    if (has_armor_max_aspect_ratio()) {
-      total_size += 1 + 4;
-    }
-
-    // required float armor_max_pixel_val = 8;
-    if (has_armor_max_pixel_val()) {
       total_size += 1 + 4;
     }
 
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // required float armor_max_stddev = 9;
-    if (has_armor_max_stddev()) {
+    // required float light_min_angle_diff = 9;
+    if (has_light_min_angle_diff()) {
       total_size += 1 + 4;
     }
 
-    // required float armor_max_mean = 10;
-    if (has_armor_max_mean()) {
+    // required float light_max_angle_diff = 10;
+    if (has_light_max_angle_diff()) {
       total_size += 1 + 4;
     }
 
-    // required float color_thread = 11;
-    if (has_color_thread()) {
+    // required float light_min_aspect_ratio = 11;
+    if (has_light_min_aspect_ratio()) {
       total_size += 1 + 4;
     }
 
-    // required float blue_thread = 12;
-    if (has_blue_thread()) {
+    // required float light_max_aspect_ratio = 12;
+    if (has_light_max_aspect_ratio()) {
       total_size += 1 + 4;
     }
 
-    // required float red_thread = 13;
-    if (has_red_thread()) {
+    // required float light_max_width_diff = 13;
+    if (has_light_max_width_diff()) {
       total_size += 1 + 4;
+    }
+
+    // required float light_max_height_diff = 14;
+    if (has_light_max_height_diff()) {
+      total_size += 1 + 4;
+    }
+
+    // required float armor_min_area = 15;
+    if (has_armor_min_area()) {
+      total_size += 1 + 4;
+    }
+
+    // required float armor_max_area = 16;
+    if (has_armor_max_area()) {
+      total_size += 2 + 4;
+    }
+
+  }
+  if (_has_bits_[16 / 32] & (0xffu << (16 % 32))) {
+    // required float armor_min_angle = 17;
+    if (has_armor_min_angle()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_max_angle = 18;
+    if (has_armor_max_angle()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_light_angle_diff = 19;
+    if (has_armor_light_angle_diff()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_min_ratio = 20;
+    if (has_armor_min_ratio()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_max_ratio = 21;
+    if (has_armor_max_ratio()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_min_aspect_ratio = 22;
+    if (has_armor_min_aspect_ratio()) {
+      total_size += 2 + 4;
+    }
+
+    // required float armor_max_aspect_ratio = 23;
+    if (has_armor_max_aspect_ratio()) {
+      total_size += 2 + 4;
+    }
+
+    // required float filter_armor_area = 24;
+    if (has_filter_armor_area()) {
+      total_size += 2 + 4;
     }
 
   }
@@ -806,46 +1182,81 @@ void Threshold::MergeFrom(const ::google::protobuf::Message& from) {
 void Threshold::MergeFrom(const Threshold& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_light_max_aspect_ratio()) {
-      set_light_max_aspect_ratio(from.light_max_aspect_ratio());
+    if (from.has_light_threshold()) {
+      set_light_threshold(from.light_threshold());
+    }
+    if (from.has_color_threshold()) {
+      set_color_threshold(from.color_threshold());
+    }
+    if (from.has_blue_threshold()) {
+      set_blue_threshold(from.blue_threshold());
+    }
+    if (from.has_red_threshold()) {
+      set_red_threshold(from.red_threshold());
     }
     if (from.has_light_min_area()) {
       set_light_min_area(from.light_min_area());
     }
+    if (from.has_light_max_area()) {
+      set_light_max_area(from.light_max_area());
+    }
+    if (from.has_light_min_angle()) {
+      set_light_min_angle(from.light_min_angle());
+    }
     if (from.has_light_max_angle()) {
       set_light_max_angle(from.light_max_angle());
+    }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_light_min_angle_diff()) {
+      set_light_min_angle_diff(from.light_min_angle_diff());
     }
     if (from.has_light_max_angle_diff()) {
       set_light_max_angle_diff(from.light_max_angle_diff());
     }
-    if (from.has_armor_max_angle()) {
-      set_armor_max_angle(from.armor_max_angle());
+    if (from.has_light_min_aspect_ratio()) {
+      set_light_min_aspect_ratio(from.light_min_aspect_ratio());
+    }
+    if (from.has_light_max_aspect_ratio()) {
+      set_light_max_aspect_ratio(from.light_max_aspect_ratio());
+    }
+    if (from.has_light_max_width_diff()) {
+      set_light_max_width_diff(from.light_max_width_diff());
+    }
+    if (from.has_light_max_height_diff()) {
+      set_light_max_height_diff(from.light_max_height_diff());
     }
     if (from.has_armor_min_area()) {
       set_armor_min_area(from.armor_min_area());
     }
+    if (from.has_armor_max_area()) {
+      set_armor_max_area(from.armor_max_area());
+    }
+  }
+  if (from._has_bits_[16 / 32] & (0xffu << (16 % 32))) {
+    if (from.has_armor_min_angle()) {
+      set_armor_min_angle(from.armor_min_angle());
+    }
+    if (from.has_armor_max_angle()) {
+      set_armor_max_angle(from.armor_max_angle());
+    }
+    if (from.has_armor_light_angle_diff()) {
+      set_armor_light_angle_diff(from.armor_light_angle_diff());
+    }
+    if (from.has_armor_min_ratio()) {
+      set_armor_min_ratio(from.armor_min_ratio());
+    }
+    if (from.has_armor_max_ratio()) {
+      set_armor_max_ratio(from.armor_max_ratio());
+    }
+    if (from.has_armor_min_aspect_ratio()) {
+      set_armor_min_aspect_ratio(from.armor_min_aspect_ratio());
+    }
     if (from.has_armor_max_aspect_ratio()) {
       set_armor_max_aspect_ratio(from.armor_max_aspect_ratio());
     }
-    if (from.has_armor_max_pixel_val()) {
-      set_armor_max_pixel_val(from.armor_max_pixel_val());
-    }
-  }
-  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (from.has_armor_max_stddev()) {
-      set_armor_max_stddev(from.armor_max_stddev());
-    }
-    if (from.has_armor_max_mean()) {
-      set_armor_max_mean(from.armor_max_mean());
-    }
-    if (from.has_color_thread()) {
-      set_color_thread(from.color_thread());
-    }
-    if (from.has_blue_thread()) {
-      set_blue_thread(from.blue_thread());
-    }
-    if (from.has_red_thread()) {
-      set_red_thread(from.red_thread());
+    if (from.has_filter_armor_area()) {
+      set_filter_armor_area(from.filter_armor_area());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -864,26 +1275,37 @@ void Threshold::CopyFrom(const Threshold& from) {
 }
 
 bool Threshold::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00001fff) != 0x00001fff) return false;
+  if ((_has_bits_[0] & 0x00ffffff) != 0x00ffffff) return false;
 
   return true;
 }
 
 void Threshold::Swap(Threshold* other) {
   if (other != this) {
-    std::swap(light_max_aspect_ratio_, other->light_max_aspect_ratio_);
+    std::swap(light_threshold_, other->light_threshold_);
+    std::swap(color_threshold_, other->color_threshold_);
+    std::swap(blue_threshold_, other->blue_threshold_);
+    std::swap(red_threshold_, other->red_threshold_);
     std::swap(light_min_area_, other->light_min_area_);
+    std::swap(light_max_area_, other->light_max_area_);
+    std::swap(light_min_angle_, other->light_min_angle_);
     std::swap(light_max_angle_, other->light_max_angle_);
+    std::swap(light_min_angle_diff_, other->light_min_angle_diff_);
     std::swap(light_max_angle_diff_, other->light_max_angle_diff_);
-    std::swap(armor_max_angle_, other->armor_max_angle_);
+    std::swap(light_min_aspect_ratio_, other->light_min_aspect_ratio_);
+    std::swap(light_max_aspect_ratio_, other->light_max_aspect_ratio_);
+    std::swap(light_max_width_diff_, other->light_max_width_diff_);
+    std::swap(light_max_height_diff_, other->light_max_height_diff_);
     std::swap(armor_min_area_, other->armor_min_area_);
+    std::swap(armor_max_area_, other->armor_max_area_);
+    std::swap(armor_min_angle_, other->armor_min_angle_);
+    std::swap(armor_max_angle_, other->armor_max_angle_);
+    std::swap(armor_light_angle_diff_, other->armor_light_angle_diff_);
+    std::swap(armor_min_ratio_, other->armor_min_ratio_);
+    std::swap(armor_max_ratio_, other->armor_max_ratio_);
+    std::swap(armor_min_aspect_ratio_, other->armor_min_aspect_ratio_);
     std::swap(armor_max_aspect_ratio_, other->armor_max_aspect_ratio_);
-    std::swap(armor_max_pixel_val_, other->armor_max_pixel_val_);
-    std::swap(armor_max_stddev_, other->armor_max_stddev_);
-    std::swap(armor_max_mean_, other->armor_max_mean_);
-    std::swap(color_thread_, other->color_thread_);
-    std::swap(blue_thread_, other->blue_thread_);
-    std::swap(red_thread_, other->red_thread_);
+    std::swap(filter_armor_area_, other->filter_armor_area_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
