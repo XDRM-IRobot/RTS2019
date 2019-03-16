@@ -78,49 +78,52 @@ public:
 private:
   void SelectFinalEnemy()
   {
-    if(enemy_pose_candidate_.size())
-      enemy_pose_ = enemy_pose_candidate_[0];
+    if(pose_point_candidate_.size())
+      enemy_pose_ = pose_point_candidate_[0];
+  }
+
+  void GimbalAngleControl(geometry_msgs::Point pt)
+  {
+    if(enemy_detected_)
+    {
+      cv::Point3f target;
+      target.x = pt.x;
+      target.y = pt.y;
+      target.z = pt.z;
+
+      float yaw, pitch;
+      gimbal_control_.SolveContrlAgnle(target, yaw, pitch);
+      gimbal_angle_.yaw_angle   = -yaw;
+      gimbal_angle_.pitch_angle = pitch;
+
+      enemy_info_pub_.publish(gimbal_angle_);
+
+      ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
+    }
+    else{
+      gimbal_angle_.yaw_angle   = 0;
+      gimbal_angle_.pitch_angle = 0;
+      enemy_info_pub_.publish(gimbal_angle_);
+      ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
+    }
   }
   void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
-    tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
-      geometry_msgs::Point pose_msg;
+      tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
+      geometry_msgs::Point pose_point;
 
-      enemy_pose_candidate_.clear();
+      pose_point_candidate_.clear();
 
       for (int i = 0; i != feedback->enemy_pos.size(); ++i)
       {
-        pose_msg = feedback->enemy_pos[i];
-        pose_msg.x += gimbal_control_.offset_.x;
-        pose_msg.y += gimbal_control_.offset_.y;
-        pose_msg.z += gimbal_control_.offset_.z;
-
-        //double distance = pose_msg.pose.position.z;
-        //double yaw      = atan(pose_msg.pose.position.z / pose_msg.pose.position.x);
-        enemy_pose_candidate_.push_back(pose_msg);
+        pose_point = feedback->enemy_pos[i];
+        // transform camera to ptz
+        pose_point.x += gimbal_control_.offset_.x; 
+        pose_point.y += gimbal_control_.offset_.y;
+        pose_point.z += gimbal_control_.offset_.z;
+        pose_point_candidate_.push_back(pose_point);
       }
-      if(feedback->enemy_pos.size())
-      {
-        cv::Point3f target;
-        target.x = pose_msg.x;
-        target.y = pose_msg.y;
-        target.z = pose_msg.z;
-
-        float yaw, pitch;
-        gimbal_control_.SolveContrlAgnle(target, yaw, pitch);
-        gimbal_angle_.yaw_angle   = -yaw;
-        gimbal_angle_.pitch_angle = pitch;
-
-        enemy_info_pub_.publish(gimbal_angle_);
-
-        ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
-      }
-      else{
-        gimbal_angle_.yaw_angle   = 0;
-        gimbal_angle_.pitch_angle = 0;
-        enemy_info_pub_.publish(gimbal_angle_);
-        ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
-      }
+      GimbalAngleControl(pose_point);
   }
   
   void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -129,7 +132,7 @@ private:
       ROS_INFO("Find Enemy!");
 
       GetEnemyGloalPose(feedback);
-  
+
     } else{
       enemy_detected_ = false;
     }
@@ -142,7 +145,7 @@ private:
   
   bool enemy_detected_;
   geometry_msgs::Point enemy_pose_;
-  std::vector<geometry_msgs::Point> enemy_pose_candidate_;
+  std::vector<geometry_msgs::Point> pose_point_candidate_;
   //! tf
   std::shared_ptr<tf::TransformListener> tf_ptr_;
 

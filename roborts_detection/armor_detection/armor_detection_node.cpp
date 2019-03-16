@@ -92,7 +92,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
     default:
       break;
   }
-  ros::Rate rate(50);
+  ros::Rate rate(100);
   while(ros::ok()) {
 
     if(as_.isPreemptRequested()) {
@@ -102,7 +102,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 
     {
       std::lock_guard<std::mutex> guard(mutex_);
-      if (undetected_count_ != 0) {
+      if (detected_enemy_) {
         feedback.detected = true;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
