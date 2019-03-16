@@ -22,14 +22,3 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 add_dependencies(${PROJECT_NAME}_node
   roborts_msgs_generate_messages)
-
-add_executable(${PROJECT_NAME}_test
-  global_planner_test.cpp)
-target_link_libraries(${PROJECT_NAME}_test
-  PRIVATE
-  ${catkin_LIBRARIES}
-)
-add_dependencies(${PROJECT_NAME}_test
-  roborts_msgs_generate_messages)
-
-

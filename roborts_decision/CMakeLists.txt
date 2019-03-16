@@ -35,6 +35,7 @@ rrts_protobuf_generate_cpp(${CMAKE_CURRENT_SOURCE_DIR}/proto
 catkin_package()
 
 add_subdirectory(dev_vision_test)
+add_subdirectory(dev_nav_test)
 
 #
 #add_executable(behavior_test_node
