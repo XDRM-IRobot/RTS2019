@@ -92,7 +92,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
     default:
       break;
   }
-  ros::Rate rate(25);
+  ros::Rate rate(100);
   while(ros::ok()) {
 
     if(as_.isPreemptRequested()) {
@@ -102,25 +102,20 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 
     {
       std::lock_guard<std::mutex> guard(mutex_);
-      if (undetected_count_ != 0) {
+      if (detected_enemy_) {
         feedback.detected = true;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
-        std::vector<geometry_msgs::PoseStamped> target_3ds;
-
         for (int i = 0; i != targets_3d_.size(); ++i)
         {
-          geometry_msgs::PoseStamped posestamp;
-          posestamp.header.frame_id    = "find_enemy";
-          posestamp.header.stamp       = ros::Time::now();
-          posestamp.pose.position.x    = targets_3d_[i].x;
-          posestamp.pose.position.y    = targets_3d_[i].y;
-          posestamp.pose.position.x    = targets_3d_[i].z;
-          posestamp.pose.orientation.w = 1;
-          target_3ds.push_back(posestamp);
+          geometry_msgs::Point temp;
+          temp.x = targets_3d_[i].x;
+          temp.y = targets_3d_[i].y;
+          temp.z = targets_3d_[i].z;
+          feedback.enemy_pos.push_back(temp);
         }
-        feedback.enemy_pos = target_3ds;
+        //feedback.enemy_pos = target_3ds;
         as_.publishFeedback(feedback);
         undetected_msg_published = false;
       }
@@ -129,13 +124,6 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.detected = false;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
-
-        //feedback.enemy_pos.header.frame_id = "no_enemy";
-        //feedback.enemy_pos.header.stamp    = ros::Time::now();
-        //feedback.enemy_pos.pose.position.x = 0;
-        //feedback.enemy_pos.pose.position.y = 0;
-        //feedback.enemy_pos.pose.position.z = 0;
-        //feedback.enemy_pos.pose.orientation.w = 1;
 
         as_.publishFeedback(feedback);
         undetected_msg_published = true;

@@ -59,7 +59,6 @@ void ConstraintSet::LoadParam() {
 
 	// image threshold parameters
 	light_threshold_        = constraint_set_config_.threshold().light_threshold();
-	color_threshold_        = constraint_set_config_.threshold().color_threshold();
   blue_threshold_         = constraint_set_config_.threshold().blue_threshold();
   red_threshold_          = constraint_set_config_.threshold().red_threshold();
 
@@ -173,14 +172,15 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, std::vector<cv::Point3f> &t
 				cv::Point3f target_3d;
       	GetTarget3d(armors[i].rect, target_3d);
 				targets_3d.push_back(target_3d);
-				cv_toolbox_->DrawRotatedRect(src_img_, armors[i].rect, cv::Scalar(0, 255, 0), 2);
+				cv_toolbox_->DrawTarget3d(src_img_, armors[i].rect, cv::Scalar(0, 255, 0), 2, target_3d);
 			}
     } else
       detected = false;
-    if(enable_debug_) {
-      cv::imshow("relust_img_", src_img_);
-    }
-
+  
+		//cv::imshow("gray_img_", gray_img_);
+    cv::imshow("relust_img_", src_img_);
+		cv::waitKey(1);
+		
   lights.clear();
   armors.clear();
   cv_toolbox_->ReadComplete(read_index_);
@@ -193,9 +193,6 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, std::vector<cv::Point3f> &t
 
 void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect> &lights) 
 {
-  cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
-  cv::dilate(src, src, element, cv::Point(-1, -1), 1);
-
 	cv::Mat subtract_color_img;
 	cv::Mat binary_brightness_img;
   cv::Mat binary_color_img;
@@ -203,7 +200,7 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
 
   if(using_hsv_) {
     binary_color_img = cv_toolbox_->DistillationColor(src, enemy_color_, using_hsv_);
-    cv::threshold(gray_img_, binary_brightness_img, color_threshold_, 255, CV_THRESH_BINARY);
+    cv::threshold(gray_img_, binary_brightness_img, light_threshold_, 255, CV_THRESH_BINARY);
   }else {
     cv::Mat subtract_color_img;
 	  std::vector<cv::Mat> bgr_channel;
@@ -213,8 +210,8 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
 		  cv::subtract(bgr_channel[2], bgr_channel[1], subtract_color_img);
 	  else
 		  cv::subtract(bgr_channel[0], bgr_channel[1], subtract_color_img);
-
-    cv::threshold(gray_img_, binary_brightness_img, color_threshold_, 255, CV_THRESH_BINARY);
+		
+    cv::threshold(gray_img_, binary_brightness_img, light_threshold_, 255, CV_THRESH_BINARY);
     
     float thresh;
     if (enemy_color_ == RED)
@@ -223,9 +220,8 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
       thresh = blue_threshold_;
 
     cv::threshold(subtract_color_img, binary_color_img, thresh, 255, CV_THRESH_BINARY);
-
     binary_light_img = binary_color_img & binary_brightness_img;
-
+	
   }
   std::vector<std::vector<cv::Point>> contours_light;
 	cv::findContours(binary_light_img, contours_light, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
@@ -269,8 +265,8 @@ void ConstraintSet::FilterLights(std::vector<cv::RotatedRect> &lights)
 
 		if ( // 80 <= abs(angle) && abs(angle) <= 90   // 高速水平移动的灯条,带有拖影  // 特殊情况,无论横竖, 旧版本有这一行代码
 		      light_aspect_ratio <= 2.5
-		   && armor_light.size.area() >= light_min_area_ // 1.0
-		   && armor_light.size.area() < 100000)  //light_max_area_ * src_img_.size().height * src_img_.size().width) // 0.04
+		   && armor_light.size.area() > light_min_area_ // 1.0
+		   && armor_light.size.area() < light_max_area_ * src_img_.size().height * src_img_.size().width) // 0.04
 		{
 			light_rects.push_back(armor_light); // 高速水平移动的灯条
       if (enable_debug_)

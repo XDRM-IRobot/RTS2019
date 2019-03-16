@@ -77,8 +77,8 @@ void Gimbal::GimbalAngleCtrlCallback(const roborts_msgs::GimbalAngle::ConstPtr &
   roborts_sdk::cmd_gimbal_angle gimbal_angle;
   gimbal_angle.ctrl.bit.pitch_mode = msg->pitch_mode;
   gimbal_angle.ctrl.bit.yaw_mode = msg->yaw_mode;
-  gimbal_angle.pitch = msg->pitch_angle*1800/M_PI;
-  gimbal_angle.yaw = msg->yaw_angle*1800/M_PI;
+  gimbal_angle.pitch = msg->pitch_angle;
+  gimbal_angle.yaw   = msg->yaw_angle;
 
   gimbal_angle_pub_->Publish(gimbal_angle); // publish to car
 

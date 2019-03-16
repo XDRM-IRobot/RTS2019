@@ -1,38 +1,38 @@
 camera: {
   camera_name: "gimbal_camera"
   camera_type: "uvc"
-  camera_path: "/dev/video0"
+  camera_path: "/dev/video1"
 
   camera_matrix {
-    data: 839.923052
+    data: 615.02827981044
     data: 0.0
-    data: 340.780730
+    data: 332.67238080109
     data: 0.0
-    data: 837.671081
-    data: 261.766523
+    data: 614.47468113892
+    data: 233.68115469874
     data: 0.0
     data: 0.0
     data: 1.0
   }
 
   camera_distortion {
-    data: 0.082613
-    data: 0.043275
-    data: 0.002486
-    data: -0.000823
-    data: 0.0
+    data: 0.0091
+    data: 0.0894
+    data: 0.00036
+    data: 0.000636
+    data: 0.2720
   }
 
   resolution {
-    width: 1280
-    height: 720
+    width: 640
+    height: 480
 
     width_offset: 0
     height_offset: 0
   }
 
   fps: 60                # no use
-  auto_exposure: 1       # added 
+  auto_exposure: 0       # added 
   exposure_value: 100
   exposure_time: 10
   auto_white_balance: 1
