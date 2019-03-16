@@ -56,6 +56,8 @@ public:
                          param.offset_yaw(), 
                          param.init_v(),
                          param.init_k());
+    gimbal_angle_.yaw_mode    = true;
+    gimbal_angle_.pitch_mode  = true;
   }
 
   void start()
@@ -106,22 +108,18 @@ private:
 
         float yaw, pitch;
         gimbal_control_.SolveContrlAgnle(target, yaw, pitch);
-
-        gimbal_angle_.yaw_mode    = true;
-        gimbal_angle_.pitch_mode  = true;
-        gimbal_angle_.yaw_angle   = yaw;
+        gimbal_angle_.yaw_angle   = -yaw;
         gimbal_angle_.pitch_angle = pitch;
 
         enemy_info_pub_.publish(gimbal_angle_);
 
-        std::cout << "yaw : "<< yaw << "  pitch: " << pitch <<std::endl;
+        ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
       }
       else{
-        gimbal_angle_.yaw_mode    = true;
-        gimbal_angle_.pitch_mode  = true;
         gimbal_angle_.yaw_angle   = 0;
         gimbal_angle_.pitch_angle = 0;
         enemy_info_pub_.publish(gimbal_angle_);
+        ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
       }
   }
   

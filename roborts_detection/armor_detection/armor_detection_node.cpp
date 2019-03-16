@@ -92,7 +92,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
     default:
       break;
   }
-  ros::Rate rate(25);
+  ros::Rate rate(50);
   while(ros::ok()) {
 
     if(as_.isPreemptRequested()) {
@@ -106,8 +106,6 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.detected = true;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
-
-        //std::vector<geometry_msgs::PoseStamped> target_3ds;
 
         for (int i = 0; i != targets_3d_.size(); ++i)
         {
@@ -126,13 +124,6 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.detected = false;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
-
-        //feedback.enemy_pos.header.frame_id = "no_enemy";
-        //feedback.enemy_pos.header.stamp    = ros::Time::now();
-        //feedback.enemy_pos.pose.position.x = 0;
-        //feedback.enemy_pos.pose.position.y = 0;
-        //feedback.enemy_pos.pose.position.z = 0;
-        //feedback.enemy_pos.pose.orientation.w = 1;
 
         as_.publishFeedback(feedback);
         undetected_msg_published = true;

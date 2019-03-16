@@ -35,8 +35,8 @@ signal_recognization {
 }
 
 armor_size {
-  width: 120 # mm
-  height: 60 # mm
+  width: 21.6 #12.4  cm
+  height: 5.4 # cm
 }
 
 using_hsv: false

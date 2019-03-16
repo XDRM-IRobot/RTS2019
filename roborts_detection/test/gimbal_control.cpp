@@ -32,29 +32,39 @@ void GimbalContrl::Init(float x,float y,float z,float pitch,float yaw, float ini
   init_k_ = init_k;
 }
 
-void GimbalContrl::SolveContrlAgnle(cv::Point3f &postion, float &yaw, float &pitch) 
+void GimbalContrl::SolveContrlAgnle(cv::Point3f &postion, float &angle_x, float &angle_y) 
 {
-    double down_t = postion.z / 100.0 / 15; // bullet_speed;
+    double offset_y_barrel_ptz = 0;
+    double bullet_speed = 20;
+    double down_t = 0.0;
+
+    if (bullet_speed > 10e-3)
+        down_t = postion.z / 100.0 / bullet_speed;
     double offset_gravity = 0.5 * 9.8 * down_t * down_t * 100;
-    double xyz[3] = {postion.x, postion.y - offset_gravity, postion.z};
+
+    double xyz[3] = {postion.x, 
+                     postion.y - offset_gravity, 
+                     postion.z};
+
     double alpha = 0.0, theta = 0.0;
 
-    alpha = asin(1/sqrt(xyz[1]*xyz[1] + xyz[2]*xyz[2]));
+    alpha = asin(offset_y_barrel_ptz/sqrt(xyz[1]*xyz[1] + xyz[2]*xyz[2]));
     if(xyz[1] < 0){
         theta = atan(-xyz[1]/xyz[2]);
-        pitch = -(alpha+theta);  // camera coordinate
+        angle_y = -(alpha+theta);  // camera coordinate
     }
-    else if (xyz[1] < 1){
+    else if (xyz[1] < offset_y_barrel_ptz){
         theta = atan(xyz[1]/xyz[2]);
-        pitch = -(alpha-theta);  // camera coordinate
+        angle_y = -(alpha-theta);  // camera coordinate
     }
     else{
         theta = atan(xyz[1]/xyz[2]);
-        pitch = (theta-alpha);   // camera coordinate
+        angle_y = (theta-alpha);   // camera coordinate
     }
-    yaw = atan2(xyz[0], xyz[2]);
-    yaw = yaw * 180 / 3.1415926;
-    pitch = pitch * 180 / 3.1415926;
+    angle_x = atan2(xyz[0], xyz[2]);
+
+    angle_x = angle_x * 180 / M_PI;
+    angle_y = angle_y * 180 / M_PI;
 }
 
 } // roborts_detection

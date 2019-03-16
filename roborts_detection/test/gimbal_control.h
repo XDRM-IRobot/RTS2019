@@ -70,6 +70,7 @@ class GimbalContrl
   void SolveContrlAgnle(cv::Point3f &postion,float &pitch,float &yaw);
 
   cv::Point3f offset_;
+  
  private:
   //! Transformation matrix between camera coordinate system and gimbal coordinate system.
   //! Translation unit: cm
