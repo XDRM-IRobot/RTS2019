@@ -289,6 +289,23 @@ class CVToolbox {
     for (int i = 0; i < 4; i++)
       cv::line(img, vertex[i], vertex[(i + 1) % 4], color, thickness);
   }
+
+  void DrawTarget3d(const cv::Mat &img, const cv::RotatedRect &rect, const cv::Scalar &color, int thickness, cv::Point3f pt) {
+    cv::Point2f vertex[4];
+
+    cv::Point2f center = rect.center;
+    std::ostringstream ss;
+    ss << pt.x << ", " << pt.y << ", " << pt.z;
+    std::string text(ss.str());
+
+    int font_face = cv::FONT_HERSHEY_COMPLEX;
+    double font_scale = 0.5;
+    cv::putText(img, text, center, font_face, font_scale, cv::Scalar(0, 255, 0), thickness, 8, 0);
+
+    rect.points(vertex);
+    for (int i = 0; i < 4; i++)
+      cv::line(img, vertex[i], vertex[(i + 1) % 4], color, thickness);
+  }
  private:
   std::vector<cv::Mat> image_buffer_;
   std::vector<BufferState> buffer_state_;

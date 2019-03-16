@@ -224,7 +224,6 @@ class ConstraintSet : public ArmorDetectionBase {
 
   // image threshold parameters
 	float light_threshold_;
-	float color_threshold_;
   float blue_threshold_;
   float red_threshold_;
 
@@ -316,6 +315,13 @@ class ConstraintSet : public ArmorDetectionBase {
                  rvec, 
                  tvec);
     target_3d = cv::Point3f(tvec);
+
+    // double enemy_ang = rvec.at<double>(1);   // Rotate around y axis
+    // double enemy_dis = tvec.at<double>(2);   // Z distance
+            
+    // std::cout<<"Enemy angle:"   <<enemy_ang * 180/3.14 << std::endl;
+    // std::cout<<"Enemy distance:"<<enemy_dis            << std::endl;
+
   }
 };
 

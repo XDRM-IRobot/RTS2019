@@ -1,7 +1,6 @@
 threshold {
-  light_threshold        :  200
-  color_threshold        :  100
-  blue_threshold         :  70
+  light_threshold        :  150
+  blue_threshold         :  50
   red_threshold          :  40
 
 #for light
@@ -36,11 +35,11 @@ signal_recognization {
 }
 
 armor_size {
-  width: 120 # mm
-  height: 60 # mm
+  width: 21.6 #12.4  cm
+  height: 5.4 # cm
 }
 
 using_hsv: false
-enable_debug: true
+enable_debug: false
 enable_neon: false
 enemy_color: BLUE
