@@ -107,20 +107,17 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
-        std::vector<geometry_msgs::PoseStamped> target_3ds;
+        //std::vector<geometry_msgs::PoseStamped> target_3ds;
 
         for (int i = 0; i != targets_3d_.size(); ++i)
         {
-          geometry_msgs::PoseStamped posestamp;
-          posestamp.header.frame_id    = "find_enemy";
-          posestamp.header.stamp       = ros::Time::now();
-          posestamp.pose.position.x    = targets_3d_[i].x;
-          posestamp.pose.position.y    = targets_3d_[i].y;
-          posestamp.pose.position.x    = targets_3d_[i].z;
-          posestamp.pose.orientation.w = 1;
-          target_3ds.push_back(posestamp);
+          geometry_msgs::Point temp;
+          temp.x = targets_3d_[i].x;
+          temp.y = targets_3d_[i].y;
+          temp.z = targets_3d_[i].z;
+          feedback.enemy_pos.push_back(temp);
         }
-        feedback.enemy_pos = target_3ds;
+        //feedback.enemy_pos = target_3ds;
         as_.publishFeedback(feedback);
         undetected_msg_published = false;
       }

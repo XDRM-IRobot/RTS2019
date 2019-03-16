@@ -82,64 +82,56 @@ private:
   void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
     tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
-      geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
+      geometry_msgs::Point pose_msg;
 
       enemy_pose_candidate_.clear();
 
-      std::vector<geometry_msgs::PoseStamped>::const_iterator it = feedback->enemy_pos.begin(); 
-      for (int i = 0; it != feedback->enemy_pos.end(); ++it, ++i)
+      for (int i = 0; i != feedback->enemy_pos.size(); ++i)
       {
-        camera_pose_msg = feedback->enemy_pos[i];
+        pose_msg = feedback->enemy_pos[i];
+        pose_msg.x += gimbal_control_.offset_.x;
+        pose_msg.y += gimbal_control_.offset_.y;
+        pose_msg.z += gimbal_control_.offset_.z;
 
-        double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
-                                  camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
-        double yaw      = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
-      
-        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
-        camera_pose_msg.pose.orientation.w = quaternion.w();
-        camera_pose_msg.pose.orientation.x = quaternion.x();
-        camera_pose_msg.pose.orientation.y = quaternion.y();
-        camera_pose_msg.pose.orientation.z = quaternion.z();
-        poseStampedMsgToTF(camera_pose_msg, tf_pose);
-        tf_pose.stamp_ = ros::Time(0);      
-        try
-        {
-          tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
-          tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
+        //double distance = pose_msg.pose.position.z;
+        //double yaw      = atan(pose_msg.pose.position.z / pose_msg.pose.position.x);
+        enemy_pose_candidate_.push_back(pose_msg);
+      }
+      if(feedback->enemy_pos.size())
+      {
+        cv::Point3f target;
+        target.x = pose_msg.x;
+        target.y = pose_msg.y;
+        target.z = pose_msg.z;
 
-          if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
-            enemy_pose_candidate_.push_back(global_pose_msg);
-          }
-        }
-        catch (tf::TransformException &ex) {
-          ROS_ERROR("tf error when transform enemy pose from camera to map");
-        }
+        float yaw, pitch;
+        gimbal_control_.SolveContrlAgnle(target, yaw, pitch);
+
+        gimbal_angle_.yaw_mode    = true;
+        gimbal_angle_.pitch_mode  = true;
+        gimbal_angle_.yaw_angle   = yaw;
+        gimbal_angle_.pitch_angle = pitch;
+
+        enemy_info_pub_.publish(gimbal_angle_);
+
+        std::cout << "yaw : "<< yaw << "  pitch: " << pitch <<std::endl;
+      }
+      else{
+        gimbal_angle_.yaw_mode    = true;
+        gimbal_angle_.pitch_mode  = true;
+        gimbal_angle_.yaw_angle   = 0;
+        gimbal_angle_.pitch_angle = 0;
+        enemy_info_pub_.publish(gimbal_angle_);
       }
   }
-  void PubGimbalControl()
-  {
-    float pitch, yaw;
-    cv::Point3f target_3d;
-    target_3d.x = enemy_pose_.pose.position.x;
-    target_3d.y = enemy_pose_.pose.position.y;
-    target_3d.z = enemy_pose_.pose.position.z;
-    gimbal_control_.Transform(target_3d, pitch, yaw);
-
-    gimbal_angle_.yaw_mode = true;
-    gimbal_angle_.pitch_mode = false;
-    gimbal_angle_.yaw_angle = yaw * 0.7;
-    gimbal_angle_.pitch_angle = pitch;
-
-    enemy_info_pub_.publish(gimbal_angle_);
-  }
+  
   void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
       enemy_detected_ = true;
       ROS_INFO("Find Enemy!");
 
       GetEnemyGloalPose(feedback);
-      SelectFinalEnemy();
-      PubGimbalControl();
+  
     } else{
       enemy_detected_ = false;
     }
@@ -151,8 +143,8 @@ private:
   actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction> armor_detection_actionlib_client_;
   
   bool enemy_detected_;
-  geometry_msgs::PoseStamped enemy_pose_;
-  std::vector<geometry_msgs::PoseStamped> enemy_pose_candidate_;
+  geometry_msgs::Point enemy_pose_;
+  std::vector<geometry_msgs::Point> enemy_pose_candidate_;
   //! tf
   std::shared_ptr<tf::TransformListener> tf_ptr_;
 
