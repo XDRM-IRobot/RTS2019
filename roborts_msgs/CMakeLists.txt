@@ -28,6 +28,7 @@ add_message_files(
   ShootInfo.msg
   ShootState.msg
   BattleField.msg
+  GimbalInfo.msg
 )
 
 add_service_files(
