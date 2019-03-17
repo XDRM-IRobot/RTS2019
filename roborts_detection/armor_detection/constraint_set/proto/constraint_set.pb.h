@@ -120,164 +120,157 @@ class Threshold : public ::google::protobuf::Message {
   inline float light_threshold() const;
   inline void set_light_threshold(float value);
 
-  // required float color_threshold = 2;
-  inline bool has_color_threshold() const;
-  inline void clear_color_threshold();
-  static const int kColorThresholdFieldNumber = 2;
-  inline float color_threshold() const;
-  inline void set_color_threshold(float value);
-
-  // required float blue_threshold = 3;
+  // required float blue_threshold = 2;
   inline bool has_blue_threshold() const;
   inline void clear_blue_threshold();
-  static const int kBlueThresholdFieldNumber = 3;
+  static const int kBlueThresholdFieldNumber = 2;
   inline float blue_threshold() const;
   inline void set_blue_threshold(float value);
 
-  // required float red_threshold = 4;
+  // required float red_threshold = 3;
   inline bool has_red_threshold() const;
   inline void clear_red_threshold();
-  static const int kRedThresholdFieldNumber = 4;
+  static const int kRedThresholdFieldNumber = 3;
   inline float red_threshold() const;
   inline void set_red_threshold(float value);
 
-  // required float light_min_area = 5;
+  // required float light_min_area = 4;
   inline bool has_light_min_area() const;
   inline void clear_light_min_area();
-  static const int kLightMinAreaFieldNumber = 5;
+  static const int kLightMinAreaFieldNumber = 4;
   inline float light_min_area() const;
   inline void set_light_min_area(float value);
 
-  // required float light_max_area = 6;
+  // required float light_max_area = 5;
   inline bool has_light_max_area() const;
   inline void clear_light_max_area();
-  static const int kLightMaxAreaFieldNumber = 6;
+  static const int kLightMaxAreaFieldNumber = 5;
   inline float light_max_area() const;
   inline void set_light_max_area(float value);
 
-  // required float light_min_angle = 7;
+  // required float light_min_angle = 6;
   inline bool has_light_min_angle() const;
   inline void clear_light_min_angle();
-  static const int kLightMinAngleFieldNumber = 7;
+  static const int kLightMinAngleFieldNumber = 6;
   inline float light_min_angle() const;
   inline void set_light_min_angle(float value);
 
-  // required float light_max_angle = 8;
+  // required float light_max_angle = 7;
   inline bool has_light_max_angle() const;
   inline void clear_light_max_angle();
-  static const int kLightMaxAngleFieldNumber = 8;
+  static const int kLightMaxAngleFieldNumber = 7;
   inline float light_max_angle() const;
   inline void set_light_max_angle(float value);
 
-  // required float light_min_angle_diff = 9;
+  // required float light_min_angle_diff = 8;
   inline bool has_light_min_angle_diff() const;
   inline void clear_light_min_angle_diff();
-  static const int kLightMinAngleDiffFieldNumber = 9;
+  static const int kLightMinAngleDiffFieldNumber = 8;
   inline float light_min_angle_diff() const;
   inline void set_light_min_angle_diff(float value);
 
-  // required float light_max_angle_diff = 10;
+  // required float light_max_angle_diff = 9;
   inline bool has_light_max_angle_diff() const;
   inline void clear_light_max_angle_diff();
-  static const int kLightMaxAngleDiffFieldNumber = 10;
+  static const int kLightMaxAngleDiffFieldNumber = 9;
   inline float light_max_angle_diff() const;
   inline void set_light_max_angle_diff(float value);
 
-  // required float light_min_aspect_ratio = 11;
+  // required float light_min_aspect_ratio = 10;
   inline bool has_light_min_aspect_ratio() const;
   inline void clear_light_min_aspect_ratio();
-  static const int kLightMinAspectRatioFieldNumber = 11;
+  static const int kLightMinAspectRatioFieldNumber = 10;
   inline float light_min_aspect_ratio() const;
   inline void set_light_min_aspect_ratio(float value);
 
-  // required float light_max_aspect_ratio = 12;
+  // required float light_max_aspect_ratio = 11;
   inline bool has_light_max_aspect_ratio() const;
   inline void clear_light_max_aspect_ratio();
-  static const int kLightMaxAspectRatioFieldNumber = 12;
+  static const int kLightMaxAspectRatioFieldNumber = 11;
   inline float light_max_aspect_ratio() const;
   inline void set_light_max_aspect_ratio(float value);
 
-  // required float light_max_width_diff = 13;
+  // required float light_max_width_diff = 12;
   inline bool has_light_max_width_diff() const;
   inline void clear_light_max_width_diff();
-  static const int kLightMaxWidthDiffFieldNumber = 13;
+  static const int kLightMaxWidthDiffFieldNumber = 12;
   inline float light_max_width_diff() const;
   inline void set_light_max_width_diff(float value);
 
-  // required float light_max_height_diff = 14;
+  // required float light_max_height_diff = 13;
   inline bool has_light_max_height_diff() const;
   inline void clear_light_max_height_diff();
-  static const int kLightMaxHeightDiffFieldNumber = 14;
+  static const int kLightMaxHeightDiffFieldNumber = 13;
   inline float light_max_height_diff() const;
   inline void set_light_max_height_diff(float value);
 
-  // required float armor_min_area = 15;
+  // required float armor_min_area = 14;
   inline bool has_armor_min_area() const;
   inline void clear_armor_min_area();
-  static const int kArmorMinAreaFieldNumber = 15;
+  static const int kArmorMinAreaFieldNumber = 14;
   inline float armor_min_area() const;
   inline void set_armor_min_area(float value);
 
-  // required float armor_max_area = 16;
+  // required float armor_max_area = 15;
   inline bool has_armor_max_area() const;
   inline void clear_armor_max_area();
-  static const int kArmorMaxAreaFieldNumber = 16;
+  static const int kArmorMaxAreaFieldNumber = 15;
   inline float armor_max_area() const;
   inline void set_armor_max_area(float value);
 
-  // required float armor_min_angle = 17;
+  // required float armor_min_angle = 16;
   inline bool has_armor_min_angle() const;
   inline void clear_armor_min_angle();
-  static const int kArmorMinAngleFieldNumber = 17;
+  static const int kArmorMinAngleFieldNumber = 16;
   inline float armor_min_angle() const;
   inline void set_armor_min_angle(float value);
 
-  // required float armor_max_angle = 18;
+  // required float armor_max_angle = 17;
   inline bool has_armor_max_angle() const;
   inline void clear_armor_max_angle();
-  static const int kArmorMaxAngleFieldNumber = 18;
+  static const int kArmorMaxAngleFieldNumber = 17;
   inline float armor_max_angle() const;
   inline void set_armor_max_angle(float value);
 
-  // required float armor_light_angle_diff = 19;
+  // required float armor_light_angle_diff = 18;
   inline bool has_armor_light_angle_diff() const;
   inline void clear_armor_light_angle_diff();
-  static const int kArmorLightAngleDiffFieldNumber = 19;
+  static const int kArmorLightAngleDiffFieldNumber = 18;
   inline float armor_light_angle_diff() const;
   inline void set_armor_light_angle_diff(float value);
 
-  // required float armor_min_ratio = 20;
+  // required float armor_min_ratio = 19;
   inline bool has_armor_min_ratio() const;
   inline void clear_armor_min_ratio();
-  static const int kArmorMinRatioFieldNumber = 20;
+  static const int kArmorMinRatioFieldNumber = 19;
   inline float armor_min_ratio() const;
   inline void set_armor_min_ratio(float value);
 
-  // required float armor_max_ratio = 21;
+  // required float armor_max_ratio = 20;
   inline bool has_armor_max_ratio() const;
   inline void clear_armor_max_ratio();
-  static const int kArmorMaxRatioFieldNumber = 21;
+  static const int kArmorMaxRatioFieldNumber = 20;
   inline float armor_max_ratio() const;
   inline void set_armor_max_ratio(float value);
 
-  // required float armor_min_aspect_ratio = 22;
+  // required float armor_min_aspect_ratio = 21;
   inline bool has_armor_min_aspect_ratio() const;
   inline void clear_armor_min_aspect_ratio();
-  static const int kArmorMinAspectRatioFieldNumber = 22;
+  static const int kArmorMinAspectRatioFieldNumber = 21;
   inline float armor_min_aspect_ratio() const;
   inline void set_armor_min_aspect_ratio(float value);
 
-  // required float armor_max_aspect_ratio = 23;
+  // required float armor_max_aspect_ratio = 22;
   inline bool has_armor_max_aspect_ratio() const;
   inline void clear_armor_max_aspect_ratio();
-  static const int kArmorMaxAspectRatioFieldNumber = 23;
+  static const int kArmorMaxAspectRatioFieldNumber = 22;
   inline float armor_max_aspect_ratio() const;
   inline void set_armor_max_aspect_ratio(float value);
 
-  // required float filter_armor_area = 24;
+  // required float filter_armor_area = 23;
   inline bool has_filter_armor_area() const;
   inline void clear_filter_armor_area();
-  static const int kFilterArmorAreaFieldNumber = 24;
+  static const int kFilterArmorAreaFieldNumber = 23;
   inline float filter_armor_area() const;
   inline void set_filter_armor_area(float value);
 
@@ -285,8 +278,6 @@ class Threshold : public ::google::protobuf::Message {
  private:
   inline void set_has_light_threshold();
   inline void clear_has_light_threshold();
-  inline void set_has_color_threshold();
-  inline void clear_has_color_threshold();
   inline void set_has_blue_threshold();
   inline void clear_has_blue_threshold();
   inline void set_has_red_threshold();
@@ -337,7 +328,6 @@ class Threshold : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   float light_threshold_;
-  float color_threshold_;
   float blue_threshold_;
   float red_threshold_;
   float light_min_area_;
@@ -731,39 +721,15 @@ inline void Threshold::set_light_threshold(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_threshold)
 }
 
-// required float color_threshold = 2;
-inline bool Threshold::has_color_threshold() const {
+// required float blue_threshold = 2;
+inline bool Threshold::has_blue_threshold() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Threshold::set_has_color_threshold() {
+inline void Threshold::set_has_blue_threshold() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Threshold::clear_has_color_threshold() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void Threshold::clear_color_threshold() {
-  color_threshold_ = 0;
-  clear_has_color_threshold();
-}
-inline float Threshold::color_threshold() const {
-  // @@protoc_insertion_point(field_get:roborts_detection.Threshold.color_threshold)
-  return color_threshold_;
-}
-inline void Threshold::set_color_threshold(float value) {
-  set_has_color_threshold();
-  color_threshold_ = value;
-  // @@protoc_insertion_point(field_set:roborts_detection.Threshold.color_threshold)
-}
-
-// required float blue_threshold = 3;
-inline bool Threshold::has_blue_threshold() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void Threshold::set_has_blue_threshold() {
-  _has_bits_[0] |= 0x00000004u;
-}
 inline void Threshold::clear_has_blue_threshold() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void Threshold::clear_blue_threshold() {
   blue_threshold_ = 0;
@@ -779,15 +745,15 @@ inline void Threshold::set_blue_threshold(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.blue_threshold)
 }
 
-// required float red_threshold = 4;
+// required float red_threshold = 3;
 inline bool Threshold::has_red_threshold() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void Threshold::set_has_red_threshold() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void Threshold::clear_has_red_threshold() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Threshold::clear_red_threshold() {
   red_threshold_ = 0;
@@ -803,15 +769,15 @@ inline void Threshold::set_red_threshold(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.red_threshold)
 }
 
-// required float light_min_area = 5;
+// required float light_min_area = 4;
 inline bool Threshold::has_light_min_area() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void Threshold::set_has_light_min_area() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void Threshold::clear_has_light_min_area() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Threshold::clear_light_min_area() {
   light_min_area_ = 0;
@@ -827,15 +793,15 @@ inline void Threshold::set_light_min_area(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_min_area)
 }
 
-// required float light_max_area = 6;
+// required float light_max_area = 5;
 inline bool Threshold::has_light_max_area() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Threshold::set_has_light_max_area() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Threshold::clear_has_light_max_area() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Threshold::clear_light_max_area() {
   light_max_area_ = 0;
@@ -851,15 +817,15 @@ inline void Threshold::set_light_max_area(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_area)
 }
 
-// required float light_min_angle = 7;
+// required float light_min_angle = 6;
 inline bool Threshold::has_light_min_angle() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void Threshold::set_has_light_min_angle() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void Threshold::clear_has_light_min_angle() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void Threshold::clear_light_min_angle() {
   light_min_angle_ = 0;
@@ -875,15 +841,15 @@ inline void Threshold::set_light_min_angle(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_min_angle)
 }
 
-// required float light_max_angle = 8;
+// required float light_max_angle = 7;
 inline bool Threshold::has_light_max_angle() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void Threshold::set_has_light_max_angle() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void Threshold::clear_has_light_max_angle() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void Threshold::clear_light_max_angle() {
   light_max_angle_ = 0;
@@ -899,15 +865,15 @@ inline void Threshold::set_light_max_angle(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_angle)
 }
 
-// required float light_min_angle_diff = 9;
+// required float light_min_angle_diff = 8;
 inline bool Threshold::has_light_min_angle_diff() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void Threshold::set_has_light_min_angle_diff() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void Threshold::clear_has_light_min_angle_diff() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void Threshold::clear_light_min_angle_diff() {
   light_min_angle_diff_ = 0;
@@ -923,15 +889,15 @@ inline void Threshold::set_light_min_angle_diff(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_min_angle_diff)
 }
 
-// required float light_max_angle_diff = 10;
+// required float light_max_angle_diff = 9;
 inline bool Threshold::has_light_max_angle_diff() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void Threshold::set_has_light_max_angle_diff() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void Threshold::clear_has_light_max_angle_diff() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void Threshold::clear_light_max_angle_diff() {
   light_max_angle_diff_ = 0;
@@ -947,15 +913,15 @@ inline void Threshold::set_light_max_angle_diff(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_angle_diff)
 }
 
-// required float light_min_aspect_ratio = 11;
+// required float light_min_aspect_ratio = 10;
 inline bool Threshold::has_light_min_aspect_ratio() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void Threshold::set_has_light_min_aspect_ratio() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void Threshold::clear_has_light_min_aspect_ratio() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void Threshold::clear_light_min_aspect_ratio() {
   light_min_aspect_ratio_ = 0;
@@ -971,15 +937,15 @@ inline void Threshold::set_light_min_aspect_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_min_aspect_ratio)
 }
 
-// required float light_max_aspect_ratio = 12;
+// required float light_max_aspect_ratio = 11;
 inline bool Threshold::has_light_max_aspect_ratio() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void Threshold::set_has_light_max_aspect_ratio() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void Threshold::clear_has_light_max_aspect_ratio() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void Threshold::clear_light_max_aspect_ratio() {
   light_max_aspect_ratio_ = 0;
@@ -995,15 +961,15 @@ inline void Threshold::set_light_max_aspect_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_aspect_ratio)
 }
 
-// required float light_max_width_diff = 13;
+// required float light_max_width_diff = 12;
 inline bool Threshold::has_light_max_width_diff() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void Threshold::set_has_light_max_width_diff() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void Threshold::clear_has_light_max_width_diff() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void Threshold::clear_light_max_width_diff() {
   light_max_width_diff_ = 0;
@@ -1019,15 +985,15 @@ inline void Threshold::set_light_max_width_diff(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_width_diff)
 }
 
-// required float light_max_height_diff = 14;
+// required float light_max_height_diff = 13;
 inline bool Threshold::has_light_max_height_diff() const {
-  return (_has_bits_[0] & 0x00002000u) != 0;
+  return (_has_bits_[0] & 0x00001000u) != 0;
 }
 inline void Threshold::set_has_light_max_height_diff() {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00001000u;
 }
 inline void Threshold::clear_has_light_max_height_diff() {
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00001000u;
 }
 inline void Threshold::clear_light_max_height_diff() {
   light_max_height_diff_ = 0;
@@ -1043,15 +1009,15 @@ inline void Threshold::set_light_max_height_diff(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.light_max_height_diff)
 }
 
-// required float armor_min_area = 15;
+// required float armor_min_area = 14;
 inline bool Threshold::has_armor_min_area() const {
-  return (_has_bits_[0] & 0x00004000u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 inline void Threshold::set_has_armor_min_area() {
-  _has_bits_[0] |= 0x00004000u;
+  _has_bits_[0] |= 0x00002000u;
 }
 inline void Threshold::clear_has_armor_min_area() {
-  _has_bits_[0] &= ~0x00004000u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 inline void Threshold::clear_armor_min_area() {
   armor_min_area_ = 0;
@@ -1067,15 +1033,15 @@ inline void Threshold::set_armor_min_area(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_min_area)
 }
 
-// required float armor_max_area = 16;
+// required float armor_max_area = 15;
 inline bool Threshold::has_armor_max_area() const {
-  return (_has_bits_[0] & 0x00008000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 inline void Threshold::set_has_armor_max_area() {
-  _has_bits_[0] |= 0x00008000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 inline void Threshold::clear_has_armor_max_area() {
-  _has_bits_[0] &= ~0x00008000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline void Threshold::clear_armor_max_area() {
   armor_max_area_ = 0;
@@ -1091,15 +1057,15 @@ inline void Threshold::set_armor_max_area(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_max_area)
 }
 
-// required float armor_min_angle = 17;
+// required float armor_min_angle = 16;
 inline bool Threshold::has_armor_min_angle() const {
-  return (_has_bits_[0] & 0x00010000u) != 0;
+  return (_has_bits_[0] & 0x00008000u) != 0;
 }
 inline void Threshold::set_has_armor_min_angle() {
-  _has_bits_[0] |= 0x00010000u;
+  _has_bits_[0] |= 0x00008000u;
 }
 inline void Threshold::clear_has_armor_min_angle() {
-  _has_bits_[0] &= ~0x00010000u;
+  _has_bits_[0] &= ~0x00008000u;
 }
 inline void Threshold::clear_armor_min_angle() {
   armor_min_angle_ = 0;
@@ -1115,15 +1081,15 @@ inline void Threshold::set_armor_min_angle(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_min_angle)
 }
 
-// required float armor_max_angle = 18;
+// required float armor_max_angle = 17;
 inline bool Threshold::has_armor_max_angle() const {
-  return (_has_bits_[0] & 0x00020000u) != 0;
+  return (_has_bits_[0] & 0x00010000u) != 0;
 }
 inline void Threshold::set_has_armor_max_angle() {
-  _has_bits_[0] |= 0x00020000u;
+  _has_bits_[0] |= 0x00010000u;
 }
 inline void Threshold::clear_has_armor_max_angle() {
-  _has_bits_[0] &= ~0x00020000u;
+  _has_bits_[0] &= ~0x00010000u;
 }
 inline void Threshold::clear_armor_max_angle() {
   armor_max_angle_ = 0;
@@ -1139,15 +1105,15 @@ inline void Threshold::set_armor_max_angle(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_max_angle)
 }
 
-// required float armor_light_angle_diff = 19;
+// required float armor_light_angle_diff = 18;
 inline bool Threshold::has_armor_light_angle_diff() const {
-  return (_has_bits_[0] & 0x00040000u) != 0;
+  return (_has_bits_[0] & 0x00020000u) != 0;
 }
 inline void Threshold::set_has_armor_light_angle_diff() {
-  _has_bits_[0] |= 0x00040000u;
+  _has_bits_[0] |= 0x00020000u;
 }
 inline void Threshold::clear_has_armor_light_angle_diff() {
-  _has_bits_[0] &= ~0x00040000u;
+  _has_bits_[0] &= ~0x00020000u;
 }
 inline void Threshold::clear_armor_light_angle_diff() {
   armor_light_angle_diff_ = 0;
@@ -1163,15 +1129,15 @@ inline void Threshold::set_armor_light_angle_diff(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_light_angle_diff)
 }
 
-// required float armor_min_ratio = 20;
+// required float armor_min_ratio = 19;
 inline bool Threshold::has_armor_min_ratio() const {
-  return (_has_bits_[0] & 0x00080000u) != 0;
+  return (_has_bits_[0] & 0x00040000u) != 0;
 }
 inline void Threshold::set_has_armor_min_ratio() {
-  _has_bits_[0] |= 0x00080000u;
+  _has_bits_[0] |= 0x00040000u;
 }
 inline void Threshold::clear_has_armor_min_ratio() {
-  _has_bits_[0] &= ~0x00080000u;
+  _has_bits_[0] &= ~0x00040000u;
 }
 inline void Threshold::clear_armor_min_ratio() {
   armor_min_ratio_ = 0;
@@ -1187,15 +1153,15 @@ inline void Threshold::set_armor_min_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_min_ratio)
 }
 
-// required float armor_max_ratio = 21;
+// required float armor_max_ratio = 20;
 inline bool Threshold::has_armor_max_ratio() const {
-  return (_has_bits_[0] & 0x00100000u) != 0;
+  return (_has_bits_[0] & 0x00080000u) != 0;
 }
 inline void Threshold::set_has_armor_max_ratio() {
-  _has_bits_[0] |= 0x00100000u;
+  _has_bits_[0] |= 0x00080000u;
 }
 inline void Threshold::clear_has_armor_max_ratio() {
-  _has_bits_[0] &= ~0x00100000u;
+  _has_bits_[0] &= ~0x00080000u;
 }
 inline void Threshold::clear_armor_max_ratio() {
   armor_max_ratio_ = 0;
@@ -1211,15 +1177,15 @@ inline void Threshold::set_armor_max_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_max_ratio)
 }
 
-// required float armor_min_aspect_ratio = 22;
+// required float armor_min_aspect_ratio = 21;
 inline bool Threshold::has_armor_min_aspect_ratio() const {
-  return (_has_bits_[0] & 0x00200000u) != 0;
+  return (_has_bits_[0] & 0x00100000u) != 0;
 }
 inline void Threshold::set_has_armor_min_aspect_ratio() {
-  _has_bits_[0] |= 0x00200000u;
+  _has_bits_[0] |= 0x00100000u;
 }
 inline void Threshold::clear_has_armor_min_aspect_ratio() {
-  _has_bits_[0] &= ~0x00200000u;
+  _has_bits_[0] &= ~0x00100000u;
 }
 inline void Threshold::clear_armor_min_aspect_ratio() {
   armor_min_aspect_ratio_ = 0;
@@ -1235,15 +1201,15 @@ inline void Threshold::set_armor_min_aspect_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_min_aspect_ratio)
 }
 
-// required float armor_max_aspect_ratio = 23;
+// required float armor_max_aspect_ratio = 22;
 inline bool Threshold::has_armor_max_aspect_ratio() const {
-  return (_has_bits_[0] & 0x00400000u) != 0;
+  return (_has_bits_[0] & 0x00200000u) != 0;
 }
 inline void Threshold::set_has_armor_max_aspect_ratio() {
-  _has_bits_[0] |= 0x00400000u;
+  _has_bits_[0] |= 0x00200000u;
 }
 inline void Threshold::clear_has_armor_max_aspect_ratio() {
-  _has_bits_[0] &= ~0x00400000u;
+  _has_bits_[0] &= ~0x00200000u;
 }
 inline void Threshold::clear_armor_max_aspect_ratio() {
   armor_max_aspect_ratio_ = 0;
@@ -1259,15 +1225,15 @@ inline void Threshold::set_armor_max_aspect_ratio(float value) {
   // @@protoc_insertion_point(field_set:roborts_detection.Threshold.armor_max_aspect_ratio)
 }
 
-// required float filter_armor_area = 24;
+// required float filter_armor_area = 23;
 inline bool Threshold::has_filter_armor_area() const {
-  return (_has_bits_[0] & 0x00800000u) != 0;
+  return (_has_bits_[0] & 0x00400000u) != 0;
 }
 inline void Threshold::set_has_filter_armor_area() {
-  _has_bits_[0] |= 0x00800000u;
+  _has_bits_[0] |= 0x00400000u;
 }
 inline void Threshold::clear_has_filter_armor_area() {
-  _has_bits_[0] &= ~0x00800000u;
+  _has_bits_[0] &= ~0x00400000u;
 }
 inline void Threshold::clear_filter_armor_area() {
   filter_armor_area_ = 0;

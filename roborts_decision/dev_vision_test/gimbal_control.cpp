@@ -32,39 +32,39 @@ void GimbalContrl::Init(float x,float y,float z,float pitch,float yaw, float ini
   init_k_ = init_k;
 }
 
-//air friction is considered
-float GimbalContrl::BulletModel(float x, float v, float angle) { //x:m,v:m/s,angle:rad
-  float t, y;
-  t = (float)((exp(init_k_ * x) - 1) / (init_k_ * v * cos(angle)));
-  y = (float)(v * sin(angle) * t - GRAVITY * t * t / 2);
-  return y;
-}
+void GimbalContrl::SolveContrlAgnle(geometry_msgs::Point &postion, float &angle_x, float &angle_y) 
+{
+    double offset_y_barrel_ptz = 0;
+    double bullet_speed = 20;
+    double down_t = 0.0;
 
-//x:distance , y: height
-float GimbalContrl::GetPitch(float x, float y, float v) {
-  float y_temp, y_actual, dy;
-  float a;
-  y_temp = y;
-  // by iteration
-  for (int i = 0; i < 20; i++) {
-    a = (float) atan2(y_temp, x);
-    y_actual = BulletModel(x, v, a);
-    dy = y - y_actual;
-    y_temp = y_temp + dy;
-    if (fabsf(dy) < 0.001) {
-      break;
+    if (bullet_speed > 10e-3)
+        down_t = postion.z / 100.0 / bullet_speed;
+    double offset_gravity = 0.5 * 9.8 * down_t * down_t * 100;
+
+    double xyz[3] = {postion.x, 
+                     postion.y - offset_gravity, 
+                     postion.z};
+
+    double alpha = 0.0, theta = 0.0;
+
+    alpha = asin(offset_y_barrel_ptz/sqrt(xyz[1]*xyz[1] + xyz[2]*xyz[2]));
+    if(xyz[1] < 0){
+        theta = atan(-xyz[1]/xyz[2]);
+        angle_y = -(alpha+theta);  // camera coordinate
     }
-    //printf("iteration num %d: angle %f,temp target y:%f,err of y:%f\n",i+1,a*180/3.1415926535,yTemp,dy);
-  }
-  return a;
+    else if (xyz[1] < offset_y_barrel_ptz){
+        theta = atan(xyz[1]/xyz[2]);
+        angle_y = -(alpha-theta);  // camera coordinate
+    }
+    else{
+        theta = atan(xyz[1]/xyz[2]);
+        angle_y = (theta-alpha);   // camera coordinate
+    }
+    angle_x = atan2(xyz[0], xyz[2]);
 
-}
-
-void GimbalContrl::Transform(cv::Point3f &postion, float &pitch, float &yaw) {
-  pitch =
-      -GetPitch((postion.z + offset_.z) / 100, -(postion.y + offset_.y) / 100, 15) + (float)(offset_pitch_ * 3.1415926535 / 180);
-  //yaw positive direction :anticlockwise
-  yaw = -(float) (atan2(postion.x + offset_.x, postion.z + offset_.z)) + (float)(offset_yaw_ * 3.1415926535 / 180);
+    angle_x = angle_x * 180 / M_PI;
+    angle_y = angle_y * 180 / M_PI;
 }
 
 } // roborts_detection

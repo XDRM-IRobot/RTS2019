@@ -1,0 +1,7 @@
+int32 my_bullet
+int32 my_health
+int32 enemy1_health
+int32 enemy2_health
+geometry_msgs/Point my_position
+geometry_msgs/Point enemy1_position
+geometry_msgs/Point enemy2_position
