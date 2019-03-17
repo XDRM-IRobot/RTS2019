@@ -30,10 +30,20 @@
   <!-- Run the velocity converter node -->
   <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
   
-  <node pkg="roborts_decision" type="nav_test" name="Rviz" respawn="false" />
+  <node pkg="roborts_decision" type="nav_test" name="Nav_test" respawn="false" />
 
   <!-- Run the rviz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
 
+  <!-- Run the camera node -->
+  <node pkg="roborts_camera" type="roborts_camera_node" name="uvc_camera" respawn="false" />
+
+  <!-- Run the camera test node -->
+  <node pkg="roborts_camera" type="image_capture_test" name="Camera_test" respawn="false" />
+  
+  <node pkg="roborts_detection" type="armor_detection_node" name="armor_detection_node" respawn="false" />
+
+  <node pkg="roborts_decision" type="armor_detection_client" name="Vision_test" respawn="false" />
+  
 </launch>
 

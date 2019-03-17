@@ -10,4 +10,4 @@ float32 result
 bool detected
 int32  error_code
 string error_msg
-geometry_msgs/PoseStamped[] enemy_pos
+geometry_msgs/Point[] enemy_pos
