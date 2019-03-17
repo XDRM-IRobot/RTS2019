@@ -10,7 +10,7 @@ rrts_protobuf_generate_cpp(${CMAKE_CURRENT_SOURCE_DIR}/proto
 
 add_executable(armor_detection_client
   gimbal_control.cpp
-  armor_detection_client.cpp
+  vision_test.cpp
   ${GimbalControlProtoSrc}
   ${GimbalControlProtoHds}
 )

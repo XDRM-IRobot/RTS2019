@@ -19,6 +19,7 @@
 #define ROBORTS_BASE_GIMBAL_H
 #include "../roborts_sdk/sdk.h"
 #include "../ros_dep.h"
+#include <roborts_msgs/GimbalInfo.h>
 
 namespace roborts_base {
 /**
@@ -107,6 +108,8 @@ class Gimbal {
   //! ros gimbal tf broadcaster
   tf::TransformBroadcaster        tf_broadcaster_;
 
+  roborts_msgs::GimbalInfo gimbal_; 
+  ros::Publisher ros_pub_gimbal_;
 };
 }
 #endif //ROBORTS_BASE_GIMBAL_H

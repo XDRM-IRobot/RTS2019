@@ -99,11 +99,19 @@ public:
       tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
       geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
 
-      enemy_pose_candidate_.clear();
-
-      std::vector<geometry_msgs::PoseStamped>::const_iterator it = feedback->enemy_pos.begin(); 
-      for (int i = 0; it != feedback->enemy_pos.end(); ++it, ++i)
+      pose_point_candidate_.clear();
+      for (int i = 0; it != feedback->enemy_pos.end(); ++i)
       {
+        geometry_msgs::Point pose_point;
+        pose_point = feedback->enemy_pos[i];
+        // transform camera to ptz
+        pose_point.x += gimbal_control_.offset_.x; 
+        pose_point.y += gimbal_control_.offset_.y;
+        pose_point.z += gimbal_control_.offset_.z;
+        pose_point_candidate_.push_back(pose_point);
+      }
+      GimbalAngleControl(pose_point);
+
         camera_pose_msg = feedback->enemy_pos[i];
 
         double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
@@ -233,7 +241,7 @@ public:
   actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction> armor_detection_actionlib_client_;
   roborts_msgs::ArmorDetectionGoal armor_detection_goal_;
   geometry_msgs::PoseStamped enemy_pose_;
-  std::vector<geometry_msgs::PoseStamped> enemy_pose_candidate_;
+  std::vector<geometry_msgs::Point> pose_point_candidate_;
   bool enemy_detected_;
 
   //! cost map

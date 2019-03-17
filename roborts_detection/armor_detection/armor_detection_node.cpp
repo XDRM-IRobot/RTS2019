@@ -106,7 +106,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.detected = true;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
-
+        feedback.enemy_pos.clear();
         for (int i = 0; i != targets_3d_.size(); ++i)
         {
           geometry_msgs::Point temp;
@@ -124,7 +124,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.detected = false;
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
-
+        feedback.enemy_pos.clear();
         as_.publishFeedback(feedback);
         undetected_msg_published = true;
       }
