@@ -1,5 +1,6 @@
 <launch>
   <master auto="start"/>
+  <arg name="map" value="icra2019"/>
 
   <!-- Run the camera node -->
   <node pkg="roborts_camera" type="roborts_camera_node" name="uvc_camera" respawn="false" />
@@ -13,5 +14,11 @@
 
   <!-- Run the robot sdk interface >
   <include file="$(find roborts_bringup)/launch/base.launch" /-->
+
+  <!-- Publish static tf -->
+  <include file="$(find roborts_bringup)/launch/static_tf.launch" />
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
 
 </launch>

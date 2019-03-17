@@ -82,16 +82,10 @@ private:
       enemy_pose_ = pose_point_candidate_[0];
   }
 
-  void GimbalAngleControl(geometry_msgs::Point pt)
+  void GimbalAngleControl(geometry_msgs::Point target, float& yaw, float& pitch)
   {
     if(enemy_detected_)
     {
-      cv::Point3f target;
-      target.x = pt.x;
-      target.y = pt.y;
-      target.z = pt.z;
-
-      float yaw, pitch;
       gimbal_control_.SolveContrlAgnle(target, yaw, pitch);
       gimbal_angle_.yaw_angle   = -yaw;
       gimbal_angle_.pitch_angle = pitch;
@@ -107,23 +101,33 @@ private:
       ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
     }
   }
+
+  void PoesStampedToCvPoint3f(geometry_msgs::Point& ros_point, cv::Point3f& cv_point)
+  {
+      cv_point.x = ros_point.x;
+      cv_point.y = ros_point.y;
+      cv_point.z = ros_point.z;
+  }
+
+  void CvPoint3fToPoesStamped(cv::Point3f& cv_point, geometry_msgs::Point& ros_point)
+  {
+      ros_point.x = cv_point.x;
+      ros_point.x = cv_point.x;
+      ros_point.x = cv_point.x;
+  }
+
   void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
-      tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
-      geometry_msgs::Point pose_point;
-
       pose_point_candidate_.clear();
-
       for (int i = 0; i != feedback->enemy_pos.size(); ++i)
       {
-        pose_point = feedback->enemy_pos[i];
+        geometry_msgs::Point pose_point = feedback->enemy_pos[i];
         // transform camera to ptz
         pose_point.x += gimbal_control_.offset_.x; 
         pose_point.y += gimbal_control_.offset_.y;
         pose_point.z += gimbal_control_.offset_.z;
         pose_point_candidate_.push_back(pose_point);
       }
-      GimbalAngleControl(pose_point);
   }
   
   void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -132,7 +136,15 @@ private:
       ROS_INFO("Find Enemy!");
 
       GetEnemyGloalPose(feedback);
+      
 
+      SelectFinalEnemy();
+      
+      //ROS_ERROR("pose_point_candidate_.size() = %d ", pose_point_candidate_.size());
+      ROS_ERROR("enemy_pose_  = (%f, %f, %f) ",enemy_pose_.x, enemy_pose_.y, enemy_pose_.z);
+      float yaw, pitch;
+      cv::Point3f target_pose_;
+      GimbalAngleControl(enemy_pose_, yaw, pitch);
     } else{
       enemy_detected_ = false;
     }

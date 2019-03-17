@@ -18,6 +18,7 @@
 #define ROBORTS_DETECTION_GIMBAL_CONTROL_H
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <geometry_msgs/Point.h>
 
 namespace roborts_detection{
 
@@ -67,7 +68,7 @@ class GimbalContrl
    * @param pitch Input and output actual pitch angle
    * @param yaw Input and output actual yaw angle
    */
-  void SolveContrlAgnle(cv::Point3f &postion,float &pitch,float &yaw);
+  void SolveContrlAgnle(geometry_msgs::Point &postion,float &pitch,float &yaw);
 
   cv::Point3f offset_;
   

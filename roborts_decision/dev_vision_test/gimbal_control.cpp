@@ -32,7 +32,7 @@ void GimbalContrl::Init(float x,float y,float z,float pitch,float yaw, float ini
   init_k_ = init_k;
 }
 
-void GimbalContrl::SolveContrlAgnle(cv::Point3f &postion, float &angle_x, float &angle_y) 
+void GimbalContrl::SolveContrlAgnle(geometry_msgs::Point &postion, float &angle_x, float &angle_y) 
 {
     double offset_y_barrel_ptz = 0;
     double bullet_speed = 20;
