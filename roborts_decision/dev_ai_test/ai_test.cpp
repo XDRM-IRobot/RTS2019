@@ -20,6 +20,10 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 
+#include <tf/tf.h>
+#include <tf/transform_listener.h>
+#include <tf/transform_broadcaster.h>
+
 #include <gimbal_control.h>
 #include "proto/gimbal_control.pb.h"
 
@@ -41,6 +45,8 @@ public:
     ros_ctrl_gimbal_angle_       = ros_nh_.advertise<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 100);
     ros_ctrl_fric_wheel_client_  = ros_nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
     ros_ctrl_shoot_client_       = ros_nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
+
+    tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
 
     armor_detection_actionlib_client_.waitForServer();
     ROS_INFO("Waiting for action server to start.");
@@ -84,6 +90,12 @@ public:
   }
 
 private:
+  void SelectFinalEnemy()
+  {
+    if(ptz_point_candidate_.size())
+      enemy_pose_ = ptz_point_candidate_[0];
+  }
+
   void ShootControl(float& yaw, float& pitch)
   {
     if(fric_wheel_.request.open)
@@ -114,14 +126,12 @@ private:
       ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
     }
   }
- 
-  void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
-    if (feedback->detected){
-      enemy_detected_ = true;
-      ROS_INFO("Find Enemy!");
 
+  void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
+  {
       ptz_point_candidate_.clear();
-      
+      global_pose_candidate_.clear();
+
       for (int i = 0; i != feedback->enemy_pos.size(); ++i)
       {
         geometry_msgs::Point pt;
@@ -129,10 +139,46 @@ private:
         pt.y = feedback->enemy_pos[i].y - gimbal_control_.offset_.y;
         pt.z = feedback->enemy_pos[i].z - gimbal_control_.offset_.z;
         ptz_point_candidate_.push_back(pt);
-      }
 
-      if(ptz_point_candidate_.size())
-        enemy_pose_ = ptz_point_candidate_[0];
+        geometry_msgs::PoseStamped ptz_pose;
+        ptz_pose.header.stamp       = ros::Time();
+        ptz_pose.header.frame_id    = "gimbal_link";
+        ptz_pose.pose.position.x    = pt.x / 100.;
+        ptz_pose.pose.position.y    = pt.z / 100.;
+        ptz_pose.pose.position.z    = pt.y / 100.;
+
+        float yaw = ptz_pose.pose.position.y / ptz_pose.pose.position.x;
+        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
+
+        ptz_pose.pose.orientation.x = quaternion.x();
+        ptz_pose.pose.orientation.y = quaternion.y();
+        ptz_pose.pose.orientation.z = quaternion.z();
+        ptz_pose.pose.orientation.w = quaternion.w();
+
+        //tf::Transform transform
+        try{
+          geometry_msgs::PoseStamped map_pose;
+          tf::Stamped<tf::Pose> map_tf_pose;
+          tf_ptr_->transformPose("map", ptz_pose, map_pose);
+          poseStampedMsgToTF(map_pose, map_tf_pose);
+          tf_in_map_.sendTransform(tf::StampedTransform(map_tf_pose, ros::Time::now(), "map", "enemy_link"));
+          global_pose_candidate_.push_back(map_pose);
+        }
+        catch (tf::TransformException &ex) {
+          ROS_ERROR("%s",ex.what());
+          ROS_ERROR("tf error when transform enemy pose from /gimbal_link to /map");
+          ros::Duration(1.0).sleep();
+        }
+      }
+  }
+  
+  void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
+    if (feedback->detected){
+      enemy_detected_ = true;
+      ROS_INFO("Find Enemy!");
+
+      GetEnemyGloalPose(feedback);
+      SelectFinalEnemy();
       
       float yaw, pitch;
       GimbalAngleControl(yaw, pitch);
@@ -151,6 +197,11 @@ private:
   bool enemy_detected_;
   geometry_msgs::Point enemy_pose_;
   std::vector<geometry_msgs::Point> ptz_point_candidate_;
+  std::vector<geometry_msgs::PoseStamped> global_pose_candidate_;
+
+  //! tf
+  std::shared_ptr<tf::TransformListener> tf_ptr_;
+  tf::TransformBroadcaster tf_in_map_;
 
   roborts_detection::GimbalContrl gimbal_control_;
   roborts_msgs::GimbalAngle gimbal_angle_;
