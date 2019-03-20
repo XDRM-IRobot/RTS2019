@@ -189,7 +189,7 @@ class Amcl {
 
  public:
   AmclConfig amcl_param_;
-
+  Vec3d uwb_pose_;
  private:
   std::mutex mutex_;
 

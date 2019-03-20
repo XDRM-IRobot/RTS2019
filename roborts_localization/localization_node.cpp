@@ -51,7 +51,7 @@ bool LocalizationNode::Init() {
 
   distance_map_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("distance_map", 1, true);
   particlecloud_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particlecloud", 2, true);
-
+  //uwb_pose_sub_=nh_.subscribe("uwb",3, &LocalizationNode::uwb_PoseCallback, this);
   // Use message filter for time synchronizer (laser scan topic and tf between odom and base frame)
   laser_scan_sub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::LaserScan>>(nh_, laser_topic_, 100);
   laser_scan_filter_ = std::make_unique<tf::MessageFilter<sensor_msgs::LaserScan>>(*laser_scan_sub_,
@@ -161,7 +161,7 @@ void LocalizationNode::InitialPoseCallback(const geometry_msgs::PoseWithCovarian
 
   amcl_ptr_->HandleInitialPoseMessage(init_pose_mean, init_pose_cov);
 }
-
+void LocalizationNode::uwb_PoseCallback(){std::cout<<"hello_world";}
 void LocalizationNode::LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr &laser_scan_msg_ptr){
 
   last_laser_msg_timestamp_ = laser_scan_msg_ptr->header.stamp;

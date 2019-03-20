@@ -64,7 +64,7 @@ class LocalizationNode {
    * @param laser_scan_msg Laser scan data
    */
   void LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr &laser_scan_msg);
-
+  void uwb_PoseCallback();
   /**
    * @brief Manually initialize localization init_pose
    * @param init_pose_msg Init pose (2D Pose Estimate button in RViz)

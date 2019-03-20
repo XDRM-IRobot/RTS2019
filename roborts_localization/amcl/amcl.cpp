@@ -142,7 +142,7 @@ void Amcl::HandleMapMessage(const nav_msgs::OccupancyGrid &map_msg, const Vec3d 
       );
   LOG_INFO << "Done initializing likelihood field model.";
 
-  if (use_global_localization_) {
+  if (use_global_localization_) {//初始位置随机
     GlobalLocalization();
   } else {
     if (random_heading_) {
@@ -166,7 +166,7 @@ void Amcl::UpdatePoseFromParam(const Vec3d &init_pose, const Vec3d &init_cov) {
   init_cov_[1] = 0.5 * 0.5;
   init_cov_[2] = (M_PI / 12.0) * (M_PI / 12.0);
 
-  if (!std::isnan(init_pose[0])) {
+  if (!std::isnan(init_pose[0])) {//是一个不溢出的数字
     init_pose_[0] = init_pose[0];
   } else {
     LOG_WARNING << "ignoring NAN in initial pose X position";
@@ -231,7 +231,7 @@ Vec3d Amcl::UniformPoseGenerator() {
   return p;
 }
 
-bool Amcl::GlobalLocalization() {
+bool Amcl::GlobalLocalization() {//随机初始化位姿
   if (map_ptr_ == nullptr) {
     return true;
   }
@@ -267,7 +267,7 @@ void Amcl::UpdateUwb(const Vec3d &uwb_pose, const Vec3d &uwb_cov) {
   UpdateUwb(uwb_pose);
 }
 
-void Amcl::UpdateUwb(const Vec3d &uwb_pose) {
+void Amcl::UpdateUwb(const Vec3d  &uwb_pose) {
 
   std::lock_guard<std::mutex> sample_lock(mutex_);
 
@@ -281,10 +281,10 @@ void Amcl::UpdateUwb(const Vec3d &uwb_pose) {
                                           uwb_pose[1],
                                           set_ptr->samples_vec[i].pose[0],
                                           set_ptr->samples_vec[i].pose[1]);
-    if (distance[i] > (map_ptr_->GetDiagDistance() / resample_uwb_factor_)) {
-      set_ptr->samples_vec[i].pose[0] = uwb_pose[0] + math::RandomGaussianNumByStdDev(uwb_cov_x_);
+    if (distance[i] > (map_ptr_->GetDiagDistance() / resample_uwb_factor_)) {//如果粒子和uwb位姿间距小于一个因子，认为该粒子向uwb靠拢
+      set_ptr->samples_vec[i].pose[0] = uwb_pose[0] + math::RandomGaussianNumByStdDev(uwb_cov_x_);//在uwb位姿附近用噪声重采样粒子点
       set_ptr->samples_vec[i].pose[1] = uwb_pose[1] + math::RandomGaussianNumByStdDev(uwb_cov_y_);
-      set_ptr->samples_vec[i].pose[2] = uwb_pose[2] + math::RandomGaussianNumByStdDev((M_PI / 3.0) * (M_PI / 3.0));
+      set_ptr->samples_vec[i].pose[2] = set_ptr->samples_vec[i].pose[2] + math::RandomGaussianNumByStdDev((M_PI / 3.0) * (M_PI / 3.0));//不使用方向信息
       distance[i] = math::EuclideanDistance(uwb_pose[0],
                                             uwb_pose[1],
                                             set_ptr->samples_vec[i].pose[0],
@@ -295,7 +295,7 @@ void Amcl::UpdateUwb(const Vec3d &uwb_pose) {
 
   CHECK_GT(total, 0);
   for (int j = 0; j < set_ptr->sample_count; j++) {
-    set_ptr->samples_vec[j].weight *= (total - distance[j]) / total;
+    set_ptr->samples_vec[j].weight *= (total - distance[j]) / total;//距离越近权重越大
   }
 
   std::sort(set_ptr->samples_vec.begin(),
@@ -304,7 +304,7 @@ void Amcl::UpdateUwb(const Vec3d &uwb_pose) {
               return sample1.weight < sample2.weight;
             });
 
-  auto least_weight_particle_num = static_cast<int>(max_uwb_particles_);
+  auto least_weight_particle_num = static_cast<int>(max_uwb_particles_);//强制转换 uwb重采样粒子数
   if (least_weight_particle_num <= 0) {
     least_weight_particle_num = 1;
   }
@@ -322,7 +322,7 @@ int Amcl::Update(const Vec3d &pose,
                  const double &angle_min,
                  const double &angle_increment,
                  geometry_msgs::PoseArray &particle_cloud_pose_msg,
-                 HypPose &hyp_pose) {
+                 HypPose &hyp_pose) {    
 
   std::lock_guard<std::mutex> sample_lock(mutex_);
 
@@ -330,7 +330,7 @@ int Amcl::Update(const Vec3d &pose,
   publish_particle_pose_cloud_ = false;
   update_tf_ = false;
 
-  UpdateOdomPoseData(pose);
+  UpdateOdomPoseData(pose);//通过传感器信息结合粒子更新位姿
 
   resampled_ = false;
   if (laser_update_) {
@@ -434,17 +434,18 @@ void Amcl::UpdateLaser(const sensor_msgs::LaserScan &laser_scan,
 
 }
 
-geometry_msgs::PoseArray Amcl::ResampleParticles() {
+geometry_msgs::PoseArray Amcl::ResampleParticles() {//在此添加uwb重采样
 
   geometry_msgs::PoseArray particle_cloud_pose_msg;
 
-  if (!(++resample_count_ % resample_interval_)) {
+  if (!(++resample_count_ % resample_interval_)) {//重采样
     DLOG_INFO << "Resample the particles";
     pf_ptr_->UpdateResample();
+    // const Vec3d& uwb_pose = this->uwb_pose_;       UpdateUwb(const Vec3d &uwb_pose, const Vec3d &uwb_cov);
     resampled_ = true;
   }
 
-  auto set_ptr = pf_ptr_->GetCurrentSampleSetPtr();
+  auto set_ptr = pf_ptr_->GetCurrentSampleSetPtr();//使用更新后的粒子
   DLOG_INFO << "Number of samples : " << set_ptr->sample_count;
 
   // Publish the resulting particle cloud
