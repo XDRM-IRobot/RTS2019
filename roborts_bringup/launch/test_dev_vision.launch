@@ -12,7 +12,7 @@
 
   <node pkg="roborts_decision" type="armor_detection_client" name="armor_detection_client" respawn="false" />
 
-  <!-- Run the robot sdk interface >
-  <include file="$(find roborts_bringup)/launch/base.launch" /-->
+  <!-- Run the robot sdk interface -->
+  <include file="$(find roborts_bringup)/launch/base.launch" />
 
 </launch>

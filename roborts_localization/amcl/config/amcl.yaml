@@ -39,7 +39,7 @@ transform_tolerance : 0.1        # tf发布间隔
 recovery_alpha_slow : 0.001      # Augmented_MCL中的\alpha_{slow}参数
 recovery_alpha_fast : 0.1        # Augmented_MCL中的\alpha_{fast}参数
 
-use_global_localization : false  # 是否初始随机初始定位
+use_global_localization : true  # 是否初始随机初始定位
 random_heading : true            # 是否初始随机角度的初始定位
 laser_filter_weight : 0.4        # 权重阈值，用于筛选出权重较低的激光雷达测量值
 
