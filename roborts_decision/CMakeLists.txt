@@ -36,25 +36,27 @@ catkin_package()
 
 add_subdirectory(dev_vision_test)
 add_subdirectory(dev_nav_test)
+add_subdirectory(dev_ai_test)
 
-#
-#add_executable(behavior_test_node
-#  ${DecisionProtoHds}
-#  ${DecisionProtoSrc}
-#  behavior/escape_behavior.h
-#  behavior/back_boot_area_behavior.h
-#  behavior/chase_behavior.h
-#  behavior/patrol_behavior.h
-#  behavior/search_behavior.h
-# behavior_test.cpp
-#  executor/chassis_executor.cpp
-#  )
 
-#target_link_libraries(behavior_test_node
-#  PRIVATE
-#  roborts_costmap
-#  ${catkin_LIBRARIES}
-#  ${PROTOBUF_LIBRARIES}
-#  )
-#add_dependencies(behavior_test_node
-#  roborts_msgs_generate_messages)
+add_executable(behavior_test_node
+  ${DecisionProtoHds}
+  ${DecisionProtoSrc}
+  behavior/escape_behavior.h
+  behavior/back_boot_area_behavior.h
+  behavior/chase_behavior.h
+  behavior/patrol_behavior.h
+  behavior/search_behavior.h
+ behavior_test.cpp
+  executor/chassis_executor.cpp
+  )
+
+target_link_libraries(behavior_test_node
+  PRIVATE
+  roborts_costmap
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+  )
+  
+add_dependencies(behavior_test_node
+  roborts_msgs_generate_messages)

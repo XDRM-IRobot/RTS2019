@@ -69,13 +69,13 @@ public:
     gimbal_angle_.yaw_mode    = true;
     gimbal_angle_.pitch_mode  = true;
 
-    fric_wheel_.request.open  = true;
-    ros_ctrl_fric_wheel_client_.call(fric_wheel_);
+    //fric_wheel_.request.open  = true;
+    //ros_ctrl_fric_wheel_client_.call(fric_wheel_);
 
   }
 
   void start()
-  {
+  {                     
     ROS_INFO("Start.");
 
     roborts_msgs::ArmorDetectionGoal goal;
@@ -168,9 +168,9 @@ private:
         geometry_msgs::PoseStamped ptz_pose;
         ptz_pose.header.stamp       = ros::Time();
         ptz_pose.header.frame_id    = "gimbal_link";
-        ptz_pose.pose.position.x    = pt.x / 100.;
-        ptz_pose.pose.position.y    = pt.z / 100.;
-        ptz_pose.pose.position.z    = pt.y / 100.;
+        ptz_pose.pose.position.x    =  pt.z / 100.;
+        ptz_pose.pose.position.y    = -pt.x / 100.;
+        ptz_pose.pose.position.z    = -pt.y / 100.;
 
         float yaw = ptz_pose.pose.position.y / ptz_pose.pose.position.x;
         tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
@@ -207,7 +207,7 @@ private:
       
       float yaw, pitch;
       GimbalAngleControl(yaw, pitch);
-      ShootControl(yaw, pitch);
+      //ShootControl(yaw, pitch);
 
     } else{
       enemy_detected_ = false;
@@ -227,9 +227,8 @@ private:
   //! tf
   std::shared_ptr<tf::TransformListener> tf_ptr_;
   tf::TransformBroadcaster tf_in_map_;
-
+  //! anglesolver
   roborts_detection::GimbalContrl gimbal_control_;
-  roborts_msgs::GimbalAngle gimbal_angle_;
 
   //! ros control
   ros::NodeHandle    ros_nh_;
@@ -237,8 +236,9 @@ private:
   ros::ServiceClient ros_ctrl_fric_wheel_client_;
   ros::ServiceClient ros_ctrl_shoot_client_;
 
-  roborts_msgs::FricWhl fric_wheel_;
-  roborts_msgs::ShootCmd shoot_cmd_;
+  roborts_msgs::GimbalAngle gimbal_angle_;
+  roborts_msgs::FricWhl     fric_wheel_;
+  roborts_msgs::ShootCmd    shoot_cmd_;
 };
 
 }

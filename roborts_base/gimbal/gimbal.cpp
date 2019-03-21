@@ -78,7 +78,7 @@ void Gimbal::GimbalInfoCallback(const std::shared_ptr<roborts_sdk::cmd_gimbal_in
   gimbal_tf_.transform.rotation = q;
   gimbal_tf_.transform.translation.x = 0;
   gimbal_tf_.transform.translation.y = 0;
-  gimbal_tf_.transform.translation.z = 0.15;
+  gimbal_tf_.transform.translation.z = 0.4;
   tf_broadcaster_.sendTransform(gimbal_tf_); // publish gimbal tf 
 
 }

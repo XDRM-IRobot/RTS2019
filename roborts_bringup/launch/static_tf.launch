@@ -1,20 +1,20 @@
 <launch>
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_base_laser_link_broadcaster"
-          args="0.15 0.00 0.15 
+          args="0.15 0.00 0.20 
                 4    0.00 0.00
                 base_link 
                 base_laser_link" />
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_uwb_link_broadcaster"
-          args="0.0  -0.01 0.1 
-                0.0  0.0 0.0 
+          args="-0.18 -0.28 0.35
+                 0.0   0.0  0.0 
                 base_link 
                 uwb_link" />
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_magazine_link_broadcaster"
-          args="0.0  -0.01 0.1 
-                0.0  0.0 0.0 
+          args="-0.15  0.0 0.20
+                 0.0   0.0 0.0 
                 base_link 
                 magazine_link" />
 

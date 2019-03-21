@@ -18,20 +18,26 @@
 #define ROBORTS_DECISION_BLACKBOARD_H
 
 #include <actionlib/client/simple_action_client.h>
+
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
+#include <tf/transform_broadcaster.h>
+
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#include "roborts_msgs/ArmorDetectionAction.h"
-
 #include "io/io.h"
 #include "../proto/decision.pb.h"
+
 #include "costmap/costmap_interface.h"
 
-namespace roborts_decision{
+#include "roborts_msgs/ArmorDetectionAction.h"
+#include <roborts_msgs/GimbalAngle.h>
+#include "roborts_msgs/ShootCmd.h"
+#include "roborts_msgs/FricWhl.h"
+#include "roborts_msgs/BattleField.h"  // multi-car
 
-#define Simulator
+namespace roborts_decision{
 
 class Blackboard {
 public:
@@ -41,8 +47,8 @@ public:
 
   explicit Blackboard(const std::string &proto_file_path):
       enemy_detected_(false),
-      armor_detection_actionlib_client_("armor_detection_node_action", true){
-
+      armor_detection_actionlib_client_("armor_detection_node_action", true)
+  {
     tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
 
     std::string map_path = ros::package::getPath("roborts_costmap") + \
@@ -53,20 +59,16 @@ public:
 
     costmap_2d_ = costmap_ptr_->GetLayeredCostmap()->GetCostMap();
 
-#ifdef Simulator
-    // Enemy fake pose
-    ros::NodeHandle rviz_nh("/move_base_simple");
-    enemy_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, &Blackboard::GoalCallback, this);
-#else
-    // sub topic from armor detect
-#endif
-    ros::NodeHandle nh;
-
     roborts_decision::DecisionConfig decision_config;
     roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config);
 
-    if (!decision_config.simulate()){
-
+    if(decision_config.simulate())
+    {
+      // Enemy fake pose
+      ros::NodeHandle rviz_nh("/move_base_simple");
+      enemy_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, &Blackboard::GoalCallback, this);
+    }
+    else{
       armor_detection_actionlib_client_.waitForServer();
 
       ROS_INFO("Armor detection module has been connected!");
@@ -76,70 +78,75 @@ public:
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleDoneCallback(),
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
+      
+      battlefield_sub_ = ros_nh_.subscribe<roborts_msgs::BattleField>("other_call", 5, &Blackboard::BattleFieldCallback, this);
+      battlefield_pub_ = ros_nh_.advertise<roborts_msgs::BattleField>("call_other", 5);
+      
     }
-
-
   }
 
   ~Blackboard() = default;
 
-  geometry_msgs::PoseStamped SelectFinalEnemy()
+  void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
-    if(enemy_pose_candidate_.size())
-    {
-      return enemy_pose_candidate_[0];
-    }
+      ptz_point_candidate_.clear();
+      global_pose_candidate_.clear();
+
+      for (int i = 0; i != feedback->enemy_pos.size(); ++i)
+      {
+        geometry_msgs::Point pt;
+        pt.x = feedback->enemy_pos[i].x - 0;  // gimbal_control_.offset_.x;
+        pt.y = feedback->enemy_pos[i].y - 10; // gimbal_control_.offset_.y;
+        pt.z = feedback->enemy_pos[i].z + 1;  // gimbal_control_.offset_.z;
+        ptz_point_candidate_.push_back(pt);
+
+        geometry_msgs::PoseStamped ptz_pose;
+        ptz_pose.header.stamp       = ros::Time();
+        ptz_pose.header.frame_id    = "gimbal_link";
+        ptz_pose.pose.position.x    = pt.x / 100.;
+        ptz_pose.pose.position.y    = pt.z / 100.;
+        ptz_pose.pose.position.z    = pt.y / 100.;
+
+        float yaw = ptz_pose.pose.position.y / ptz_pose.pose.position.x;
+        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
+
+        ptz_pose.pose.orientation.x = quaternion.x();
+        ptz_pose.pose.orientation.y = quaternion.y();
+        ptz_pose.pose.orientation.z = quaternion.z();
+        ptz_pose.pose.orientation.w = quaternion.w();
+
+        //tf::Transform transform
+        try{
+          geometry_msgs::PoseStamped map_pose;
+          tf::Stamped<tf::Pose> map_tf_pose;
+          tf_ptr_->transformPose("map", ptz_pose, map_pose);
+          poseStampedMsgToTF(map_pose, map_tf_pose);
+          tf_in_map_.sendTransform(tf::StampedTransform(map_tf_pose, ros::Time::now(), "map", "enemy_link"));
+          global_pose_candidate_.push_back(map_pose);
+        }
+        catch (tf::TransformException &ex) {
+          ROS_ERROR("%s",ex.what());
+          ROS_ERROR("tf error when transform enemy pose from /gimbal_link to /map");
+          ros::Duration(1.0).sleep();
+        }
+      }
   }
-  // Enemy
+  void BattleFieldCallback(const roborts_msgs::BattleFieldConstPtr& Battlefield)
+  {
+
+  }
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
       enemy_detected_ = true;
       ROS_INFO("Find Enemy!");
 
-      tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
-      geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
-
-      pose_point_candidate_.clear();
-      for (int i = 0; it != feedback->enemy_pos.end(); ++i)
-      {
-        geometry_msgs::Point pose_point;
-        pose_point = feedback->enemy_pos[i];
-        // transform camera to ptz
-        pose_point.x += gimbal_control_.offset_.x; 
-        pose_point.y += gimbal_control_.offset_.y;
-        pose_point.z += gimbal_control_.offset_.z;
-        pose_point_candidate_.push_back(pose_point);
-      }
-      GimbalAngleControl(pose_point);
-
-        camera_pose_msg = feedback->enemy_pos[i];
-
-        double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
-                                  camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
-        double yaw      = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
+      GetEnemyGloalPose(feedback);
       
-        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, yaw);
-        camera_pose_msg.pose.orientation.w = quaternion.w();
-        camera_pose_msg.pose.orientation.x = quaternion.x();
-        camera_pose_msg.pose.orientation.y = quaternion.y();
-        camera_pose_msg.pose.orientation.z = quaternion.z();
-        poseStampedMsgToTF(camera_pose_msg, tf_pose);
-        tf_pose.stamp_ = ros::Time(0);      
-        try
-        {
-          tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
-          tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
-
-          if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
-            enemy_pose_candidate_.push_back(global_pose_msg);
-          }
-        }
-        catch (tf::TransformException &ex) {
-          ROS_ERROR("tf error when transform enemy pose from camera to map");
-        }
-      }
-
-      enemy_pose_ = SelectFinalEnemy();
+      // SelectFinalEnemy();
+      
+      // float yaw, pitch;
+      // GimbalAngleControl(yaw, pitch);
+      // ShootControl(yaw, pitch);
 
     } else{
       enemy_detected_ = false;
@@ -227,11 +234,20 @@ public:
       ROS_ERROR("Transform Error looking up robot pose: %s", ex.what());
     }
   }
+
+  //! 3D point in ptz
+  std::vector<geometry_msgs::Point>       ptz_point_candidate_;   
+  //! 3D pose in map
+  std::vector<geometry_msgs::PoseStamped> global_pose_candidate_; 
+
   //! tf
   std::shared_ptr<tf::TransformListener> tf_ptr_;
+  tf::TransformBroadcaster tf_in_map_;
 
   //! Enenmy detection
   ros::Subscriber enemy_sub_;
+  ros::Subscriber battlefield_sub_;
+  ros::Publisher  battlefield_pub_;
 
   //! Goal info
   geometry_msgs::PoseStamped goal_;
@@ -251,6 +267,19 @@ public:
 
   //! robot map pose
   geometry_msgs::PoseStamped robot_map_pose_;
+
+  //! anglesolver
+  //roborts_detection::GimbalContrl gimbal_control_;
+
+  //! ros control
+  ros::NodeHandle    ros_nh_;
+  ros::Publisher     ros_ctrl_gimbal_angle_;
+  ros::ServiceClient ros_ctrl_fric_wheel_client_;
+  ros::ServiceClient ros_ctrl_shoot_client_;
+
+  roborts_msgs::GimbalAngle gimbal_angle_;
+  roborts_msgs::FricWhl     fric_wheel_;
+  roborts_msgs::ShootCmd    shoot_cmd_;
 
 };
 } //namespace roborts_decision
