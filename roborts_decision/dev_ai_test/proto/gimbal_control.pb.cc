@@ -34,7 +34,7 @@ void protobuf_AssignDesc_gimbal_5fcontrol_2eproto() {
       "gimbal_control.proto");
   GOOGLE_CHECK(file != NULL);
   GimbalControlParam_descriptor_ = file->message_type(0);
-  static const int GimbalControlParam_offsets_[7] = {
+  static const int GimbalControlParam_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, offset_x_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, offset_y_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, offset_z_),
@@ -42,6 +42,7 @@ void protobuf_AssignDesc_gimbal_5fcontrol_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, offset_pitch_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, init_v_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, init_k_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GimbalControlParam, fric_wheel_),
   };
   GimbalControlParam_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -85,10 +86,11 @@ void protobuf_AddDesc_gimbal_5fcontrol_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\024gimbal_control.proto\022\020roborts_decision"
-    "\"\224\001\n\022GimbalControlParam\022\020\n\010offset_x\030\001 \002("
+    "\"\250\001\n\022GimbalControlParam\022\020\n\010offset_x\030\001 \002("
     "\002\022\020\n\010offset_y\030\002 \002(\002\022\020\n\010offset_z\030\003 \002(\002\022\022\n"
     "\noffset_yaw\030\004 \002(\002\022\024\n\014offset_pitch\030\005 \002(\002\022"
-    "\016\n\006init_v\030\006 \002(\002\022\016\n\006init_k\030\007 \002(\002", 191);
+    "\016\n\006init_v\030\006 \002(\002\022\016\n\006init_k\030\007 \002(\002\022\022\n\nfric_"
+    "wheel\030\010 \002(\010", 211);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "gimbal_control.proto", &protobuf_RegisterTypes);
   GimbalControlParam::default_instance_ = new GimbalControlParam();
@@ -113,6 +115,7 @@ const int GimbalControlParam::kOffsetYawFieldNumber;
 const int GimbalControlParam::kOffsetPitchFieldNumber;
 const int GimbalControlParam::kInitVFieldNumber;
 const int GimbalControlParam::kInitKFieldNumber;
+const int GimbalControlParam::kFricWheelFieldNumber;
 #endif  // !_MSC_VER
 
 GimbalControlParam::GimbalControlParam()
@@ -140,6 +143,7 @@ void GimbalControlParam::SharedCtor() {
   offset_pitch_ = 0;
   init_v_ = 0;
   init_k_ = 0;
+  fric_wheel_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -185,8 +189,8 @@ void GimbalControlParam::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  if (_has_bits_[0 / 32] & 127) {
-    ZR_(offset_x_, init_k_);
+  if (_has_bits_[0 / 32] & 255) {
+    ZR_(offset_x_, fric_wheel_);
   }
 
 #undef OFFSET_OF_FIELD_
@@ -306,6 +310,21 @@ bool GimbalControlParam::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(64)) goto parse_fric_wheel;
+        break;
+      }
+
+      // required bool fric_wheel = 8;
+      case 8: {
+        if (tag == 64) {
+         parse_fric_wheel:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &fric_wheel_)));
+          set_has_fric_wheel();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -370,6 +389,11 @@ void GimbalControlParam::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->init_k(), output);
   }
 
+  // required bool fric_wheel = 8;
+  if (has_fric_wheel()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->fric_wheel(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -413,6 +437,11 @@ void GimbalControlParam::SerializeWithCachedSizes(
   // required float init_k = 7;
   if (has_init_k()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->init_k(), target);
+  }
+
+  // required bool fric_wheel = 8;
+  if (has_fric_wheel()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->fric_wheel(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -460,6 +489,11 @@ int GimbalControlParam::ByteSize() const {
     // required float init_k = 7;
     if (has_init_k()) {
       total_size += 1 + 4;
+    }
+
+    // required bool fric_wheel = 8;
+    if (has_fric_wheel()) {
+      total_size += 1 + 1;
     }
 
   }
@@ -510,6 +544,9 @@ void GimbalControlParam::MergeFrom(const GimbalControlParam& from) {
     if (from.has_init_k()) {
       set_init_k(from.init_k());
     }
+    if (from.has_fric_wheel()) {
+      set_fric_wheel(from.fric_wheel());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -527,7 +564,7 @@ void GimbalControlParam::CopyFrom(const GimbalControlParam& from) {
 }
 
 bool GimbalControlParam::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000007f) != 0x0000007f) return false;
+  if ((_has_bits_[0] & 0x000000ff) != 0x000000ff) return false;
 
   return true;
 }
@@ -541,6 +578,7 @@ void GimbalControlParam::Swap(GimbalControlParam* other) {
     std::swap(offset_pitch_, other->offset_pitch_);
     std::swap(init_v_, other->init_v_);
     std::swap(init_k_, other->init_k_);
+    std::swap(fric_wheel_, other->fric_wheel_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

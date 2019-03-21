@@ -6,3 +6,4 @@ offset_pitch  :  0
 offset_yaw    :  0
 init_v        :  15       
 init_k        :  0.026
+fric_wheel    :  false

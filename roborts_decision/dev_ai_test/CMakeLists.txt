@@ -9,8 +9,10 @@ rrts_protobuf_generate_cpp(${CMAKE_CURRENT_SOURCE_DIR}/proto
   ${ProtoFiles})
 
 add_executable(ai_test
-  gimbal_control.cpp
   ai_test.cpp
+  gimbal_control.cpp
+  go_nav.cpp 
+  go_aim.cpp
   ${GimbalControlProtoSrc}
   ${GimbalControlProtoHds}
 )

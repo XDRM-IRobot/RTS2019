@@ -10,4 +10,5 @@ message GimbalControlParam
     required float offset_pitch = 5;
     required float init_v       = 6;
     required float init_k       = 7;
+    required bool  fric_wheel   = 8;
 }

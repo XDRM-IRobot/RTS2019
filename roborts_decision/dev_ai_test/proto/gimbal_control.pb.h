@@ -139,6 +139,13 @@ class GimbalControlParam : public ::google::protobuf::Message {
   inline float init_k() const;
   inline void set_init_k(float value);
 
+  // required bool fric_wheel = 8;
+  inline bool has_fric_wheel() const;
+  inline void clear_fric_wheel();
+  static const int kFricWheelFieldNumber = 8;
+  inline bool fric_wheel() const;
+  inline void set_fric_wheel(bool value);
+
   // @@protoc_insertion_point(class_scope:roborts_decision.GimbalControlParam)
  private:
   inline void set_has_offset_x();
@@ -155,6 +162,8 @@ class GimbalControlParam : public ::google::protobuf::Message {
   inline void clear_has_init_v();
   inline void set_has_init_k();
   inline void clear_has_init_k();
+  inline void set_has_fric_wheel();
+  inline void clear_has_fric_wheel();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -167,6 +176,7 @@ class GimbalControlParam : public ::google::protobuf::Message {
   float offset_pitch_;
   float init_v_;
   float init_k_;
+  bool fric_wheel_;
   friend void  protobuf_AddDesc_gimbal_5fcontrol_2eproto();
   friend void protobuf_AssignDesc_gimbal_5fcontrol_2eproto();
   friend void protobuf_ShutdownFile_gimbal_5fcontrol_2eproto();
@@ -347,6 +357,30 @@ inline void GimbalControlParam::set_init_k(float value) {
   set_has_init_k();
   init_k_ = value;
   // @@protoc_insertion_point(field_set:roborts_decision.GimbalControlParam.init_k)
+}
+
+// required bool fric_wheel = 8;
+inline bool GimbalControlParam::has_fric_wheel() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void GimbalControlParam::set_has_fric_wheel() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void GimbalControlParam::clear_has_fric_wheel() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void GimbalControlParam::clear_fric_wheel() {
+  fric_wheel_ = false;
+  clear_has_fric_wheel();
+}
+inline bool GimbalControlParam::fric_wheel() const {
+  // @@protoc_insertion_point(field_get:roborts_decision.GimbalControlParam.fric_wheel)
+  return fric_wheel_;
+}
+inline void GimbalControlParam::set_fric_wheel(bool value) {
+  set_has_fric_wheel();
+  fric_wheel_ = value;
+  // @@protoc_insertion_point(field_set:roborts_decision.GimbalControlParam.fric_wheel)
 }
 
 

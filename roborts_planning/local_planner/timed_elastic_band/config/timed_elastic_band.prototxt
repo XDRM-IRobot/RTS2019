@@ -28,9 +28,9 @@ kinematics_opt {
     max_vel_x_backwards: 0.2                  # 最大后退速度
     max_vel_y: 1                              # 最大平移速度
     max_vel_theta: 1                          # 最大角速度
-    acc_lim_x: 1                              # 最大纵向加速度
-    acc_lim_y: 1                              # 最大平移加速度
-    acc_lim_theta: 1                          # 最大角加速度
+    acc_lim_x: 0.1                              # 最大纵向加速度
+    acc_lim_y: 0.1                              # 最大平移加速度
+    acc_lim_theta: 0.1                          # 最大角加速度
     min_turning_radius: 0                     # 最小转弯半径
     wheelbase: 0                              # 无用参数
     cmd_angle_instead_rotvel: false           # ?
