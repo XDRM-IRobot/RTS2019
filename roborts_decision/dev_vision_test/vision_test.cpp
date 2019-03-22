@@ -143,7 +143,7 @@ private:
   void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
       enemy_detected_ = true;
-      ROS_INFO("Find Enemy!");
+      ROS_ERROR("Find Enemy!");
 
       ptz_point_candidate_.clear();
       
@@ -165,7 +165,7 @@ private:
 
     } else{
       enemy_detected_ = false;
-      ROS_INFO("no Enemy!");
+      ROS_ERROR("no Enemy!");
     }
   }
 

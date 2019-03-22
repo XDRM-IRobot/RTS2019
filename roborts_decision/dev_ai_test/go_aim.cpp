@@ -2,11 +2,33 @@
 
 namespace roborts_decision{
 
-void AI_Test::SelectFinalEnemy()
-  {
-    if(ptz_point_candidate_.size())
-      enemy_pose_ = ptz_point_candidate_[0];
-  }
+
+int AI_Test::SelectFinalEnemy()
+{
+    if(shoot_candidate_.size())
+    {
+      //...
+      shoot_target_ = shoot_candidate_[0];
+      return 0; 
+      
+    }
+    /*try{
+          geometry_msgs::PoseStamped ptz_pose_in_map;
+          tf::Stamped<tf::Pose> ptz_pose_tf;
+          tf_ptr_->transformPose("map", ptz_pose, ptz_pose_in_map);
+          poseStampedMsgToTF(ptz_pose_in_map, ptz_pose_tf);
+          tf_in_map_.sendTransform(tf::StampedTransform(ptz_pose_tf, ros::Time::now(), "map", "enemy_link"));
+          global_pose_candidate_.push_back(map_pose);
+        }
+        catch (tf::TransformException &ex) {
+          ROS_ERROR("%s",ex.what());
+          ROS_ERROR("tf error when transform enemy pose from /gimbal_link to /map");
+          ros::Duration(1.0).sleep();
+        }
+    */
+}
+
+
 
   void AI_Test::ShootControl(float& yaw, float& pitch)
   {
@@ -23,10 +45,8 @@ void AI_Test::SelectFinalEnemy()
 
   void AI_Test::GimbalAngleControl(float& yaw, float& pitch)
   {
-    gimbal_control_.SolveContrlAgnle(enemy_pose_, yaw, pitch);
-
-    double dyaw   = 0.1;
-    double dpitch = 0.1;
+      double dyaw   = 0.1;
+      double dpitch = 0.1;
 
            if (abs(yaw) > 30) dyaw = 1;
       else if (abs(yaw) > 25) dyaw = 0.8;
@@ -48,10 +68,10 @@ void AI_Test::SelectFinalEnemy()
       gimbal_angle_.pitch_angle = pitch * dpitch;
 
       ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
-      ROS_ERROR("yaw = %f , pitch = %f , dyaw = %f , dpitch = %f  ",
-                gimbal_angle_.yaw_angle, 
-                gimbal_angle_.pitch_angle, 
-                dyaw, 
-                dpitch);
+      //ROS_ERROR("yaw = %f , pitch = %f , dyaw = %f , dpitch = %f  ",
+      //          gimbal_angle_.yaw_angle, 
+      //          gimbal_angle_.pitch_angle, 
+      //          dyaw, 
+      //          dpitch);
   }
 }

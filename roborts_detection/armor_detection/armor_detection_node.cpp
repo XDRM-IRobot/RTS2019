@@ -99,14 +99,16 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
       as_.setPreempted();
       return;
     }
-
+    
     {
       std::lock_guard<std::mutex> guard(mutex_);
-      if (detected_enemy_) {
+
+      feedback.enemy_pos.clear();
+      feedback.error_code = error_info_.error_code();
+      feedback.error_msg = error_info_.error_msg();
+
+      if (detected_enemy_){
         feedback.detected = true;
-        feedback.error_code = error_info_.error_code();
-        feedback.error_msg = error_info_.error_msg();
-        feedback.enemy_pos.clear();
         for (int i = 0; i != targets_3d_.size(); ++i)
         {
           geometry_msgs::Point temp;
@@ -115,19 +117,10 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
           temp.z = targets_3d_[i].z;
           feedback.enemy_pos.push_back(temp);
         }
-        //feedback.enemy_pos = target_3ds;
-        as_.publishFeedback(feedback);
-        undetected_msg_published = false;
-      }
-      else if(!undetected_msg_published) 
-      {
+      }else{
         feedback.detected = false;
-        feedback.error_code = error_info_.error_code();
-        feedback.error_msg = error_info_.error_msg();
-        feedback.enemy_pos.clear();
-        as_.publishFeedback(feedback);
-        undetected_msg_published = true;
       }
+      as_.publishFeedback(feedback);
     }
     rate.sleep();
   }

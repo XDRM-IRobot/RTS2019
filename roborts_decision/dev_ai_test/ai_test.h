@@ -39,6 +39,8 @@
 #include "roborts_msgs/GlobalPlannerAction.h"
 #include "roborts_msgs/LocalPlannerAction.h"
 
+#include "roborts_msgs/GimbalInfo.h"
+
 namespace roborts_decision{
 
 using roborts_common::ErrorCode;
@@ -61,6 +63,8 @@ public:
   void init_ros()
   {
     ros_nh_                      = ros::NodeHandle();
+    ros_sub_gimbal_              = ros_nh_.subscribe("gimbal_info", 1, &AI_Test::ListenYaw, this);
+
     ros_ctrl_gimbal_angle_       = ros_nh_.advertise<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 100);
     ros_ctrl_fric_wheel_client_  = ros_nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
     ros_ctrl_shoot_client_       = ros_nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
@@ -108,8 +112,28 @@ public:
       usleep(3000000);  // wait 3s
     }
   }
+  const geometry_msgs::PoseStamped GetRobotMapPose() {
+    UpdateRobotPose();
+    return robot_map_pose_;
+  }
 
-  void SelectFinalEnemy();
+  void UpdateRobotPose() {
+    tf::Stamped<tf::Pose> robot_tf_pose;
+    robot_tf_pose.setIdentity();
+
+    robot_tf_pose.frame_id_ = "base_link";
+    robot_tf_pose.stamp_ = ros::Time();
+    try {
+      geometry_msgs::PoseStamped robot_pose;
+      tf::poseStampedTFToMsg(robot_tf_pose, robot_pose);
+      tf_ptr_->transformPose("map", robot_pose, robot_map_pose_);
+    }
+    catch (tf::LookupException &ex) {
+      ROS_ERROR("Transform Error looking up robot pose: %s", ex.what());
+    }
+  }
+  int SelectFinalEnemy();
+  
   void ShootControl(float& yaw, float& pitch);
   void GimbalAngleControl(float& yaw, float& pitch);
   void NavGoalCallback(const geometry_msgs::PoseStamped & goal);
@@ -121,44 +145,8 @@ public:
   void GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback);
   void ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback);
 
-  void start()
-  {                     
-    ros::Rate loop_rate(100);
-
-    unsigned long dt = 0;
-
-    while(ros::ok())
-    {
-       if(enemy_detected_)
-       {
-         gimbal_angle_.yaw_mode    = true;
-         gimbal_angle_.pitch_mode  = true;
-
-         float yaw, pitch;
-         GimbalAngleControl(yaw, pitch);
-
-         if(yaw > 30)
-         {
-           // 原地旋转
-           //NavGoalCallback();
-         }
-       }
-       else{
-         gimbal_angle_.yaw_mode    = false;
-         gimbal_angle_.pitch_mode  = false;
-
-         float yaw = sin(0.01 * dt++);
-         
-         gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
-         gimbal_angle_.pitch_angle = 0;
-         ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
-
-         ros::spinOnce();
-         loop_rate.sleep();
-       }
-    }
-  }   
-
+  void start();
+  void GetEnemyNavGoal(geometry_msgs::PoseStamped& nav, const float distance);
 private:
   
   // create the action client
@@ -168,22 +156,32 @@ private:
   int lost_cnt_;   
   int detect_cnt_;   
 
-  geometry_msgs::Point enemy_pose_;
-  std::vector<geometry_msgs::Point> ptz_point_candidate_;
-  std::vector<geometry_msgs::PoseStamped> global_pose_candidate_;
+  std::vector<geometry_msgs::Point> shoot_candidate_;         // for decision
+  std::vector<geometry_msgs::PoseStamped> enemy_candidate_;   // for decision
+  geometry_msgs::Point shoot_target_;    // in ptz
+
+  std::vector<geometry_msgs::PoseStamped> enemy_pose_in_ptz_; // for nav
+  
+
+  geometry_msgs::PoseStamped nav_goal_;  // in map
+  geometry_msgs::PoseStamped robot_map_pose_;
 
   //! tf
   std::shared_ptr<tf::TransformListener> tf_ptr_;
   tf::TransformBroadcaster tf_in_map_;
+  tf::TransformListener tf_listener_;
+
   //! anglesolver
   roborts_detection::GimbalContrl gimbal_control_;
 
   //! ros control
   ros::NodeHandle    ros_nh_;
+  ros::Subscriber    ros_sub_gimbal_;
   ros::Publisher     ros_ctrl_gimbal_angle_;
   ros::ServiceClient ros_ctrl_fric_wheel_client_;
   ros::ServiceClient ros_ctrl_shoot_client_;
 
+  roborts_msgs::GimbalInfo  gimbal_info_;
   roborts_msgs::GimbalAngle gimbal_angle_;
   roborts_msgs::FricWhl     fric_wheel_;
   roborts_msgs::ShootCmd    shoot_cmd_;
@@ -194,6 +192,11 @@ private:
 
   roborts_msgs::LocalPlannerGoal local_planner_goal_;
   actionlib::SimpleActionClient<roborts_msgs::LocalPlannerAction>  local_planner_actionlib_client_;
+
+  void ListenYaw(const roborts_msgs::GimbalInfo::ConstPtr &msg)
+  {
+     // gimbal_info_ = msg;
+  }
 };
 
 }

@@ -2,18 +2,6 @@
 
 namespace roborts_decision{
 
-void AI_Test::NavGoalCallback(const geometry_msgs::PoseStamped & goal)
-  {
-    ROS_INFO("Get nav goal.");
-    global_planner_goal_.goal = goal;
-    global_planner_actionlib_client_.sendGoal(global_planner_goal_,
-                                              boost::bind(&AI_Test::DoneCallback, this, _1, _2),
-                                              boost::bind(&AI_Test::ActiveCallback, this),
-                                              boost::bind(&AI_Test::FeedbackCallback, this, _1)
-    );
-  }
-
-  
   void AI_Test::DoneCallback(const actionlib::SimpleClientGoalState& state,  
                     const roborts_msgs::GlobalPlannerResultConstPtr& result)
   {
@@ -37,4 +25,14 @@ void AI_Test::NavGoalCallback(const geometry_msgs::PoseStamped & goal)
       local_planner_actionlib_client_.sendGoal(local_planner_goal_);  // added
     }
   }
+
+
+  void AI_Test::GetEnemyNavGoal(geometry_msgs::PoseStamped& nav, const float distance)
+  {
+    nav.pose.position.x = nav.pose.position.x - distance;
+    tf::Stamped<tf::Pose> nav_tf;
+    poseStampedMsgToTF(nav, nav_tf);
+   // tf_in_map_.sendTransform(tf::StampedTransform(nav, ros::Time::now(), "map", "nav_link"));
+  }
+
 }
