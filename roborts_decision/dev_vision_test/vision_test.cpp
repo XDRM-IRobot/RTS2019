@@ -165,6 +165,7 @@ private:
 
     } else{
       enemy_detected_ = false;
+      ROS_INFO("no Enemy!");
     }
   }
 

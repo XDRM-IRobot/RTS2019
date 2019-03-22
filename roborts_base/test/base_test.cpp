@@ -61,6 +61,18 @@ public:
 
   }
 
+  void test()
+  {
+    ros::Rate loop_rate(30);
+    while(ros::ok())
+    {
+      float yaw   = 0;
+      float pitch = 0;
+      GimbalAngleControl(yaw, pitch);
+      ros::spinOnce();
+      loop_rate.sleep();
+    }
+  }
   void run()
   {
     ros::Rate loop_rate(gimbal_control_freq_);

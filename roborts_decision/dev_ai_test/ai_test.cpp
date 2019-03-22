@@ -66,21 +66,24 @@ void AI_Test::GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstP
       }
   }
   
+  unsigned long dt = 0;
+ 
+
   void AI_Test::ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
-    if (feedback->detected){
-      enemy_detected_ = true;
-      ROS_INFO("Find Enemy!");
-
-      GetEnemyGloalPose(feedback);
-      SelectFinalEnemy();
-      
-      float yaw, pitch;
-      GimbalAngleControl(yaw, pitch);
-      //ShootControl(yaw, pitch);
-
-    } else{
-      enemy_detected_ = false;
-    }
+    if (feedback->detected)
+    {
+        enemy_detected_ = true;
+        lost_cnt_ = 0;
+        ROS_INFO("Find Enemy!");
+        GetEnemyGloalPose(feedback);
+        SelectFinalEnemy();
+    } 
+    else
+      {
+        enemy_detected_ = false;
+        lost_cnt_ = 0;
+        ROS_ERROR("no armor");
+      }
   }
 }
 
@@ -89,6 +92,5 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "armor_detection_node_test_client");
   roborts_decision::AI_Test ac;
   ac.start();
-  ros::spin();
   return 0;
 }

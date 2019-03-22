@@ -47,7 +47,9 @@ class AI_Test
 {
 public:
   AI_Test(): 
-      enemy_detected_(false),
+      enemy_detected_(true),
+      lost_cnt_(0),
+      detect_cnt_(0),
       armor_detection_actionlib_client_("armor_detection_node_action", true),
       global_planner_actionlib_client_("global_planner_node_action", true),
       local_planner_actionlib_client_("local_planner_node_action", true) // Added
@@ -69,6 +71,17 @@ public:
     global_planner_actionlib_client_.waitForServer();
 
     ROS_INFO("Waiting for action server to start.");
+
+    ROS_INFO("Start AI Test.");
+
+    roborts_msgs::ArmorDetectionGoal goal;
+    goal.command = 1;
+    
+    armor_detection_actionlib_client_.sendGoal(goal, 
+            actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleDoneCallback(),
+            actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
+            boost::bind(&AI_Test::ArmorDetectionCallback, this, _1));
+
   }
   void init_gimbal()
   {
@@ -86,10 +99,6 @@ public:
                          param.offset_yaw(), 
                          param.init_v(),
                          param.init_k());
-    
-   
-    gimbal_angle_.yaw_mode    = true;
-    gimbal_angle_.pitch_mode  = true;
 
     fric_wheel_.request.open  = param.fric_wheel();
 
@@ -114,15 +123,40 @@ public:
 
   void start()
   {                     
-    ROS_INFO("Start AI Test.");
+    ros::Rate loop_rate(100);
 
-    roborts_msgs::ArmorDetectionGoal goal;
-    goal.command = 1;
-    
-    armor_detection_actionlib_client_.sendGoal(goal, 
-            actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleDoneCallback(),
-            actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
-            boost::bind(&AI_Test::ArmorDetectionCallback, this, _1));
+    unsigned long dt = 0;
+
+    while(ros::ok())
+    {
+       if(enemy_detected_)
+       {
+         gimbal_angle_.yaw_mode    = true;
+         gimbal_angle_.pitch_mode  = true;
+
+         float yaw, pitch;
+         GimbalAngleControl(yaw, pitch);
+
+         if(yaw > 30)
+         {
+           // 原地旋转
+           //NavGoalCallback();
+         }
+       }
+       else{
+         gimbal_angle_.yaw_mode    = false;
+         gimbal_angle_.pitch_mode  = false;
+
+         float yaw = sin(0.01 * dt++);
+         
+         gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
+         gimbal_angle_.pitch_angle = 0;
+         ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
+
+         ros::spinOnce();
+         loop_rate.sleep();
+       }
+    }
   }   
 
 private:
@@ -131,6 +165,9 @@ private:
   actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction> armor_detection_actionlib_client_;
   
   bool enemy_detected_;
+  int lost_cnt_;   
+  int detect_cnt_;   
+
   geometry_msgs::Point enemy_pose_;
   std::vector<geometry_msgs::Point> ptz_point_candidate_;
   std::vector<geometry_msgs::PoseStamped> global_pose_candidate_;

@@ -23,12 +23,10 @@ void AI_Test::SelectFinalEnemy()
 
   void AI_Test::GimbalAngleControl(float& yaw, float& pitch)
   {
-    if(enemy_detected_)
-    {
-      gimbal_control_.SolveContrlAgnle(enemy_pose_, yaw, pitch);
+    gimbal_control_.SolveContrlAgnle(enemy_pose_, yaw, pitch);
 
-      double dyaw   = 0.1;
-      double dpitch = 0.1;
+    double dyaw   = 0.1;
+    double dpitch = 0.1;
 
            if (abs(yaw) > 30) dyaw = 1;
       else if (abs(yaw) > 25) dyaw = 0.8;
@@ -55,12 +53,5 @@ void AI_Test::SelectFinalEnemy()
                 gimbal_angle_.pitch_angle, 
                 dyaw, 
                 dpitch);
-    }
-    else{
-      gimbal_angle_.yaw_angle   = 0;
-      gimbal_angle_.pitch_angle = 0;
-      ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
-      ROS_ERROR("yaw = %f , pitch = %f ",gimbal_angle_.yaw_angle,gimbal_angle_.pitch_angle);
-    }
   }
 }

@@ -3,8 +3,8 @@ fric_wheel_open        : 0
 shoot_mode             : 1
 shoot_number           : 1
 
-gimbal_yaw_mode        : 1
-gimbal_pitch_mode      : 1
+gimbal_yaw_mode        : 0
+gimbal_pitch_mode      : 0
 
 gimbal_control_freq    : 100
-gimbal_control_range   : 0.05
+gimbal_control_range   : 1
