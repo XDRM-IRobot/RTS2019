@@ -78,7 +78,7 @@ void Gimbal::GimbalInfoCallback(const std::shared_ptr<roborts_sdk::cmd_gimbal_in
   gimbal_tf_.transform.rotation = q;
   gimbal_tf_.transform.translation.x = 0;
   gimbal_tf_.transform.translation.y = 0;
-  gimbal_tf_.transform.translation.z = 0.15;
+  gimbal_tf_.transform.translation.z = 0.4;
   tf_broadcaster_.sendTransform(gimbal_tf_); // publish gimbal tf 
 
 }
@@ -88,9 +88,9 @@ void Gimbal::GimbalAngleCtrlCallback(const roborts_msgs::GimbalAngle::ConstPtr &
   roborts_sdk::cmd_gimbal_angle gimbal_angle;
   gimbal_angle.ctrl.bit.pitch_mode = msg->pitch_mode;
   gimbal_angle.ctrl.bit.yaw_mode = msg->yaw_mode;
-  gimbal_angle.pitch = msg->pitch_angle;
-  gimbal_angle.yaw   = msg->yaw_angle;
-
+  gimbal_angle.pitch = msg->pitch_angle * 10;
+  gimbal_angle.yaw   = msg->yaw_angle   * 10;
+  
   gimbal_angle_pub_->Publish(gimbal_angle); // publish to car
 
 }
@@ -106,8 +106,8 @@ bool Gimbal::CtrlFricWheelService(roborts_msgs::FricWhl::Request &req,
                                   roborts_msgs::FricWhl::Response &res){
   roborts_sdk::cmd_fric_wheel_speed fric_speed;
   if(req.open){
-    fric_speed.left = 1200;
-    fric_speed.right = 1200;
+    fric_speed.left = 1250;
+    fric_speed.right = 1250;
   } else{
     fric_speed.left = 1000;
     fric_speed.right = 1000;

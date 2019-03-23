@@ -54,7 +54,7 @@ void Chassis::ROS_Init(){
   odom_tf_.header.frame_id = "odom";
   odom_tf_.child_frame_id = "base_link";
 
-  uwb_data_.header.frame_id = "uwb";
+  uwb_data_.header.frame_id = "uwb_link";
 }
 void Chassis::ChassisInfoCallback(const std::shared_ptr<roborts_sdk::cmd_chassis_info> chassis_info){
 
@@ -82,6 +82,7 @@ void Chassis::ChassisInfoCallback(const std::shared_ptr<roborts_sdk::cmd_chassis
 void Chassis::UWBInfoCallback(const std::shared_ptr<roborts_sdk::cmd_uwb_info> uwb_info){
 
   uwb_data_.header.stamp = ros::Time::now();
+
   uwb_data_.pose.position.x = ((double)uwb_info->x)/100.0;
   uwb_data_.pose.position.y = ((double)uwb_info->y)/100.0;
   uwb_data_.pose.position.z = 0;

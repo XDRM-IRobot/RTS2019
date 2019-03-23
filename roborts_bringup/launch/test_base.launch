@@ -1,0 +1,12 @@
+<launch>
+  <master auto="start"/>
+  <arg name="map" value="icra2019"/>
+
+  <!-- Run the robot sdk interface -->
+  <include file="$(find roborts_bringup)/launch/base.launch" />
+
+  <!-- Run the local planner node -->
+  <node pkg="roborts_base" type="base_test" name="base_test" respawn="false" />
+  
+</launch>
+

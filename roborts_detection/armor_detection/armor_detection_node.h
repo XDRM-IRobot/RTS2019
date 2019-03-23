@@ -90,11 +90,9 @@ class ArmorDetectionNode {
   bool running_;
   std::mutex mutex_;
   std::condition_variable condition_var_;
-  unsigned int undetected_count_;
 
   //! enemy information
   bool detected_enemy_;
-  unsigned long demensions_;
 
   //ROS
   ros::NodeHandle nh_;
