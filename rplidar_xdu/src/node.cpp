@@ -108,7 +108,14 @@ void publish_scan(ros::Publisher *pub,
             scan_msg.intensities[node_count-1-i] = (float) (nodes[i].quality >> 2);
         }
     }
-
+#if 1
+    for(int i = 0;i<scan_msg.ranges.size();i++)
+        {
+                //if(((scan_msg.angle_min+i*scan_msg.angle_increment) > M_PI)&&((scan_msg.angle_min+i*scan_msg.angle_increment) < M_PI*2))
+                if(((scan_msg.angle_min+i*scan_msg.angle_increment) > -M_PI)&&((scan_msg.angle_min+i*scan_msg.angle_increment) < 0))
+                        scan_msg.ranges[i]=std::numeric_limits<float>::infinity();
+        } //add by hyy
+#endif
     pub->publish(scan_msg);
 }
 
@@ -197,6 +204,11 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;// it stand of angle compensate at per 1 degree
+    
+//    bool cut_angle = true;
+//    int right_degrees;
+//    int left_degrees;
+
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -207,6 +219,11 @@ int main(int argc, char * argv[]) {
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
+//    nh_private.param<bool>("cut_angle", cut_angle, false);
+//    if (cut_angle){
+//        nh_private.param<int>("left_degrees", left_degrees, 180);
+//        nh_private.param<int>("right_degrees", right_degrees, 180);
+//    }
 
     ROS_INFO("RPLIDAR running on ROS package rplidar_xdu. SDK Version:"RPLIDAR_SDK_VERSION"");
 
@@ -302,8 +319,8 @@ int main(int argc, char * argv[]) {
 
         if (op_result == RESULT_OK) {
             op_result = drv->ascendScanData(nodes, count);
-            float angle_min = DEG2RAD(0.0f);
-            float angle_max = DEG2RAD(359.0f);
+            float angle_min = DEG2RAD(0.0f);	//0->90
+            float angle_max = DEG2RAD(359.0f);	//359->270
             if (op_result == RESULT_OK) {
                 if (angle_compensate) {
                     //const int angle_compensate_multiple = 1;
@@ -348,8 +365,8 @@ int main(int argc, char * argv[]) {
                }
             } else if (op_result == RESULT_OPERATION_FAIL) {
                 // All the data is invalid, just publish them
-                float angle_min = DEG2RAD(0.0f);
-                float angle_max = DEG2RAD(359.0f);
+                float angle_min = DEG2RAD(0.0f);	//same
+                float angle_max = DEG2RAD(359.0f);	//the same as up
 
                 publish_scan(&scan_pub, nodes, count,
                              start_scan_time, scan_duration, inverted,

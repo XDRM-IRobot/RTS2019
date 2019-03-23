@@ -24,13 +24,13 @@ trajectory_opt {
 
 # 运动学参数
 kinematics_opt {
-    max_vel_x: 1                              # 最大前进运动速度
+    max_vel_x: 0.5                              # 最大前进运动速度
     max_vel_x_backwards: 0.2                  # 最大后退速度
-    max_vel_y: 1                              # 最大平移速度
-    max_vel_theta: 1                          # 最大角速度
-    acc_lim_x: 0.1                              # 最大纵向加速度
-    acc_lim_y: 0.1                              # 最大平移加速度
-    acc_lim_theta: 0.1                          # 最大角加速度
+    max_vel_y: 0.5                              # 最大平移速度
+    max_vel_theta: 0.5                          # 最大角速度
+    acc_lim_x: 0.2                              # 最大纵向加速度
+    acc_lim_y: 0.2                              # 最大平移加速度
+    acc_lim_theta: 0.5                          # 最大角加速度
     min_turning_radius: 0                     # 最小转弯半径
     wheelbase: 0                              # 无用参数
     cmd_angle_instead_rotvel: false           # ?
@@ -44,10 +44,10 @@ tolerance_opt {
 }
 
 obstacles_opt {
-    min_obstacle_dist: 0.32 #0.8                      # 障碍物最小距离
+    min_obstacle_dist: 0.3 #0.8                      # 障碍物最小距离
     inflation_dist: 0                                 # 障碍物膨胀大小
     include_costmap_obstacles: True                   # 是否考虑代价地图中的障碍物, 无用参数
-    costmap_obstacles_behind_robot_dist: 0.1          # 考虑车后障碍物距离阈值
+    costmap_obstacles_behind_robot_dist: 0.6          # 考虑车后障碍物距离阈值
     obstacle_poses_affected: 30                       # 障碍物影响路径点的数目, 仅在legacy_obstacle_association为true有用
     legacy_obstacle_association: False                # 选择以离障碍物最近的路径点优化,还是离路径点最近的障碍物优化
     obstacle_association_cutoff_factor: 5.0           # 不考虑的障碍物因子, legacy_obstacle_association为false有用
