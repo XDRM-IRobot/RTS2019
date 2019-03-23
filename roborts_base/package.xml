@@ -15,10 +15,12 @@
     <build_depend>rospy</build_depend>
     <build_depend>tf</build_depend>
     <build_depend>roborts_msgs</build_depend>
+    <build_depend>roborts_common</build_depend>
 
     <run_depend>roscpp</run_depend>
     <run_depend>rospy</run_depend>
     <run_depend>tf</run_depend>
     <run_depend>roborts_msgs</run_depend>
+    <run_depend>roborts_common</run_depend>
 
 </package>

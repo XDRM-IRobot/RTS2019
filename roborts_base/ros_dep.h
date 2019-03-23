@@ -32,4 +32,6 @@
 #include "roborts_msgs/ShootCmd.h"
 #include "roborts_msgs/FricWhl.h"
 
+#include "roborts_msgs/Referee.h"
+
 #endif //ROBORTS_SDK_PROTOCOL_DEFINE_ROS_H

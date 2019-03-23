@@ -38,7 +38,10 @@ namespace roborts_sdk {
 
 
 /*-----------------------------REFEREE_CMD---- 0x01 ---------------------*/
-
+#define CMD_PUSH_REFEREE_INFO          (0X0Bu)
+typedef struct {
+  int16_t health;
+} cmd_referee_info;
 
 /*-----------------------------CHASSIS_CMD---- 0x02 ---------------------*/
 
