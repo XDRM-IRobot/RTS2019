@@ -60,7 +60,7 @@ namespace roborts_decision{
   void AI_Test::ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
     if (feedback->detected){
-      if(detect_cnt_++ > 3)
+      if(detect_cnt_++ > 10)
       {
         //ROS_INFO("Find Enemy!");
         GetEnemyGloalPose(feedback);
@@ -96,7 +96,8 @@ void AI_Test::ExecuteLoop()
         int idx = SelectFinalEnemy();
         gimbal_control_.SolveContrlAgnle(shoot_target_, yaw, pitch);
         GimbalAngleControl(yaw, pitch);         
-        
+        ShootControl(yaw, pitch);
+
         tf::StampedTransform gimbal_tf;
         tf::Quaternion q;
 
@@ -134,7 +135,7 @@ void AI_Test::ExecuteLoop()
         // nav
         if(nav_target_.pose.position.x > 2)
         {
-          nav_target_.pose.position.x = nav_target_.pose.position.x - 2;
+          nav_target_.pose.position.x = nav_target_.pose.position.x - 1.8;
           tf_ptr_->transformPose("map", nav_target_, nav_target_);
           nav_target_.pose.position.z = 0;
           // show
@@ -148,14 +149,23 @@ void AI_Test::ExecuteLoop()
                                                     boost::bind(&AI_Test::DoneCallback, this, _1, _2),
                                                     boost::bind(&AI_Test::ActiveCallback, this),
                                                     boost::bind(&AI_Test::FeedbackCallback, this, _1));
+          usleep(1000000);
         }
         continue;
       }
       else{
         //ROS_ERROR("enemy not found.");
-        
-        global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
-        local_planner_actionlib_client_.cancelGoal();
+        if(lost_cnt_ > 300)
+        {
+          global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
+          local_planner_actionlib_client_.cancelGoal();
+        }
+        else if(lost_cnt_ > 500)
+        {
+          vel_.angular.z = 1;
+          ros_ctrl_vel_.publish(vel_); 
+        }
+
 
         gimbal_angle_.yaw_mode    = false;
         gimbal_angle_.pitch_mode  = false;
