@@ -87,6 +87,7 @@ void AI_Test::ExecuteLoop()
       //ROS_ERROR("loop thread.");
       if(enemy_detected_ && shoot_candidate_.size())
       {
+        ROS_ERROR("enemy_detected_ && shoot_candidate_.size()");
         gimbal_angle_.yaw_mode    = true;
         gimbal_angle_.pitch_mode  = true;
          
@@ -113,30 +114,6 @@ void AI_Test::ExecuteLoop()
 
           //ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", y, p, r);
 
-          if (0)//abs(y) > 50)
-          {
-            tf_listener_.lookupTransform("gimbal_link", "map", ros::Time(0), gimbal_tf);
-            m.setRotation(q);
-            m.getEulerZYX( y, p, r);
-            q = tf::createQuaternionFromRPY(0, 0, y);
-
-            geometry_msgs::PoseStamped robot = GetRobotMapPose();
-            robot.pose.position.z    = 0;
-            robot.pose.orientation.x = q.x();
-            robot.pose.orientation.y = q.y();
-            robot.pose.orientation.z = q.z();
-            robot.pose.orientation.w = q.w();
-        
-            double x = robot.pose.position.x;
-            double y = robot.pose.position.y;
-            //ROS_ERROR("rotate robot. now x = %f , y = %f", x, y);
-
-            global_planner_goal_.goal = robot;
-            global_planner_actionlib_client_.sendGoal(global_planner_goal_,
-                                                      boost::bind(&AI_Test::DoneCallback, this, _1, _2),
-                                                      boost::bind(&AI_Test::ActiveCallback, this),
-                                                      boost::bind(&AI_Test::FeedbackCallback, this, _1));
-          }
         }
         catch (tf::TransformException &ex) {
           ROS_ERROR("%s", ex.what());
@@ -144,9 +121,9 @@ void AI_Test::ExecuteLoop()
         }
 
         // nav
-        if(nav_target_.pose.position.x > 2)
+        if(nav_target_.pose.position.x > 3)
         {
-          GetEnemyNavGoal(nav_target_, 2);
+          GetEnemyNavGoal(nav_target_, 3);
           ROS_INFO("Get nav goal.");
           global_planner_goal_.goal = nav_target_;
           global_planner_actionlib_client_.sendGoal(global_planner_goal_,
@@ -154,6 +131,7 @@ void AI_Test::ExecuteLoop()
                                                     boost::bind(&AI_Test::ActiveCallback, this),
                                                     boost::bind(&AI_Test::FeedbackCallback, this, _1));
         }
+        continue;
       }
       else{
         //ROS_ERROR("enemy not found.");
