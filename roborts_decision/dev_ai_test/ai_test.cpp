@@ -114,6 +114,17 @@ void AI_Test::ExecuteLoop()
 
           //ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", y, p, r);
 
+          if(y > 60)
+          {
+            vel_.angular.z = -0.7;
+            ros_ctrl_vel_.publish(vel_); 
+          }
+          if(y < -60)
+          {
+            vel_.angular.z = 0.7;
+            ros_ctrl_vel_.publish(vel_); 
+          }
+
         }
         catch (tf::TransformException &ex) {
           ROS_ERROR("%s", ex.what());
@@ -121,9 +132,9 @@ void AI_Test::ExecuteLoop()
         }
 
         // nav
-        if(nav_target_.pose.position.x > 3)
+        if(nav_target_.pose.position.x > 2)
         {
-          GetEnemyNavGoal(nav_target_, 3);
+          GetEnemyNavGoal(nav_target_, 2);
           ROS_INFO("Get nav goal.");
           global_planner_goal_.goal = nav_target_;
           global_planner_actionlib_client_.sendGoal(global_planner_goal_,

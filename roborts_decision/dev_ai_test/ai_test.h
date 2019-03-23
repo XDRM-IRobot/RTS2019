@@ -43,6 +43,7 @@
 
 #include <thread>
 #include <condition_variable>
+#include <geometry_msgs/Twist.h>
 
 namespace roborts_decision{
 
@@ -67,6 +68,8 @@ public:
   {
     ros_nh_                      = ros::NodeHandle();
     ros_sub_gimbal_              = ros_nh_.subscribe("gimbal_info", 1, &AI_Test::ListenYaw, this);
+
+    ros_ctrl_vel_                = ros_nh_.advertise<geometry_msgs::Twist>("cmd_vel", 100);
 
     ros_ctrl_gimbal_angle_       = ros_nh_.advertise<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 100);
     ros_ctrl_fric_wheel_client_  = ros_nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
@@ -151,7 +154,11 @@ public:
   void start();
   void GetEnemyNavGoal(geometry_msgs::PoseStamped& nav, const float distance);
   void ExecuteLoop();
+
 private:
+
+  geometry_msgs::Twist vel_;
+
   std::mutex mutex_;
   std::thread execute_thread_;// = std::thread(&ArmorDetectionNode::ExecuteLoop, this);
   // create the action client
@@ -184,6 +191,7 @@ private:
   ros::NodeHandle    ros_nh_;
   ros::Subscriber    ros_sub_gimbal_;
   ros::Publisher     ros_ctrl_gimbal_angle_;
+  ros::Publisher     ros_ctrl_vel_;
   ros::ServiceClient ros_ctrl_fric_wheel_client_;
   ros::ServiceClient ros_ctrl_shoot_client_;
 
