@@ -41,6 +41,9 @@
 
 #include "roborts_msgs/GimbalInfo.h"
 
+#include <thread>
+#include <condition_variable>
+
 namespace roborts_decision{
 
 using roborts_common::ErrorCode;
@@ -49,7 +52,7 @@ class AI_Test
 {
 public:
   AI_Test(): 
-      enemy_detected_(true),
+      enemy_detected_(false),
       lost_cnt_(0),
       detect_cnt_(0),
       armor_detection_actionlib_client_("armor_detection_node_action", true),
@@ -90,7 +93,7 @@ public:
   void init_gimbal()
   {
     roborts_decision::GimbalControlParam param;
-    std::string file_name = ros::package::getPath("roborts_detection") + "/test/config/gimbal_control.prototxt";
+    std::string file_name = ros::package::getPath("roborts_decision") + "/dev_ai_test/config/gimbal_control.prototxt";
     bool read_state = roborts_common::ReadProtoFromTextFile(file_name, &param);
     if (!read_state) {
       ROS_ERROR("Cannot open %s", file_name.c_str());
@@ -147,8 +150,10 @@ public:
 
   void start();
   void GetEnemyNavGoal(geometry_msgs::PoseStamped& nav, const float distance);
+  void ExecuteLoop();
 private:
-  
+  std::mutex mutex_;
+  std::thread execute_thread_;// = std::thread(&ArmorDetectionNode::ExecuteLoop, this);
   // create the action client
   actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction> armor_detection_actionlib_client_;
   
@@ -161,6 +166,7 @@ private:
   geometry_msgs::Point shoot_target_;    // in ptz
 
   std::vector<geometry_msgs::PoseStamped> enemy_pose_in_ptz_; // for nav
+  geometry_msgs::PoseStamped nav_target_;                      // for nav
   
 
   geometry_msgs::PoseStamped nav_goal_;  // in map
@@ -195,7 +201,23 @@ private:
 
   void ListenYaw(const roborts_msgs::GimbalInfo::ConstPtr &msg)
   {
-     // gimbal_info_ = msg;
+    gimbal_info_.mode             = msg->mode;
+    gimbal_info_.pitch_ecd_angle  = msg->pitch_ecd_angle;
+    gimbal_info_.yaw_ecd_angle    = msg->yaw_ecd_angle;
+    gimbal_info_.pitch_gyro_angle = msg->pitch_gyro_angle;
+    gimbal_info_.yaw_gyro_angle   = msg->yaw_gyro_angle;
+    gimbal_info_.yaw_rate         = msg->yaw_rate;
+    gimbal_info_.pitch_rate       = msg->pitch_rate;
+
+    /*ROS_ERROR("gimbal_info_.mode: %d ", gimbal_info_.mode );
+    
+    ROS_ERROR("gimbal_info_.pitch_ecd_angle: %f ",  gimbal_info_.pitch_ecd_angle);
+    ROS_ERROR("gimbal_info_.yaw_ecd_angle: %f ",    gimbal_info_.yaw_ecd_angle );
+    ROS_ERROR("gimbal_info_.pitch_gyro_angle: %f ", gimbal_info_.pitch_gyro_angle);
+    ROS_ERROR("gimbal_info_.yaw_gyro_angle: %f ",   gimbal_info_.yaw_gyro_angle);
+    ROS_ERROR("gimbal_info_.yaw_rate: %f ",         gimbal_info_.yaw_rate);
+    ROS_ERROR("gimbal_info_.pitch_rate: %f ",       gimbal_info_.pitch_rate);
+    */
   }
 };
 

@@ -3,7 +3,9 @@
 
 namespace roborts_decision{
     
-void AI_Test::GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
+    unsigned long dt = 0;
+
+  void AI_Test::GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
       shoot_candidate_.clear();
       enemy_pose_in_ptz_.clear();
@@ -55,74 +57,79 @@ void AI_Test::GetEnemyGloalPose(const roborts_msgs::ArmorDetectionFeedbackConstP
       }
   }
   
-  unsigned long dt = 0;
-
   void AI_Test::ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
     if (feedback->detected){
       if(detect_cnt_++ > 3)
       {
-        enemy_detected_ = true;
-        lost_cnt_ = 0;
-        ROS_INFO("Find Enemy!");
-
+        //ROS_INFO("Find Enemy!");
         GetEnemyGloalPose(feedback);
-        SelectFinalEnemy();
+        lost_cnt_ = 0;
+        enemy_detected_ = true;
       }
     }
     else{
-      if (lost_cnt_++ > 3)
+      if (lost_cnt_++ > 100)
       {
-        enemy_detected_ = false;
+        //ROS_ERROR("no armor");
         detect_cnt_ = 0;
-        ROS_ERROR("no armor");
+        enemy_detected_ = false;
       }
     }
   }
 
-
-void AI_Test::start()
-  {
-    ros::Rate loop_rate(100);
-
-    unsigned long dt = 0;
-
-    while(ros::ok())
+void AI_Test::ExecuteLoop()
+{
+  ros::Rate loop_rate(100);
+  
+  while(ros::ok())
     {
-      if(enemy_detected_)
+      //ROS_ERROR("loop thread.");
+      if(enemy_detected_ && shoot_candidate_.size())
       {
-         gimbal_angle_.yaw_mode    = true;
-         gimbal_angle_.pitch_mode  = true;
+        gimbal_angle_.yaw_mode    = true;
+        gimbal_angle_.pitch_mode  = true;
          
-         float yaw, pitch;
+        float yaw, pitch;
+        
+        int idx = SelectFinalEnemy();
+        gimbal_control_.SolveContrlAgnle(shoot_target_, yaw, pitch);
+        GimbalAngleControl(yaw, pitch);         
+        
+        tf::StampedTransform gimbal_tf;
+        tf::Quaternion q;
 
-         int idx = SelectFinalEnemy();
-
-         shoot_target_ = shoot_candidate_[idx];
-         gimbal_control_.SolveContrlAgnle(shoot_target_, yaw, pitch);
-         GimbalAngleControl(yaw, pitch);
-
-         geometry_msgs::PoseStamped nav = enemy_pose_in_ptz_[idx];
-         
-         // adjust
-         try{
-           tf::StampedTransform gimbal_tf;
-           tf_listener_.lookupTransform("gimbal_link", "base_link", ros::Time(0), gimbal_tf);
-           tf::Quaternion q = gimbal_tf.getRotation();
+        try{
+          tf_listener_.lookupTransform("gimbal_link", "base_link", ros::Time(0), gimbal_tf);
+          q = gimbal_tf.getRotation();
     
-            double yaw, pitch, roll;
-            tf::Matrix3x3 m;
-            m.setRotation(q);
-            m.getEulerZYX( yaw, pitch, roll);
-            ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", yaw, pitch, roll);
+          double y, p, r;
+          tf::Matrix3x3 m;
+          m.setRotation(q);
+          m.getEulerZYX( y, p, r);
+          y = y * 180 / M_PI;
+          p = p * 180 / M_PI;
+          r = r * 180 / M_PI;
 
-          if (abs(yaw) > 20)
+          //ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", y, p, r);
+
+          if (0)//abs(y) > 50)
           {
+            tf_listener_.lookupTransform("gimbal_link", "map", ros::Time(0), gimbal_tf);
+            m.setRotation(q);
+            m.getEulerZYX( y, p, r);
+            q = tf::createQuaternionFromRPY(0, 0, y);
+
             geometry_msgs::PoseStamped robot = GetRobotMapPose();
-            robot.pose.orientation = q;
+            robot.pose.position.z    = 0;
+            robot.pose.orientation.x = q.x();
+            robot.pose.orientation.y = q.y();
+            robot.pose.orientation.z = q.z();
+            robot.pose.orientation.w = q.w();
+        
             double x = robot.pose.position.x;
             double y = robot.pose.position.y;
-            ROS_INFO("rotate robot. now x = %f , y = %f", x, y);
+            //ROS_ERROR("rotate robot. now x = %f , y = %f", x, y);
 
             global_planner_goal_.goal = robot;
             global_planner_actionlib_client_.sendGoal(global_planner_goal_,
@@ -130,42 +137,55 @@ void AI_Test::start()
                                                       boost::bind(&AI_Test::ActiveCallback, this),
                                                       boost::bind(&AI_Test::FeedbackCallback, this, _1));
           }
-         }
-         catch (tf::TransformException &ex) {
-           ROS_ERROR("%s", ex.what());
-           ros::Duration(1.0).sleep();
-         }
+        }
+        catch (tf::TransformException &ex) {
+          ROS_ERROR("%s", ex.what());
+          ros::Duration(1.0).sleep();
+        }
 
-         // nav
-         if(nav.pose.position.x > 2)
-         {
-            GetEnemyNavGoal(nav, 2);
-            ROS_INFO("Get nav goal.");
-            global_planner_goal_.goal = nav;
-            global_planner_actionlib_client_.sendGoal(global_planner_goal_,
-                                                      boost::bind(&AI_Test::DoneCallback, this, _1, _2),
-                                                      boost::bind(&AI_Test::ActiveCallback, this),
-                                                      boost::bind(&AI_Test::FeedbackCallback, this, _1));
-         }
-       }
-       else{
-         global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
-         local_planner_actionlib_client_.cancelGoal();
+        // nav
+        if(nav_target_.pose.position.x > 2)
+        {
+          GetEnemyNavGoal(nav_target_, 2);
+          ROS_INFO("Get nav goal.");
+          global_planner_goal_.goal = nav_target_;
+          global_planner_actionlib_client_.sendGoal(global_planner_goal_,
+                                                    boost::bind(&AI_Test::DoneCallback, this, _1, _2),
+                                                    boost::bind(&AI_Test::ActiveCallback, this),
+                                                    boost::bind(&AI_Test::FeedbackCallback, this, _1));
+        }
+      }
+      else{
+        //ROS_ERROR("enemy not found.");
+         //global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
+         //local_planner_actionlib_client_.cancelGoal();
 
-         gimbal_angle_.yaw_mode    = false;
-         gimbal_angle_.pitch_mode  = false;
+        gimbal_angle_.yaw_mode    = false;
+        gimbal_angle_.pitch_mode  = false;
 
-         float yaw = sin(0.01 * dt++);
+        float yaw = sin(0.01 * dt++);
          
-         gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
-         gimbal_angle_.pitch_angle = 0;
-         ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
+        gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
+        //gimbal_angle_.pitch_angle = 0;
+        ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
 
-         ros::spinOnce();
-         loop_rate.sleep();
-       }
+        ros::spinOnce();
+        loop_rate.sleep();
+      }
     }
-  }   
+}
+
+
+void AI_Test::start()
+{
+    ROS_ERROR("ai thrad start.");
+    execute_thread_ = std::thread(&AI_Test::ExecuteLoop, this);
+
+    if (execute_thread_.joinable()) {
+      execute_thread_.join();
+    }
+}
+
 }
 
 int main(int argc, char **argv) 
@@ -173,5 +193,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "armor_detection_node_test_client");
   roborts_decision::AI_Test ac;
   ac.start();
+
   return 0;
 }

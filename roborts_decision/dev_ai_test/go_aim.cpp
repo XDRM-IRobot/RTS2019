@@ -5,30 +5,11 @@ namespace roborts_decision{
 
 int AI_Test::SelectFinalEnemy()
 {
-    if(shoot_candidate_.size())
-    {
-      //...
-      shoot_target_ = shoot_candidate_[0];
-      return 0; 
-      
-    }
-    /*try{
-          geometry_msgs::PoseStamped ptz_pose_in_map;
-          tf::Stamped<tf::Pose> ptz_pose_tf;
-          tf_ptr_->transformPose("map", ptz_pose, ptz_pose_in_map);
-          poseStampedMsgToTF(ptz_pose_in_map, ptz_pose_tf);
-          tf_in_map_.sendTransform(tf::StampedTransform(ptz_pose_tf, ros::Time::now(), "map", "enemy_link"));
-          global_pose_candidate_.push_back(map_pose);
-        }
-        catch (tf::TransformException &ex) {
-          ROS_ERROR("%s",ex.what());
-          ROS_ERROR("tf error when transform enemy pose from /gimbal_link to /map");
-          ros::Duration(1.0).sleep();
-        }
-    */
+  std::lock_guard<std::mutex> guard(mutex_);
+  shoot_target_ = shoot_candidate_[0];
+  nav_target_   = enemy_pose_in_ptz_[0];
+  return 0;
 }
-
-
 
   void AI_Test::ShootControl(float& yaw, float& pitch)
   {

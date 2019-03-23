@@ -22,21 +22,18 @@ namespace roborts_detection {
 
 ArmorDetectionNode::ArmorDetectionNode():
     node_state_(roborts_common::IDLE),
-    demensions_(3),
     initialized_(false),
     detected_enemy_(false),
-    undetected_count_(0),
-    as_(nh_, "armor_detection_node_action", boost::bind(&ArmorDetectionNode::ActionCB, this, _1), false) {
-  initialized_ = false;
-  
-  if (Init().IsOK()) {
-    initialized_ = true;
-    node_state_ = roborts_common::IDLE;
-  } else {
-    ROS_ERROR("armor_detection_node initalized failed!");
-    node_state_ = roborts_common::FAILURE;
-  }
-  as_.start();
+    as_(nh_, "armor_detection_node_action", boost::bind(&ArmorDetectionNode::ActionCB, this, _1), false) 
+  {
+    if (Init().IsOK()) {
+      initialized_ = true;
+      node_state_ = roborts_common::IDLE;
+    } else {
+      ROS_ERROR("armor_detection_node initalized failed!");
+      node_state_ = roborts_common::FAILURE;
+    }
+    as_.start();
 }
 
 ErrorInfo ArmorDetectionNode::Init() 
@@ -57,7 +54,6 @@ ErrorInfo ArmorDetectionNode::Init()
   armor_detector_ = roborts_common::AlgorithmFactory<ArmorDetectionBase,std::shared_ptr<CVToolbox>>::CreateAlgorithm
       (selected_algorithm, cv_toolbox_);
 
-  undetected_armor_delay_ = armor_detection_param.undetected_armor_delay();
   if (armor_detector_ == nullptr) {
     ROS_ERROR("Create armor_detector_ pointer failed!");
     return ErrorInfo(ErrorCode::DETECTION_INIT_ERROR);
@@ -128,8 +124,6 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 
 void ArmorDetectionNode::ExecuteLoop() 
 {
-  undetected_count_ = undetected_armor_delay_;
-
   while(running_) {
     usleep(1);
     if (node_state_ == NodeState::RUNNING) 
@@ -142,10 +136,10 @@ void ArmorDetectionNode::ExecuteLoop()
         error_info_ = error_info;
       }
     } 
-    else if (node_state_ == NodeState::PAUSE) 
+    else if (node_state_ == NodeState::PAUSE)    // 如果暂停
     {
       std::unique_lock<std::mutex> lock(mutex_);
-      condition_var_.wait(lock);
+      condition_var_.wait(lock);                 // stop here
     }
   }
 }
