@@ -134,7 +134,14 @@ void AI_Test::ExecuteLoop()
         // nav
         if(nav_target_.pose.position.x > 2)
         {
-          GetEnemyNavGoal(nav_target_, 2);
+          nav_target_.pose.position.x = nav_target_.pose.position.x - 2;
+          tf_ptr_->transformPose("map", nav_target_, nav_target_);
+          nav_target_.pose.position.z = 0;
+          // show
+                    tf::Stamped<tf::Pose> nav_tf;
+                    poseStampedMsgToTF(nav_target_, nav_tf);
+                    tf_in_map_.sendTransform(tf::StampedTransform(nav_tf, ros::Time::now(), "map", "nav_link"));
+          
           ROS_INFO("Get nav goal.");
           global_planner_goal_.goal = nav_target_;
           global_planner_actionlib_client_.sendGoal(global_planner_goal_,
@@ -146,8 +153,9 @@ void AI_Test::ExecuteLoop()
       }
       else{
         //ROS_ERROR("enemy not found.");
-         //global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
-         //local_planner_actionlib_client_.cancelGoal();
+        
+        global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
+        local_planner_actionlib_client_.cancelGoal();
 
         gimbal_angle_.yaw_mode    = false;
         gimbal_angle_.pitch_mode  = false;

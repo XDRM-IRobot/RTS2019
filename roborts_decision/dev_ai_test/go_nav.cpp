@@ -25,14 +25,5 @@ namespace roborts_decision{
       local_planner_actionlib_client_.sendGoal(local_planner_goal_);  // added
     }
   }
-
-
-  void AI_Test::GetEnemyNavGoal(geometry_msgs::PoseStamped& nav, const float distance)
-  {
-    nav.pose.position.x = nav.pose.position.x - distance;
-    tf::Stamped<tf::Pose> nav_tf;
-    poseStampedMsgToTF(nav, nav_tf);
-   // tf_in_map_.sendTransform(tf::StampedTransform(nav, ros::Time::now(), "map", "nav_link"));
-  }
-
+  
 }
