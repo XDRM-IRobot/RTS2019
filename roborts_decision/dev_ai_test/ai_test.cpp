@@ -69,7 +69,7 @@ namespace roborts_decision{
       }
     }
     else{
-      if (lost_cnt_++ > 100)
+      if (lost_cnt_++ > 200)
       {
         //ROS_ERROR("no armor");
         detect_cnt_ = 0;
@@ -87,6 +87,10 @@ void AI_Test::ExecuteLoop()
       //ROS_ERROR("loop thread.");
       if(enemy_detected_ && shoot_candidate_.size())
       {
+        
+       // ros_ctrl_fric_wheel_client_.call(fric_wheel_);
+
+
         ROS_ERROR("enemy_detected_ && shoot_candidate_.size()");
         gimbal_angle_.yaw_mode    = true;
         gimbal_angle_.pitch_mode  = true;
@@ -95,7 +99,8 @@ void AI_Test::ExecuteLoop()
         
         int idx = SelectFinalEnemy();
         gimbal_control_.SolveContrlAgnle(shoot_target_, yaw, pitch);
-        GimbalAngleControl(yaw, pitch);         
+        GimbalAngleControl(yaw, pitch);     
+        
         ShootControl(yaw, pitch);
 
         tf::StampedTransform gimbal_tf;
@@ -115,17 +120,16 @@ void AI_Test::ExecuteLoop()
 
           //ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", y, p, r);
 
-          if(y > 60)
+          if(y > 45)
           {
-            vel_.angular.z = -0.7;
+            vel_.angular.z = -1;
             ros_ctrl_vel_.publish(vel_); 
           }
-          if(y < -60)
+          if(y < -45)
           {
-            vel_.angular.z = 0.7;
+            vel_.angular.z = 1;
             ros_ctrl_vel_.publish(vel_); 
           }
-
         }
         catch (tf::TransformException &ex) {
           ROS_ERROR("%s", ex.what());
@@ -155,27 +159,23 @@ void AI_Test::ExecuteLoop()
       }
       else{
         //ROS_ERROR("enemy not found.");
-        if(lost_cnt_ > 300)
-        {
-          global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
-          local_planner_actionlib_client_.cancelGoal();
-        }
-        else if(lost_cnt_ > 500)
-        {
-          vel_.angular.z = 1;
-          ros_ctrl_vel_.publish(vel_); 
-        }
-
-
+        
         gimbal_angle_.yaw_mode    = false;
         gimbal_angle_.pitch_mode  = false;
 
         float yaw = sin(0.01 * dt++);
          
         gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
-        //gimbal_angle_.pitch_angle = 0;
+        gimbal_angle_.pitch_angle = 10;
         ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
 
+        if(lost_cnt_ > 300)
+        {
+          global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
+          local_planner_actionlib_client_.cancelGoal();
+          vel_.angular.z = 2 * yaw;
+          ros_ctrl_vel_.publish(vel_); 
+        }
         ros::spinOnce();
         loop_rate.sleep();
       }

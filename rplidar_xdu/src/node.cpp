@@ -112,7 +112,7 @@ void publish_scan(ros::Publisher *pub,
     for(int i = 0;i<scan_msg.ranges.size();i++)
         {
                 //if(((scan_msg.angle_min+i*scan_msg.angle_increment) > M_PI)&&((scan_msg.angle_min+i*scan_msg.angle_increment) < M_PI*2))
-                if(((scan_msg.angle_min+i*scan_msg.angle_increment) > -M_PI)&&((scan_msg.angle_min+i*scan_msg.angle_increment) < 0))
+                if(((scan_msg.angle_min+i*scan_msg.angle_increment) > 90)&&((scan_msg.angle_min+i*scan_msg.angle_increment) < 0))
                         scan_msg.ranges[i]=std::numeric_limits<float>::infinity();
         } //add by hyy
 #endif

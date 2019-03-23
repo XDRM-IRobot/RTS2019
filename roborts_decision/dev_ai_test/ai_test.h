@@ -110,13 +110,9 @@ public:
                          param.init_v(),
                          param.init_k());
 
-    fric_wheel_.request.open  = param.fric_wheel();
-
-    if(fric_wheel_.request.open)
-    {
-      ros_ctrl_fric_wheel_client_.call(fric_wheel_);
-      usleep(3000000);  // wait 3s
-    }
+    //fric_wheel_.request.open  = true;
+    //ros_ctrl_fric_wheel_client_.call(fric_wheel_);
+    //usleep(3000000);  // wait 3s
   }
   const geometry_msgs::PoseStamped GetRobotMapPose() {
     UpdateRobotPose();
