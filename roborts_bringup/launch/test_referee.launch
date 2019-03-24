@@ -1,0 +1,11 @@
+<launch>
+  <master auto="start"/>
+
+  <!-- Run the robot sdk interface -->
+  <include file="$(find roborts_bringup)/launch/base.launch" />
+
+  <!-- Publish static tf -->
+  <node pkg="roborts_base" type="base_test" name="base_test" respawn="false" />
+
+</launch>
+

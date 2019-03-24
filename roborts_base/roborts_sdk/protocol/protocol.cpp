@@ -676,7 +676,7 @@ bool Protocol::StreamHandler(uint8_t byte) {
     recv_stream_ptr_->recv_buff[recv_stream_ptr_->recv_index] = byte;
     recv_stream_ptr_->recv_index++;
   } else {
-    LOG_ERROR << "Buffer overflow";
+    //LOG_ERROR << "Buffer overflow";
     memset(recv_stream_ptr_->recv_buff, 0, recv_stream_ptr_->recv_index);
     recv_stream_ptr_->recv_index = 0;
   }

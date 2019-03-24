@@ -447,7 +447,7 @@ class Protocol {
   /******************* Const List ***************************/
 
   //! size of receive buffer used to read from hardware device
-  static const size_t BUFFER_SIZE = 1024;
+  static const size_t BUFFER_SIZE = 4096;
   //! max Size of package
   static const size_t MAX_PACK_SIZE = 1024;
   //! session number for a sender/receiver

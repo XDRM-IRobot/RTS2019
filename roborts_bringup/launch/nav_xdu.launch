@@ -12,6 +12,9 @@
   <!-- Publish static tf -->
   <include file="$(find roborts_bringup)/launch/static_tf.launch" />
 
+  <!-- Publish static tf -->
+  <node pkg="roborts_base" type="base_test" name="base_test" respawn="false" />
+  
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
 
