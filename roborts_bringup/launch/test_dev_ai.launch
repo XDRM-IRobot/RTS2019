@@ -1,6 +1,6 @@
 <launch>
   <master auto="start"/>
-  <arg name="map" value="xdu_floor3"/>
+  <arg name="map" value="nav3"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
@@ -27,8 +27,8 @@
   <!-- Run the local planner node -->
   <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" />
   
-  <!-- Run the velocity converter node -->
-  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
+  <!-- Run the velocity converter node ->
+  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" /-->
   
   <node pkg="roborts_decision" type="nav_test" name="Nav_test" respawn="false" />
 

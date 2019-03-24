@@ -1,0 +1,9 @@
+<launch>
+  <master auto="start"/>
+
+  <!-- Run the camera node -->
+  <node pkg="roborts_camera" type="roborts_camera_node" name="uvc_camera" respawn="false" />
+  
+  <node pkg="roborts_detection" type="apriltags_detection_node" name="apriltags_detection_node" respawn="false" />
+
+</launch>

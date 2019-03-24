@@ -1,6 +1,6 @@
 <launch>
   <master auto="start"/>
-  <arg name="map" value="icra2019"/>
+  <arg name="map" value="xdu_floor3"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
@@ -33,7 +33,7 @@
   <node pkg="roborts_decision" type="nav_test" name="Rviz" respawn="false" />
 
   <!-- Run the rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
+<!--  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" /> -->
 
 </launch>
 

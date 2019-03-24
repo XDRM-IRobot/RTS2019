@@ -30,17 +30,18 @@ class VelConverter {
     cmd_vel_.linear.x = 0;
     cmd_vel_.linear.y = 0;
     cmd_vel_.angular.z = 0;
-
+    initpose.angular.z=1;
     cmd_pub_ = cmd_handle_.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+    
     cmd_sub_ = cmd_handle_.subscribe<roborts_msgs::TwistAccel>("/cmd_vel_acc", 100, boost::bind(&VelConverter::VelCallback, this, _1));
   }
   void VelCallback(const roborts_msgs::TwistAccel::ConstPtr& msg);
   void UpdateVel();
-
+  void initsend();
  private:
   roborts_msgs::TwistAccel cmd_vel_acc_;
   geometry_msgs::Twist cmd_vel_;
-
+  geometry_msgs::Twist initpose;
   bool new_cmd_acc_, begin_;
 
   ros::NodeHandle cmd_handle_;
@@ -60,7 +61,10 @@ void VelConverter::VelCallback(const roborts_msgs::TwistAccel::ConstPtr& twist_a
   new_cmd_acc_ = true;
   cmd_vel_acc_ = *twist_acc_msg;
 }
-
+void VelConverter::initsend() {
+    this->cmd_pub_.publish(initpose);
+  
+  }
 void VelConverter::UpdateVel() {
   if (!begin_) {
     return;
@@ -90,11 +94,16 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "vel_converter");
 
   VelConverter vel_converter;
-
+int count=1;
   while	(ros::ok()) {
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
     ros::spinOnce();
     vel_converter.UpdateVel();
+    if(count<=1200){
+    vel_converter.initsend();
+    }
+    
+    count++;
   }
 
   return 0;
