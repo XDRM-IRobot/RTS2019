@@ -37,16 +37,16 @@ public:
   BaseTest()
   {
     ros_nh_                      = ros::NodeHandle();
-    ros_game_status_sub_     = ros_nh_.subscribe("game_status", 1, &BaseTest::game_status_Callback, this);
-    ros_game_result_sub_     = ros_nh_.subscribe("game_result", 1, &BaseTest::game_result_Callback, this);
-    ros_game_survival_sub_   = ros_nh_.subscribe("game_survivor", 1, &BaseTest::game_survivor_Callback, this);
-    ros_bonus_status_sub_    = ros_nh_.subscribe("field_bonus_status", 1, &BaseTest::field_bonus_status_Callback, this);
-    ros_supplier_status_sub_ = ros_nh_.subscribe("field_supplier_status", 1, &BaseTest::field_supplier_status_Callback, this);
+    //ros_game_status_sub_     = ros_nh_.subscribe("game_status", 1, &BaseTest::game_status_Callback, this);
+    //ros_game_result_sub_     = ros_nh_.subscribe("game_result", 1, &BaseTest::game_result_Callback, this);
+    //ros_game_survival_sub_   = ros_nh_.subscribe("game_survivor", 1, &BaseTest::game_survivor_Callback, this);
+    //ros_bonus_status_sub_    = ros_nh_.subscribe("field_bonus_status", 1, &BaseTest::field_bonus_status_Callback, this);
+    //ros_supplier_status_sub_ = ros_nh_.subscribe("field_supplier_status", 1, &BaseTest::field_supplier_status_Callback, this);
     ros_robot_status_sub_    = ros_nh_.subscribe("robot_status", 1, &BaseTest::robot_status_Callback, this);
-    ros_robot_heat_sub_      = ros_nh_.subscribe("robot_heat", 1, &BaseTest::robot_heat_Callback, this);
-    ros_robot_bonus_sub_     = ros_nh_.subscribe("robot_bonus", 1, &BaseTest::robot_bonus_Callback, this);
+    //ros_robot_heat_sub_      = ros_nh_.subscribe("robot_heat", 1, &BaseTest::robot_heat_Callback, this);
+    //ros_robot_bonus_sub_     = ros_nh_.subscribe("robot_bonus", 1, &BaseTest::robot_bonus_Callback, this);
     ros_robot_damage_sub_    = ros_nh_.subscribe("robot_damage", 1, &BaseTest::robot_damage_Callback, this);
-    ros_robot_shoot_sub_     = ros_nh_.subscribe("robot_shoot", 1, &BaseTest::robot_shoot_Callback, this);
+    //ros_robot_shoot_sub_     = ros_nh_.subscribe("robot_shoot", 1, &BaseTest::robot_shoot_Callback, this);
 
   }
   void game_status_Callback(const roborts_msgs::GameStatus::ConstPtr msg)
@@ -87,6 +87,7 @@ public:
   }
   void robot_status_Callback(const roborts_msgs::RobotStatus::ConstPtr msg)
   {
+
     robot_status_.id                 = msg->id;
     robot_status_.level              = msg->level;
     robot_status_.remain_hp          = msg->remain_hp;
@@ -96,6 +97,8 @@ public:
     robot_status_.gimbal_output      = msg->gimbal_output;
     robot_status_.chassis_output     = msg->chassis_output;
     robot_status_.shooter_output     = msg->shooter_output;
+    //ROS_ERROR("robot_status_.id : %d", robot_status_.id);
+    //ROS_ERROR("robot_status_.remain_hp : %d", robot_status_.remain_hp);
   }
 
   void robot_heat_Callback(const roborts_msgs::RobotHeat::ConstPtr msg)
@@ -114,6 +117,7 @@ public:
   void robot_damage_Callback(const roborts_msgs::RobotDamage::ConstPtr msg)
   {
     robot_damage_.damage_source = msg->damage_source;
+    ROS_ERROR("robot_damage_.damage_source : %d", robot_damage_.damage_source);
   }
   void robot_shoot_Callback(const roborts_msgs::RobotShoot::ConstPtr msg)
   {
@@ -154,8 +158,10 @@ private:
 int main(int argc, char **argv) 
 {
   ros::init(argc, argv, "armor_detection_node_test_client");
+  ROS_ERROR("listen to referee.");
   BaseTest test;
+  ros::MultiThreadedSpinner spinner(4);
   ros::spin();
-
+  
   return 0;
 }
