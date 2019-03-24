@@ -25,30 +25,62 @@ Gimbal::Gimbal(std::shared_ptr<roborts_sdk::Handle> handle):
   ROS_Init();
 }
 
+Gimbal::~Gimbal(){
+  if(heartbeat_thread_.joinable()){
+    heartbeat_thread_.join();
+  }
+}
+
 void Gimbal::SDK_Init(){
-  // receive gimbal_info from car
+
+  verison_client_ = handle_->CreateClient<roborts_sdk::cmd_version_id,roborts_sdk::cmd_version_id>
+      (UNIVERSAL_CMD_SET, CMD_REPORT_VERSION,
+       MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
+  roborts_sdk::cmd_version_id version_cmd;
+  version_cmd.version_id=0;
+  auto version = std::make_shared<roborts_sdk::cmd_version_id>(version_cmd);
+  verison_client_->AsyncSendRequest(version,
+                                    [](roborts_sdk::Client<roborts_sdk::cmd_version_id,
+                                                           roborts_sdk::cmd_version_id>::SharedFuture future) {
+                                      LOG_INFO << "Gimbal Firmware Version: " << int(future.get()->version_id>>24&0xFF) <<"."
+                                               <<int(future.get()->version_id>>16&0xFF)<<"."
+                                               <<int(future.get()->version_id>>8&0xFF)<<"."
+                                               <<int(future.get()->version_id&0xFF);
+                                    });
+
   handle_->CreateSubscriber<roborts_sdk::cmd_gimbal_info>(GIMBAL_CMD_SET, CMD_PUSH_GIMBAL_INFO,
                                                           GIMBAL_ADDRESS, BROADCAST_ADDRESS,
                                                           std::bind(&Gimbal::GimbalInfoCallback, this, std::placeholders::_1));
-  // command to car
+ // command to car
   gimbal_angle_pub_ = handle_->CreatePublisher<roborts_sdk::cmd_gimbal_angle>(GIMBAL_CMD_SET, CMD_SET_GIMBAL_ANGLE,
                                                                               MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
-  gimbal_mode_pub_= handle_->CreatePublisher<roborts_sdk::gimbal_mode_e>(GIMBAL_CMD_SET, CMD_SET_GIMBAL_MODE,
-                                                                         MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
-  fric_wheel_pub_= handle_->CreatePublisher<roborts_sdk::cmd_fric_wheel_speed>(GIMBAL_CMD_SET, CMD_SET_FRIC_WHEEL_SPEED,
-                                                                               MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
-  gimbal_shoot_pub_= handle_->CreatePublisher<roborts_sdk::cmd_shoot_info>(GIMBAL_CMD_SET, CMD_SET_SHOOT_INFO,
-                                                                             MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
+  gimbal_mode_pub_ = handle_->CreatePublisher<roborts_sdk::gimbal_mode_e>(GIMBAL_CMD_SET, CMD_SET_GIMBAL_MODE,
+                                                                          MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
+  fric_wheel_pub_ = handle_->CreatePublisher<roborts_sdk::cmd_fric_wheel_speed>(GIMBAL_CMD_SET, CMD_SET_FRIC_WHEEL_SPEED,
+                                                                                MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
+  gimbal_shoot_pub_ = handle_->CreatePublisher<roborts_sdk::cmd_shoot_info>(GIMBAL_CMD_SET, CMD_SET_SHOOT_INFO,
+                                                                            MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
 
+  heartbeat_pub_ = handle_->CreatePublisher<roborts_sdk::cmd_heartbeat>(UNIVERSAL_CMD_SET, CMD_HEARTBEAT,
+                                                                        MANIFOLD2_ADDRESS, GIMBAL_ADDRESS);
+  heartbeat_thread_ = std::thread([this]{
+                                    roborts_sdk::cmd_heartbeat heartbeat;
+                                    heartbeat.heartbeat=0;
+                                    while(ros::ok()){
+                                      heartbeat_pub_->Publish(heartbeat);
+                                      std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                                    }
+                                  }
+  );
 }
 
 void Gimbal::ROS_Init(){
 
   //ros subscriber
   ros_sub_cmd_gimbal_angle_ = ros_nh_.subscribe("cmd_gimbal_angle", 1, &Gimbal::GimbalAngleCtrlCallback, this);
-
+  
   ros_pub_gimbal_ = ros_nh_.advertise<roborts_msgs::GimbalInfo>("gimbal_info", 30);
-
+  
   //ros service
   ros_gimbal_mode_srv_ = ros_nh_.advertiseService("set_gimbal_mode", &Gimbal::SetGimbalModeService, this);
   ros_ctrl_fric_wheel_srv_ = ros_nh_.advertiseService("cmd_fric_wheel", &Gimbal::CtrlFricWheelService, this);
@@ -69,7 +101,7 @@ void Gimbal::GimbalInfoCallback(const std::shared_ptr<roborts_sdk::cmd_gimbal_in
   gimbal_.yaw_rate         = gimbal_info->yaw_rate;
   gimbal_.pitch_rate       = gimbal_info->pitch_rate;
   ros_pub_gimbal_.publish(gimbal_);
-  
+
   ros::Time current_time = ros::Time::now();
   geometry_msgs::Quaternion q = tf::createQuaternionMsgFromRollPitchYaw(0.0,
                                                                         gimbal_info->pitch_ecd_angle / 1800.0 * M_PI,
@@ -90,7 +122,7 @@ void Gimbal::GimbalAngleCtrlCallback(const roborts_msgs::GimbalAngle::ConstPtr &
   gimbal_angle.ctrl.bit.yaw_mode = msg->yaw_mode;
   gimbal_angle.pitch = msg->pitch_angle * 10;
   gimbal_angle.yaw   = msg->yaw_angle   * 10;
-  
+
   gimbal_angle_pub_->Publish(gimbal_angle); // publish to car
 
 }
