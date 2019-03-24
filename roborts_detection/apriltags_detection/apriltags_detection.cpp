@@ -18,7 +18,8 @@ class TagDetection
   AprilTags::TagDetector* m_tagDetector;
   AprilTags::TagCodes m_tagCodes;
 
-  ros::NodeHandle nh;
+  ros::NodeHandle nh_;
+  image_transport::Subscriber sub_;
   cv::Mat src_img_;
   cv::Mat gray_img_;
 
@@ -27,9 +28,8 @@ public:
   {
     m_tagDetector = new AprilTags::TagDetector(m_tagCodes);
 
-    image_transport::ImageTransport it(nh);
-    image_transport::Subscriber sub = it.subscribe("/gimbal_camera/image_raw", 20, 
-        boost::bind(&TagDetection::ReceiveImg, this, _1));
+    image_transport::ImageTransport it(nh_);
+    sub_ = it.subscribe("/gimbal_camera/image_raw", 20, boost::bind(&TagDetection::ReceiveImg, this, _1));
   }
 
   void ReceiveImg(const sensor_msgs::ImageConstPtr &msg) 
@@ -41,7 +41,7 @@ public:
 
     for (int i=0; i<detections.size(); i++) detections[i].draw(src_img_);
     
-    imshow("apriltags_TagDetection", src_img_); 
+    cv::imshow("apriltags_TagDetection", src_img_); 
     cv::waitKey(1);
   }
 
@@ -53,11 +53,9 @@ int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "apriltags_detection");
 
-  roborts_detection::TagDetection TagDetection;
+  roborts_detection::TagDetection detector;
 
-  ros::AsyncSpinner async_spinner(1);
-  async_spinner.start();
-  ros::waitForShutdown();
+  ros::spin();
 
   return 0;
 }
