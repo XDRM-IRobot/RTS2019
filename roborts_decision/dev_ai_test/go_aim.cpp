@@ -15,7 +15,7 @@ int AI_Test::SelectFinalEnemy()
   {
     if(fric_wheel_.request.open)
     {
-      if (abs(yaw) < 2 &&  abs(pitch) < 2)
+      if (abs(yaw) < 4 && abs(pitch) < 4)
       {
         shoot_cmd_.request.mode   = true;
         shoot_cmd_.request.number = true;
@@ -45,8 +45,8 @@ int AI_Test::SelectFinalEnemy()
       else if (abs(yaw) > 5)  dyaw = 0.125;
       else                    dyaw = 0.1;
 
-      gimbal_angle_.yaw_angle   = -yaw  * dyaw;
-      gimbal_angle_.pitch_angle = pitch * dpitch;
+      gimbal_angle_.yaw_angle   = -yaw  * 0.1; //dyaw;
+      gimbal_angle_.pitch_angle = pitch * 0.1; //dpitch;
 
       ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
       //ROS_ERROR("yaw = %f , pitch = %f , dyaw = %f , dpitch = %f  ",

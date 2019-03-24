@@ -1,6 +1,6 @@
 <launch>
   <master auto="start"/>
-  <arg name="map" value="xdu_floor3"/>
+  <arg name="map" value="nav3"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
@@ -12,6 +12,9 @@
   <!-- Publish static tf -->
   <include file="$(find roborts_bringup)/launch/static_tf.launch" />
 
+  <!-- Publish static tf -->
+  <node pkg="roborts_base" type="base_test" name="base_test" respawn="false" />
+  
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
 
@@ -27,12 +30,13 @@
 
   <!-- Run the local planner node -->
   <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" />
-  
-  <!-- Run the velocity converter node -->
-  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
 
   <!-- Run the rviz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
+
+   <node pkg="roborts_camera" type="roborts_camera_node" name="uvc_camera" respawn="false" />
+  
+  <node pkg="roborts_detection" type="apriltags_detection_node" name="apriltags_detection_node" respawn="false" />
 
 </launch>
 

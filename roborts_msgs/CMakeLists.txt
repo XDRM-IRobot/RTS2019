@@ -16,6 +16,7 @@ add_action_files(
   LocalPlanner.action
   GlobalPlanner.action
   ArmorDetection.action
+  TagDetection.action
 )
 
 add_message_files(
@@ -30,6 +31,22 @@ add_message_files(
   BattleField.msg
   GimbalInfo.msg
   Referee.msg
+)
+
+add_message_files(
+    DIRECTORY msg/referee_system
+    FILES
+    BonusStatus.msg
+    GameResult.msg
+    GameStatus.msg
+    GameSurvivor.msg
+    ProjectileSupply.msg
+    RobotBonus.msg
+    RobotDamage.msg
+    RobotHeat.msg
+    RobotShoot.msg
+    RobotStatus.msg
+    SupplierStatus.msg
 )
 
 add_service_files(

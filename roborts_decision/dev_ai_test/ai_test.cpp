@@ -60,7 +60,7 @@ namespace roborts_decision{
   void AI_Test::ArmorDetectionCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback)
   {
     if (feedback->detected){
-      if(detect_cnt_++ > 3)
+      if(detect_cnt_++ > 10)
       {
         //ROS_INFO("Find Enemy!");
         GetEnemyGloalPose(feedback);
@@ -69,7 +69,7 @@ namespace roborts_decision{
       }
     }
     else{
-      if (lost_cnt_++ > 100)
+      if (lost_cnt_++ > 200)
       {
         //ROS_ERROR("no armor");
         detect_cnt_ = 0;
@@ -87,6 +87,10 @@ void AI_Test::ExecuteLoop()
       //ROS_ERROR("loop thread.");
       if(enemy_detected_ && shoot_candidate_.size())
       {
+        
+       // ros_ctrl_fric_wheel_client_.call(fric_wheel_);
+
+
         ROS_ERROR("enemy_detected_ && shoot_candidate_.size()");
         gimbal_angle_.yaw_mode    = true;
         gimbal_angle_.pitch_mode  = true;
@@ -95,8 +99,10 @@ void AI_Test::ExecuteLoop()
         
         int idx = SelectFinalEnemy();
         gimbal_control_.SolveContrlAgnle(shoot_target_, yaw, pitch);
-        GimbalAngleControl(yaw, pitch);         
+        GimbalAngleControl(yaw, pitch);     
         
+        ShootControl(yaw, pitch);
+
         tf::StampedTransform gimbal_tf;
         tf::Quaternion q;
 
@@ -114,17 +120,16 @@ void AI_Test::ExecuteLoop()
 
           //ROS_ERROR("listen tf from gimbal : yaw = %f, pitch = %f, roll = %f ", y, p, r);
 
-          if(y > 60)
+          if(y > 45)
           {
-            vel_.angular.z = -0.7;
+            vel_.angular.z = -1;
             ros_ctrl_vel_.publish(vel_); 
           }
-          if(y < -60)
+          if(y < -45)
           {
-            vel_.angular.z = 0.7;
+            vel_.angular.z = 1;
             ros_ctrl_vel_.publish(vel_); 
           }
-
         }
         catch (tf::TransformException &ex) {
           ROS_ERROR("%s", ex.what());
@@ -134,7 +139,7 @@ void AI_Test::ExecuteLoop()
         // nav
         if(nav_target_.pose.position.x > 2)
         {
-          nav_target_.pose.position.x = nav_target_.pose.position.x - 2;
+          nav_target_.pose.position.x = nav_target_.pose.position.x - 1.8;
           tf_ptr_->transformPose("map", nav_target_, nav_target_);
           nav_target_.pose.position.z = 0;
           // show
@@ -148,24 +153,29 @@ void AI_Test::ExecuteLoop()
                                                     boost::bind(&AI_Test::DoneCallback, this, _1, _2),
                                                     boost::bind(&AI_Test::ActiveCallback, this),
                                                     boost::bind(&AI_Test::FeedbackCallback, this, _1));
+          usleep(1000000);
         }
         continue;
       }
       else{
         //ROS_ERROR("enemy not found.");
         
-        global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
-        local_planner_actionlib_client_.cancelGoal();
-
         gimbal_angle_.yaw_mode    = false;
         gimbal_angle_.pitch_mode  = false;
 
         float yaw = sin(0.01 * dt++);
          
         gimbal_angle_.yaw_angle   = yaw * 180 / M_PI;
-        //gimbal_angle_.pitch_angle = 0;
+        gimbal_angle_.pitch_angle = 10;
         ros_ctrl_gimbal_angle_.publish(gimbal_angle_);
 
+        if(lost_cnt_ > 300)
+        {
+          global_planner_actionlib_client_.cancelGoal(); // no enemy stay here
+          local_planner_actionlib_client_.cancelGoal();
+          vel_.angular.z = 2 * yaw;
+          ros_ctrl_vel_.publish(vel_); 
+        }
         ros::spinOnce();
         loop_rate.sleep();
       }
