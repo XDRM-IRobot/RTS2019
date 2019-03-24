@@ -15,28 +15,18 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
-#include "gimbal/gimbal.h"
-#include "chassis/chassis.h"
-#include "referee_system/referee_system.h"
-#include "roborts_base_config.h"
+#ifndef ROBORTS_BASE_CONFIG_H
+#define ROBORTS_BASE_CONFIG_H
+#include <ros/ros.h>
 
+namespace roborts_base{
 
-int main(int argc, char **argv){
-  ros::init(argc, argv, "roborts_base_node");
-  ros::NodeHandle nh;
-  roborts_base::Config config;
-  config.GetParam(&nh);
-  auto handle = std::make_shared<roborts_sdk::Handle>(config.serial_port);
-  if(!handle->Init()) return 1;
-
-  roborts_base::Chassis chassis(handle);
-  roborts_base::Gimbal gimbal(handle);
-  roborts_base::RefereeSystem referee_system(handle);
-  while(ros::ok()) {
-
-    handle->Spin();
-    ros::spinOnce();
-    usleep(1000);
+struct Config {
+  void GetParam(ros::NodeHandle *nh) {
+    nh->param<std::string>("serial_port", serial_port, "/dev/serial_sdk");
   }
+  std::string serial_port;
+};
 
 }
+#endif //ROBORTS_BASE_CONFIG_H
